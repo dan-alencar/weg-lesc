@@ -1,2 +1,2 @@
 import customtkinter as ctk
-print('Hello World!')
+import tkinter as tk
