@@ -9,8 +9,11 @@ class FileSelectionFrame(ctk.CTkFrame):
     Cria novo frame com widgets para seleção de arquivos 
     '''
 
-    def __init__(self, master, **kwargs):
+    def __init__(self, master, repository, **kwargs):
         super().__init__(master, **kwargs)
+
+        # guarda a lista de frames do app
+        self.repository = repository
 
         # checkbox
         self.checkbox = ctk.CTkCheckBox(
@@ -46,12 +49,12 @@ class FileSelectionFrame(ctk.CTkFrame):
         # botão para apagar o frame
         img = ctk.CTkImage(Image.open('img\excluir.png'), size=(20, 20))
         self.bin = ctk.CTkButton(
-            self, text='', image=img, width=35, height=35, command=lambda: self.delFrame(master))
+            self, text='', image=img, width=35, height=35, command=lambda: self.delFrame(self.repository))
         self.bin.pack(pady=10, padx=10, side=ctk.LEFT, anchor=ctk.N)
 
-    def delFrame(self, master):
+    def delFrame(self, repository):
         '''
         Retira o respectivo frame seletor da janela 
         '''
         self.pack_forget()
-        master.delFrame(self)
+        repository.removeFrame(self)
