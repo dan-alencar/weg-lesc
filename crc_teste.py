@@ -1,12 +1,3 @@
-# byte = '11110000'
-# key_crc = int('1011', 2)
-# aux = key_crc << 2
-# #resto = byte ^ aux
-
-# print(byte[0])
-
-# print(aux)
-
 class CRC:
 	
 	def __init__(self):
@@ -23,13 +14,10 @@ class CRC:
 
 		return  ''.join(result)
 
-
-
 	def crc(self,message, key):
 		pick = len(key)
 
 		tmp = message[:pick]
-
 		while pick < len(message):
 			if tmp[0] == '1':
 				tmp = self.xor(key,tmp)+message[pick]
@@ -37,7 +25,7 @@ class CRC:
 				tmp = self.xor('0'*pick,tmp) + message[pick]
 
 			pick+=1
-
+   
 		if tmp[0] == "1":
 			tmp = self.xor(key,tmp)
 		else:
@@ -55,22 +43,26 @@ class CRC:
 		print("Remainder: " ,remainder)
 		print("Data: " ,codeword)
 
-	def reciverSide(self,key,data):
+	def reciverSide(self,data,key):
 		r = self.crc(data,key)
-		size = len(key)
-		print(r)
-		if r == size*0:
+		size = len(key)-1
+		if r == size*'0':
 			print("No Error")
 		else:
 			print("Error")
+   
+	def concat_bin(self, data):
+		result = ''
+		for pick in data:
+			binary_p = format(pick, 'b')
+			if(len(binary_p)<8):
+				binary_p = '0'*(8-len(binary_p))+binary_p
+			result += binary_p
+		return result
 
-
-
-data = '100100'
-key = '1101'
+data = [0x01, 0x00, 0x43, 0x46, 0x57, 0x31, 0x30, 0x30, 0x20, 0x20, 0x20, 0x20, 0x20, 0x20, 0x76, 0x34, 0x2E, 0x32, 0x30, 0x20, 0x20, 0x20, 0x20, 0x20, 0x20, 0x00, 0x00, 0x00]
+key = '1010000000000001'
 c = CRC()
-c.encodedData(data,key)
-print('---------------')
-c.reciverSide(c.cdw,key)
-print('---------------')
-print(c.cdw)
+data = c.concat_bin(data)
+c.encodedData(data, key)
+c.reciverSide(c.cdw, key)
