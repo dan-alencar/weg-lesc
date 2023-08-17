@@ -1,6 +1,8 @@
 import customtkinter as ctk
 from BodyFrame import BodyFrame
 from SelectionFrameList import SelectionFrameList
+from MenuFrame import MenuFrame
+from PIL import Image
 
 
 class App(ctk.CTk):
@@ -13,12 +15,21 @@ class App(ctk.CTk):
 
         # configuração inicial da janela
 
-        self.geometry("800x600")
+        self.geometry("1000x800")
+        self.resizable('false', 'false')
         self.title("Seleção de Arquivos")
         self.iconbitmap("img\weg-logo-5.ico")
         ctk.set_appearance_mode('light')
 
         # frame de menu
+        self.menu_frame = MenuFrame(
+            self, fg_color='transparent', corner_radius=0)
+        self.menu_frame.pack(fill=ctk.BOTH)
+
+        self.logo = ctk.CTkImage(
+            light_image=Image.open('img\logo-weg.png'), size=(1000, 90))
+        self.logo_label = ctk.CTkLabel(self, image=self.logo, text='')
+        self.logo_label.pack()
 
         # frame de seleção de arquivos
 

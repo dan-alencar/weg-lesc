@@ -17,7 +17,7 @@ class FileSelectionFrame(ctk.CTkFrame):
 
         # checkbox
         self.checkbox = ctk.CTkCheckBox(
-            self, text='', height=35, width=25)
+            self, text='', height=35, width=25, command=self.toggleCheckbox)
         self.checkbox.pack(padx=10, pady=10, side=ctk.LEFT, anchor=ctk.N)
 
         # primeira entrada de texto (endereço)
@@ -28,7 +28,7 @@ class FileSelectionFrame(ctk.CTkFrame):
 
         # botão para abrir a seleção de arquivos
         self.btn = ctk.CTkButton(
-            self, text="Escolher Arquivo", state=ctk.DISABLED, height=35)
+            self, text="Escolher Arquivo", state=ctk.DISABLED, height=35, command=self.chooseFile)
         self.btn.pack(pady=10, padx=10, side=ctk.LEFT, anchor=ctk.N)
 
         # campo de texto que exibe o path do arquivo selecionado
@@ -51,6 +51,36 @@ class FileSelectionFrame(ctk.CTkFrame):
         self.bin = ctk.CTkButton(
             self, text='', image=img, width=35, height=35, command=lambda: self.delFrame(self.repository))
         self.bin.pack(pady=10, padx=10, side=ctk.LEFT, anchor=ctk.N)
+
+    def toggleCheckbox(self):
+        '''
+        Controla a ativação dos widgets de acordo com a marcação na 
+        checkbox
+        '''
+
+        # ativa os widgets quando a checkbox é marcada e desativa quando desmarcada
+        if (self.btn.cget('state') == ctk.DISABLED and self.address.cget('state') == ctk.DISABLED):
+            self.btn.configure(state=ctk.NORMAL)
+            self.address.configure(state=ctk.NORMAL)
+            self.file.configure(state=ctk.NORMAL)
+            self.txt1.configure(state=ctk.NORMAL)
+            self.txt2.configure(state=ctk.NORMAL)
+            self.address.configure(placeholder_text="Endereço")
+        else:
+            self.btn.configure(state=ctk.DISABLED)
+            self.address.configure(placeholder_text="")
+            self.address.configure(state=ctk.DISABLED)
+            self.file.configure(state=ctk.DISABLED)
+            self.txt1.configure(state=ctk.DISABLED)
+            self.txt2.configure(state=ctk.DISABLED)
+
+    def chooseFile(self):
+        '''
+        Permite a seleção de arquivos .txt e .hex 
+        '''
+        self.filename = filedialog.askopenfilename(title="Selecione o arquivo do seu firmware", filetypes=[
+            ("Arquivos .txt", ".txt"), ("Arquivos .hex", ".hex")])
+        self.file.insert('end', self.filename)
 
     def delFrame(self, repository):
         '''

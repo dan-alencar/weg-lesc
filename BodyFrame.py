@@ -1,6 +1,5 @@
 import customtkinter as ctk
 from FileSelectionFrame import FileSelectionFrame
-from SelectionFrameList import SelectionFrameList
 
 
 class BodyFrame(ctk.CTkScrollableFrame):
