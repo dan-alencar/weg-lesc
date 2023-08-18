@@ -18,12 +18,14 @@ class CRC:
 		pick = len(key)
 
 		tmp = message[:pick]
+		poly = '1111111111111111'
+		tmp = self.xor(tmp,poly)+message[pick]
+		print(tmp)
 		while pick < len(message):
 			if tmp[0] == '1':
 				tmp = self.xor(key,tmp)+message[pick]
 			else:
 				tmp = self.xor('0'*pick,tmp) + message[pick]
-
 			pick+=1
    
 		if tmp[0] == "1":
@@ -61,8 +63,9 @@ class CRC:
 		return result
 
 data = [0x01, 0x00, 0x43, 0x46, 0x57, 0x31, 0x30, 0x30, 0x20, 0x20, 0x20, 0x20, 0x20, 0x20, 0x76, 0x34, 0x2E, 0x32, 0x30, 0x20, 0x20, 0x20, 0x20, 0x20, 0x20, 0x00, 0x00, 0x00]
-key = '1010000000000001'
+key = '1000000000000101'
 c = CRC()
 data = c.concat_bin(data)
+print(data)
 c.encodedData(data, key)
-c.reciverSide(c.cdw, key)
+# c.reciverSide(c.cdw, key)
