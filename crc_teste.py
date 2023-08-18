@@ -18,22 +18,28 @@ class CRC:
 		pick = len(key)
 
 		tmp = message[:pick]
-		poly = '1111111111111111'
-		tmp = self.xor(tmp,poly)+message[pick]
 		print(tmp)
-		while pick < len(message):
-			if tmp[0] == '1':
-				tmp = self.xor(key,tmp)+message[pick]
+		poly = '1111111111111111'
+		result = []
+		for i in range(0,len(tmp)):
+			if poly[i] == tmp[i]:
+				result.append('0')
 			else:
-				tmp = self.xor('0'*pick,tmp) + message[pick]
+				result.append('1')
+		print(result)
+		while pick < len(message):
+			if result[0] == '1':
+				result = self.xor(key,result)+message[pick]
+			else:
+				result = self.xor('0'*pick,result) + message[pick]
 			pick+=1
    
-		if tmp[0] == "1":
-			tmp = self.xor(key,tmp)
+		if result[0] == "1":
+			result = self.xor(key,result)
 		else:
-			tmp = self.xor('0'*pick,tmp)
+			result = self.xor('0'*pick,result)
 
-		checkword = tmp
+		checkword = result
 		return checkword
 
 	def encodedData(self,data,key):
