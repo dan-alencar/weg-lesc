@@ -3,6 +3,7 @@ from BodyFrame import BodyFrame
 from SelectionFrameList import SelectionFrameList
 from MenuFrame import MenuFrame
 from PIL import Image
+from tkinter import messagebox
 
 
 class App(ctk.CTk):
@@ -41,8 +42,21 @@ class App(ctk.CTk):
         # botão para gerar aquivo binário
 
         self.generate_binary = ctk.CTkButton(
-            self, text="Gerar Binário", command=lambda: self.listWatch())
+            self, text="Gerar Binário", command=self.listWatch)
         self.generate_binary.pack(pady=10, padx=10)
+
+    def gerarbinario(self):
+        '''
+        Função chamada pelo botão gerar binário
+        '''
+        for frame in self.frame_list.all_frames:
+            if frame.file.get() != "":
+                response = messagebox.showinfo(
+                    title="Mensagem", message="Seu arquivo binário foi gerado com sucesso")
+                return
+
+        response = messagebox.showerror(
+            title="Mensagem", message="Selecione pelo menos um arquivo")
 
     def listWatch(self):
         print(*self.frame_list.all_frames)

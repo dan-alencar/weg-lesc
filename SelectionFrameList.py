@@ -11,3 +11,7 @@ class SelectionFrameList:
 
     def clearFrames(self):
         self.all_frames.clear()
+
+    def unpackFrames(self):
+        for frame in self.all_frames:
+            frame.pack_forget()

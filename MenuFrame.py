@@ -2,6 +2,7 @@ import customtkinter as ctk
 from tkinter import messagebox
 import xml.etree.ElementTree as ET
 from tkinter import filedialog
+from FileSelectionFrame import FileSelectionFrame
 
 
 class MenuFrame(ctk.CTkFrame):
@@ -27,22 +28,60 @@ class MenuFrame(ctk.CTkFrame):
         '''
         Procurar um arquivo .lesc
         '''
-        print(filedialog.askopenfilename(initialdir="/", title="Abrir arquivo",
-                                         filetypes=(("Arquivos .lesc", "*.lesc"), ("Todos os arquivos", "*.*"))))
+
+        # abre o seletor de arquivos para carregar o arquivo .lesc
+        data = [('Arquivos .lesc', '*.lesc')]
+        file = filedialog.askopenfilename(initialdir="/", title="Abrir arquivo",
+                                          filetypes=data, defaultextension=data)
+
+        # XML parser
+        tree = ET.parse(file)
+        root = tree.getroot()
+
+        # apaga os frames do aplicativo e do repositório
+
+        self.master.frame_list.unpackFrames()
+        self.master.frame_list.clearFrames()
+
+        # carrega os frames do arquivo
+
+        for frames in root:
+            for frame in frames:
+                new_frame = FileSelectionFrame(
+                    self.master.body_frame, self.master.frame_list)
+                self.master.frame_list.addFrame(
+                    new_frame)  # adiciona no repositório
+                new_frame.pack(side=ctk.TOP, fill=ctk.BOTH, expand=ctk.TRUE)
+                address = frame.get('address')
+                filepath = frame.get('filepath')
+                bin = frame.get('bin')
+                hex = frame.get('hex')
+                new_frame.checkbox.toggle()
+                new_frame.address.insert('1',  address)
+                new_frame.file.insert('1', filepath)
+                new_frame.txt1.insert('1', bin)
+                new_frame.txt2.insert('1', hex)
 
     def onSave(self, master):
         '''
         Salva um arquivo .lesc
         '''
+
+        # abre o gerenciador de arquivos para salvar arquivo .lesc
+
         data = [('Arquivos .lesc', '*.lesc')]
         file = filedialog.asksaveasfilename(
             initialdir="/", title="Salvar como aaa", filetypes=data, defaultextension=data)
+
+        # chama a função que cria o arquivo XML
+
         file = self.toXML(master.frame_list, file)
 
     def toXML(self, repository, file):
         '''
         Cria um arquivo xml
         '''
+
         xml_doc = ET.Element('App')
         frames = ET.SubElement(xml_doc, 'frames')
         for frame in repository.all_frames:
