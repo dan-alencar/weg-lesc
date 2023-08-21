@@ -1,4 +1,5 @@
 import customtkinter as ctk
+import crc
 from BodyFrame import BodyFrame
 from SelectionFrameList import SelectionFrameList
 from MenuFrame import MenuFrame
@@ -42,7 +43,7 @@ class App(ctk.CTk):
         # botão para gerar aquivo binário
 
         self.generate_binary = ctk.CTkButton(
-            self, text="Gerar Binário", command=self.listWatch)
+            self, text="Gerar Binário", command=self.gerarbinario)
         self.generate_binary.pack(pady=10, padx=10)
 
     def gerarbinario(self):
@@ -57,10 +58,6 @@ class App(ctk.CTk):
 
         response = messagebox.showerror(
             title="Mensagem", message="Selecione pelo menos um arquivo")
-
-    def listWatch(self):
-        print(*self.frame_list.all_frames)
-
 
 # janela funcionando
 app = App()
