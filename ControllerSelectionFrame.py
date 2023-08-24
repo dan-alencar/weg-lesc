@@ -1,17 +1,16 @@
 import customtkinter as ctk
 from tkinter import filedialog
 from PIL import Image
-from FileSelectionFrameList import FileSelectionFrameList
 
 
-class FileSelectionFrame(ctk.CTkFrame):
+class ControllerSelectionFrame(ctk.CTkFrame):
     '''
     Cria novo frame com widgets para seleção de arquivos 
     '''
 
     def __init__(self, master, repository, **kwargs):
         super().__init__(master, **kwargs)
-        
+
         # guarda a lista de frames do app
         self.repository = repository
 
@@ -25,11 +24,6 @@ class FileSelectionFrame(ctk.CTkFrame):
             self, state=ctk.DISABLED, height=35, width=70)
         self.address.pack(expand=True, padx=10, pady=10,
                           side=ctk.LEFT, anchor=ctk.N)
-
-        # botão para abrir a seleção de arquivos
-        self.btn = ctk.CTkButton(
-            self, text="Escolher Arquivo", state=ctk.DISABLED, height=35, font=('', 15, 'bold'), command=self.chooseFile)
-        self.btn.pack(pady=10, padx=10, side=ctk.LEFT, anchor=ctk.N)
 
         # campo de texto que exibe o path do arquivo selecionado
         self.file = ctk.CTkEntry(self, state=ctk.DISABLED, height=35)
@@ -60,27 +54,18 @@ class FileSelectionFrame(ctk.CTkFrame):
 
         # ativa os widgets quando a checkbox é marcada e desativa quando desmarcada
         if (self.checkbox.get()==1):
-            self.btn.configure(state=ctk.NORMAL)
             self.address.configure(state=ctk.NORMAL)
             self.file.configure(state=ctk.NORMAL)
             self.txt1.configure(state=ctk.NORMAL)
             self.txt2.configure(state=ctk.NORMAL)
             self.address.configure(placeholder_text="Endereço")
         else:
-            self.btn.configure(state=ctk.DISABLED)
             self.address.configure(placeholder_text="")
             self.address.configure(state=ctk.DISABLED)
             self.file.configure(state=ctk.DISABLED)
             self.txt1.configure(state=ctk.DISABLED)
             self.txt2.configure(state=ctk.DISABLED)
 
-    def chooseFile(self):
-        '''
-        Permite a seleção de arquivos .txt e .hex 
-        '''
-        self.filename = filedialog.askopenfilename(title="Selecione o arquivo do seu firmware", filetypes=[
-            ("Arquivos .txt", ".txt"), ("Arquivos .hex", ".hex")])
-        self.file.insert('end', self.filename)
 
     def delFrame(self, repository):
         '''
