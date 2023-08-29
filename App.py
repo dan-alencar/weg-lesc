@@ -22,7 +22,7 @@ class App(ctk.CTk):
         self.title("Seleção de Arquivos")
         self.iconbitmap("img\weg-logo-5.ico")
         ctk.set_appearance_mode('light')
-        
+
         # frame de menu
         self.menu_frame = MenuFrame(
             self, fg_color='transparent', corner_radius=0)
@@ -58,6 +58,7 @@ class App(ctk.CTk):
 
         response = messagebox.showerror(
             title="Mensagem", message="Selecione pelo menos um arquivo")
+
 
 # janela funcionando
 app = App()
