@@ -35,7 +35,7 @@ class App(ctk.CTk):
         self.logo_label.pack()
         
         #Menu de abas
-        self.codeframe_list = FileSelectionFrameList()  # cria lista de frames de seleção
+        self.codeframe_list = FileSelectionFrameList(self)  # cria lista de frames de seleção
         self.controllerframe_list = ControllerSelectionFrameList()  # cria lista de frames de seleção
         self.tab_view = TabbedPanel(self)
         self.tab_view.pack(fill=ctk.BOTH,expand=ctk.TRUE)

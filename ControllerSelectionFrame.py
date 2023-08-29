@@ -18,6 +18,13 @@ class ControllerSelectionFrame(ctk.CTkFrame):
         self.checkbox = ctk.CTkCheckBox(
             self, text='', height=35, width=25, command=self.toggleCheckbox)
         self.checkbox.pack(padx=10, pady=10, side=ctk.LEFT, anchor=ctk.N)
+        
+        # menu de escolha de firmware
+        self.optionmenu_var = ctk.StringVar(value="Selecione uma opção")
+        self.optionmenu = ctk.CTkOptionMenu(self,state=ctk.DISABLED, values=["option 1 ", "option 2"],
+                                         command=self.optionmenu_callback,
+                                         variable=self.optionmenu_var)
+        self.optionmenu.pack(padx=10, pady=10, side=ctk.LEFT, anchor=ctk.N)
 
         # primeira entrada de texto (endereço)
         self.address = ctk.CTkEntry(
@@ -59,9 +66,12 @@ class ControllerSelectionFrame(ctk.CTkFrame):
             self.txt1.configure(state=ctk.NORMAL)
             self.txt2.configure(state=ctk.NORMAL)
             self.address.configure(placeholder_text="Endereço")
+            self.optionmenu.configure(state=ctk.NORMAL)
+            self.repository.updateFrames()
         else:
             self.address.configure(placeholder_text="")
             self.address.configure(state=ctk.DISABLED)
+            self.optionmenu.configure(state=ctk.DISABLED)
             self.file.configure(state=ctk.DISABLED)
             self.txt1.configure(state=ctk.DISABLED)
             self.txt2.configure(state=ctk.DISABLED)
@@ -73,3 +83,7 @@ class ControllerSelectionFrame(ctk.CTkFrame):
         '''
         self.pack_forget()
         repository.removeFrame(self)
+    
+    #debugging da opção selecionada
+    def optionmenu_callback(self, choice):
+        print("optionmenu dropdown clicked:", choice)

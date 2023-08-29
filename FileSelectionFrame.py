@@ -14,7 +14,13 @@ class FileSelectionFrame(ctk.CTkFrame):
         
         # guarda a lista de frames do app
         self.repository = repository
-
+        self.index = len(repository.codeframes) + 1
+        self.name = "Código " + str(self.index)
+        
+        #label para identificar o código na tela de seleção
+        self.label = ctk.CTkLabel(self, text = self.name)
+        self.label.pack(padx=10, pady=15, side=ctk.LEFT, anchor=ctk.N)
+        
         # checkbox
         self.checkbox = ctk.CTkCheckBox(
             self, text='', height=35, width=25, command=self.toggleCheckbox)
@@ -66,6 +72,7 @@ class FileSelectionFrame(ctk.CTkFrame):
             self.txt1.configure(state=ctk.NORMAL)
             self.txt2.configure(state=ctk.NORMAL)
             self.address.configure(placeholder_text="Endereço")
+            self.repository.fwValidation(self)
         else:
             self.btn.configure(state=ctk.DISABLED)
             self.address.configure(placeholder_text="")
@@ -73,6 +80,7 @@ class FileSelectionFrame(ctk.CTkFrame):
             self.file.configure(state=ctk.DISABLED)
             self.txt1.configure(state=ctk.DISABLED)
             self.txt2.configure(state=ctk.DISABLED)
+            self.repository.fwRemove(self)
 
     def chooseFile(self):
         '''

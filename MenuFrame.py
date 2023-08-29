@@ -67,6 +67,7 @@ class MenuFrame(ctk.CTkFrame):
                     new_frame.file.insert('1', frame.get('filepath'))
                     new_frame.txt1.insert('1', frame.get('bin'))
                     new_frame.txt2.insert('1', frame.get('hex'))
+                    new_frame.optionmenu.set(frame.get('option'))
                     
 
     def onSave(self, master):
@@ -92,7 +93,7 @@ class MenuFrame(ctk.CTkFrame):
         xml_doc = ET.Element('App')
         codeframes = ET.SubElement(xml_doc, 'codeframes')
         controllerframes = ET.SubElement(xml_doc, 'controllerframes')
-        for frame in codeframe_list.codeframes:
+        for frame in codeframe_list.valid_firmware:
             if frame.checkbox.get() == 1:
                 if (isinstance(frame, FileSelectionFrame)):
                     ET.SubElement(codeframes, 'codeframe', address=frame.address.get(
@@ -102,7 +103,7 @@ class MenuFrame(ctk.CTkFrame):
             if frame.checkbox.get() == 1:
                 if (isinstance(frame, ControllerSelectionFrame)):
                     ET.SubElement(controllerframes, 'controllerframe', address=frame.address.get(
-                    ), filepath=frame.file.get(), bin=frame.txt1.get(), hex=frame.txt2.get())
+                    ), filepath=frame.file.get(), bin=frame.txt1.get(), hex=frame.txt2.get(), option = frame.optionmenu.get())
             
 
         tree = ET.ElementTree(xml_doc)
