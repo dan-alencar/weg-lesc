@@ -1,5 +1,6 @@
 import customtkinter as ctk
 from tkinter import filedialog
+import tkinter as tk
 from PIL import Image
 from FileSelectionFrameList import FileSelectionFrameList
 
@@ -43,7 +44,7 @@ class FileSelectionFrame(ctk.CTkFrame):
                        side=ctk.LEFT, anchor=ctk.N)
 
         # segunda entrada de texto
-        self.txt1 = ctk.CTkEntry(self, state=ctk.DISABLED, height=35, width=60)
+        self.txt1 = ctk.CTkEntry(self, validate state=ctk.DISABLED, height=35, width=60)
         self.txt1.pack(expand=True, padx=10, pady=10,
                        side=ctk.LEFT, anchor=ctk.N)
 
