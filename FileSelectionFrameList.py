@@ -23,6 +23,7 @@ class FileSelectionFrameList:
 
     def clearFrames(self):
         self.codeframes.clear()
+        self.valid_firmware.clear()
 
     def unpackFrames(self):
         for frame in self.codeframes:

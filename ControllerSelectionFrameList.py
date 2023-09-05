@@ -12,6 +12,7 @@ class ControllerSelectionFrameList:
 
     def clearFrames(self):
         self.controllerframes.clear()
+        self.optionList.clear()
 
     def unpackFrames(self):
         for frame in self.controllerframes:

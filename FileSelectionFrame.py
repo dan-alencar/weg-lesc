@@ -4,7 +4,6 @@ import tkinter as tk
 from PIL import Image
 from FileSelectionFrameList import FileSelectionFrameList
 
-
 class FileSelectionFrame(ctk.CTkFrame):
     '''
     Cria novo frame com widgets para seleção de arquivos 
@@ -14,9 +13,10 @@ class FileSelectionFrame(ctk.CTkFrame):
         super().__init__(master, **kwargs)
         
         # guarda a lista de frames do app
+        validate_length = self.register((self.validate_input), "%P")
         self.repository = repository
         self.index = len(repository.codeframes) + 1
-        self.name = "Código " + str(self.index)
+        self.name = "FW " + str(self.index)
         
         #label para identificar o código na tela de seleção
         self.label = ctk.CTkLabel(self, text = self.name)
@@ -44,12 +44,12 @@ class FileSelectionFrame(ctk.CTkFrame):
                        side=ctk.LEFT, anchor=ctk.N)
 
         # segunda entrada de texto
-        self.txt1 = ctk.CTkEntry(self, validate state=ctk.DISABLED, height=35, width=60)
+        self.txt1 = ctk.CTkEntry(self, state=ctk.DISABLED, validate = "key", validatecommand = validate_length, height=35, width=60)
         self.txt1.pack(expand=True, padx=10, pady=10,
                        side=ctk.LEFT, anchor=ctk.N)
 
         # terceira entrada de texto
-        self.txt2 = ctk.CTkEntry(self, state=ctk.DISABLED, height=35, width=60)
+        self.txt2 = ctk.CTkEntry(self, state=ctk.DISABLED, validate = "key", validatecommand = validate_length, height=35, width=60)
         self.txt2.pack(expand=True, padx=10, pady=10,
                        side=ctk.LEFT, anchor=ctk.N)
 
@@ -97,3 +97,9 @@ class FileSelectionFrame(ctk.CTkFrame):
         '''
         self.pack_forget()
         repository.removeFrame(self)
+    
+    def validate_input(self, input):
+        if len(input) <= 8:
+            return True
+        else:
+            return False

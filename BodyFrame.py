@@ -12,8 +12,7 @@ class BodyFrame(ctk.CTkScrollableFrame):
 
     def __init__(self, master, repository, type, **kwargs):
         super().__init__(master, **kwargs)
-        self.tags = ctk.CTkLabel(self, bg_color='yellow')
-        # self.tags.pack()
+        
         # cria o primeiro seletor de arquivos
         if type == "code":
             self.first_frame = FileSelectionFrame(self, repository)

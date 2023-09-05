@@ -48,10 +48,8 @@ class MenuFrame(ctk.CTkFrame):
         for frames in root:
             for frame in frames:
                 if (frame.tag=='codeframe'):
-                    new_frame = FileSelectionFrame(
-                        self.master.tab_view.codeframe, self.master.codeframe_list)
-                    self.master.codeframe_list.addFrame(
-                        new_frame)  # adiciona no repositório
+                    new_frame = FileSelectionFrame(self.master.tab_view.codeframe, self.master.codeframe_list)
+                    self.master.codeframe_list.addFrame(new_frame)  # adiciona no repositório
                     new_frame.pack(side=ctk.TOP, fill=ctk.BOTH, expand=ctk.TRUE)
                     new_frame.checkbox.toggle()
                     new_frame.address.insert('1',  frame.get('address'))
