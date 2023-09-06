@@ -65,7 +65,12 @@ class MenuFrame(ctk.CTkFrame):
                     new_frame.file.insert('1', frame.get('filepath'))
                     new_frame.txt1.insert('1', frame.get('bin'))
                     new_frame.txt2.insert('1', frame.get('hex'))
-                    new_frame.optionmenu.set(frame.get('option'))
+                    option = int(frame.get('option'))
+                    if option == -1:
+                        new_frame.optionmenu.set('Selecione uma opção')
+                    else:
+                        option = self.master.codeframe_list.valid_firmware[option]
+                        new_frame.optionmenu.set(option.name)
                     
 
     def onSave(self, master):
@@ -100,8 +105,17 @@ class MenuFrame(ctk.CTkFrame):
         for frame in controllerframe_list.controllerframes:
             if frame.checkbox.get() == 1:
                 if (isinstance(frame, ControllerSelectionFrame)):
+                    optionSelected = frame.optionmenu.get()
+                    for firmware in codeframe_list.valid_firmware:
+                        if firmware.name==optionSelected:
+                            optionSelected = firmware
+                            optionSelected = str(codeframe_list.valid_firmware.index(optionSelected))
+                            print(optionSelected)
+                        else:
+                            print('Opção não encontrada')
+                            optionSelected = '-1'
                     ET.SubElement(controllerframes, 'controllerframe', address=frame.address.get(
-                    ), filepath=frame.file.get(), bin=frame.txt1.get(), hex=frame.txt2.get(), option = frame.optionmenu.get())
+                    ), filepath=frame.file.get(), bin=frame.txt1.get(), hex=frame.txt2.get(), option = optionSelected)
             
 
         tree = ET.ElementTree(xml_doc)
