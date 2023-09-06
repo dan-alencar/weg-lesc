@@ -65,13 +65,11 @@ class MenuFrame(ctk.CTkFrame):
                     new_frame.file.insert('1', frame.get('filepath'))
                     new_frame.txt1.insert('1', frame.get('bin'))
                     new_frame.txt2.insert('1', frame.get('hex'))
-                    option = int(frame.get('option'))
-                    if option == -1:
-                        new_frame.optionmenu.set('Selecione uma opção')
+                    option = frame.get('option')
+                    if option[:2] == 'FW':
+                        new_frame.optionmenu.set(option)
                     else:
-                        option = self.master.codeframe_list.valid_firmware[option]
-                        new_frame.optionmenu.set(option.name)
-                    
+                        new_frame.optionmenu.set('Selecione uma opção')
 
     def onSave(self, master):
         '''
@@ -107,15 +105,16 @@ class MenuFrame(ctk.CTkFrame):
                 if (isinstance(frame, ControllerSelectionFrame)):
                     optionSelected = frame.optionmenu.get()
                     for firmware in codeframe_list.valid_firmware:
+                        print("atualmente:" + firmware.name + "e procura:"+ optionSelected)
                         if firmware.name==optionSelected:
-                            optionSelected = firmware
-                            optionSelected = str(codeframe_list.valid_firmware.index(optionSelected))
-                            print(optionSelected)
+                            option = firmware.name
+                            print("this is:" + optionSelected)
+                            break
                         else:
                             print('Opção não encontrada')
-                            optionSelected = '-1'
+                            option = '-1'
                     ET.SubElement(controllerframes, 'controllerframe', address=frame.address.get(
-                    ), filepath=frame.file.get(), bin=frame.txt1.get(), hex=frame.txt2.get(), option = optionSelected)
+                    ), filepath=frame.file.get(), bin=frame.txt1.get(), hex=frame.txt2.get(), option = option)
             
 
         tree = ET.ElementTree(xml_doc)
