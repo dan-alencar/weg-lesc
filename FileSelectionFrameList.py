@@ -23,7 +23,7 @@ class FileSelectionFrameList:
         index = self.searchbyIndex(self.aux, frame)
         # print(frame.name + " removido com sucesso")
         if index!=-1:
-            self.aux.remove(index)
+            self.aux.pop(index)
         self.master.controllerframe_list.updateList(self.aux)
 
     def removeFrame(self, frame):
