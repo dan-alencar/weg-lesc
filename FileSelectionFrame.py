@@ -9,17 +9,17 @@ class FileSelectionFrame(ctk.CTkFrame):
     Cria novo frame com widgets para seleção de arquivos 
     '''
 
-    def __init__(self, master, repository, **kwargs):
+    def __init__(self, master, repository, index, **kwargs):
         super().__init__(master, **kwargs)
         
         # guarda a lista de frames do app
         validate_length = self.register((self.validate_input), "%P")
         self.repository = repository
-        self.index = len(repository.codeframes) + 1
-        self.name = "FW " + str(self.index)
+        self.index = index
+        # self.name = "FW " + str(self.index + 1)
         
         #label para identificar o código na tela de seleção
-        self.label = ctk.CTkLabel(self, text = self.name)
+        self.label = ctk.CTkLabel(self, text = "FW " + str(self.index + 1))
         self.label.pack(padx=10, pady=15, side=ctk.LEFT, anchor=ctk.N)
         
         # checkbox

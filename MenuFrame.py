@@ -48,7 +48,8 @@ class MenuFrame(ctk.CTkFrame):
         for frames in root:
             for frame in frames:
                 if (frame.tag=='codeframe'):
-                    new_frame = FileSelectionFrame(self.master.tab_view.codeframe, self.master.codeframe_list)
+                    new_frame = FileSelectionFrame(self.master.tab_view.codeframe, self.master.codeframe_list, self.master.tab_view.codeframe.index)
+                    self.master.tab_view.codeframe.index += 1
                     self.master.codeframe_list.addFrame(new_frame)  # adiciona no repositório
                     new_frame.pack(side=ctk.TOP, fill=ctk.BOTH, expand=ctk.TRUE)
                     new_frame.checkbox.toggle()
@@ -104,17 +105,17 @@ class MenuFrame(ctk.CTkFrame):
             if frame.checkbox.get() == 1:
                 if (isinstance(frame, ControllerSelectionFrame)):
                     optionSelected = frame.optionmenu.get()
-                    for firmware in codeframe_list.valid_firmware:
-                        print("atualmente:" + firmware.name + "e procura:"+ optionSelected)
-                        if firmware.name==optionSelected:
-                            option = firmware.name
-                            print("this is:" + optionSelected)
-                            break
-                        else:
-                            print('Opção não encontrada')
-                            option = '-1'
+                    # for firmware in codeframe_list.valid_firmware:
+                    #     print("atualmente:" + firmware.name + "e procura:"+ optionSelected)
+                    #     if firmware.name==optionSelected:
+                    #         option = firmware.name
+                    #         print("this is:" + optionSelected)
+                    #         break
+                    #     else:
+                    #         print('Opção não encontrada')
+                    #         option = '-1'
                     ET.SubElement(controllerframes, 'controllerframe', address=frame.address.get(
-                    ), filepath=frame.file.get(), bin=frame.txt1.get(), hex=frame.txt2.get(), option = option)
+                    ), filepath=frame.file.get(), bin=frame.txt1.get(), hex=frame.txt2.get(), option = optionSelected)
             
 
         tree = ET.ElementTree(xml_doc)
@@ -128,6 +129,7 @@ class MenuFrame(ctk.CTkFrame):
         self.master.codeframe_list.clearFrames()
         self.master.controllerframe_list.unpackFrames()
         self.master.controllerframe_list.clearFrames()
+        self.master.tab_view.codeframe.index = 0
         
 
     def about(self):

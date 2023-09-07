@@ -18,12 +18,18 @@ class ControllerSelectionFrameList:
         for frame in self.controllerframes:
             frame.pack_forget()
             
-    def updateFrames(self):
-        for frame in self.controllerframes:
-            frame.optionmenu.configure(values = self.optionList)
-            
     def updateList(self, repository):
         self.optionList = []
         for option in repository:
-            self.optionList.append(option.name)
+            self.optionList.append("FW " + str(option + 1))
         self.updateFrames()
+    
+    def updateFrames(self):
+        for frame in self.controllerframes:
+            # frame.optionmenu.set('Selecione uma opção')
+            currentoption = frame.optionmenu.get()
+            try:
+                index = self.optionList.index(currentoption)
+            except ValueError:
+                frame.optionmenu.set("Selecione uma opção")
+            frame.optionmenu.configure(values = self.optionList)
