@@ -105,15 +105,6 @@ class MenuFrame(ctk.CTkFrame):
             if frame.checkbox.get() == 1:
                 if (isinstance(frame, ControllerSelectionFrame)):
                     optionSelected = frame.optionmenu.get()
-                    # for firmware in codeframe_list.valid_firmware:
-                    #     print("atualmente:" + firmware.name + "e procura:"+ optionSelected)
-                    #     if firmware.name==optionSelected:
-                    #         option = firmware.name
-                    #         print("this is:" + optionSelected)
-                    #         break
-                    #     else:
-                    #         print('Opção não encontrada')
-                    #         option = '-1'
                     ET.SubElement(controllerframes, 'controllerframe', address=frame.address.get(
                     ), filepath=frame.file.get(), bin=frame.txt1.get(), hex=frame.txt2.get(), option = optionSelected)
             
