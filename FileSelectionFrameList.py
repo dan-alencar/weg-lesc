@@ -4,6 +4,7 @@ class FileSelectionFrameList:
         self.codeframes = []
         self.valid_firmware = []
         self.master = master
+        # self.aux = []
 
     def addFrame(self, frame):
         self.codeframes.append(frame)
@@ -45,4 +46,14 @@ class FileSelectionFrameList:
         except ValueError:
             index = -1
             print(f"{frame} não encontrado")
+        return index
+    
+    def searchbyName(self, repository, frame_name):
+        frame_index = int(frame_name[2:])
+        try:
+            index = repository.index(frame_index-1)
+            print(f"{frame_name} encontrado na posição {index}")
+        except ValueError:
+            index = -1
+            print(f"{frame_name} não encontrado")
         return index

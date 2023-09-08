@@ -16,10 +16,10 @@ class FileSelectionFrame(ctk.CTkFrame):
         validate_length = self.register((self.validate_input), "%P")
         self.repository = repository
         self.index = index
-        # self.name = "FW " + str(self.index + 1)
+        self.name = "FW " + str(self.index + 1)
         
         #label para identificar o código na tela de seleção
-        self.label = ctk.CTkLabel(self, text = "FW " + str(self.index + 1))
+        self.label = ctk.CTkLabel(self, text = self.name)
         self.label.pack(padx=10, pady=15, side=ctk.LEFT, anchor=ctk.N)
         
         # checkbox

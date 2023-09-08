@@ -71,6 +71,8 @@ class MenuFrame(ctk.CTkFrame):
                         new_frame.optionmenu.set(option)
                     else:
                         new_frame.optionmenu.set('Selecione uma opção')
+        #teste
+        # self.master.controllerframe_list.updateList()
 
     def onSave(self, master):
         '''
@@ -105,6 +107,12 @@ class MenuFrame(ctk.CTkFrame):
             if frame.checkbox.get() == 1:
                 if (isinstance(frame, ControllerSelectionFrame)):
                     optionSelected = frame.optionmenu.get()
+                    if optionSelected[:2] == 'FW':
+                        optionIndex = codeframe_list.searchbyName(codeframe_list.aux, optionSelected)
+                        if optionIndex != -1:
+                            optionSelected = 'FW ' + str(optionIndex+1)
+                        else:
+                            optionSelected = "Selecione uma opção"
                     ET.SubElement(controllerframes, 'controllerframe', address=frame.address.get(
                     ), filepath=frame.file.get(), bin=frame.txt1.get(), hex=frame.txt2.get(), option = optionSelected)
             
