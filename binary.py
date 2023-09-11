@@ -37,13 +37,23 @@ def build_header(header_ver, header_valid, prod_id, prod_version, length):
     return header_data
 
 
-#
+# percorre uma linha de um aquivo .mot e separa as informações em sua estrutura
 def parse_srec_line(line):
     record_type = line[0:2]
     data_length = int(line[2:4], 16)
     address = line[4:8]
-    data = bytearray(line[8:-2])
+    data = line[8:-2].decode('utf-8')
     checksum = line[-2:]
+
+    # Preenche as linhas caso o dado seja menor que 16 bytes
+    if len(data) < 32:
+        for i in range(32-len(data)):
+            data = data + 'F'
+
+    print(data)
+
+    # transforma o dado em bytearray
+    data = bytearray.fromhex(data)
 
     return {
         "record_type": record_type,
@@ -54,44 +64,33 @@ def parse_srec_line(line):
     }
 
 
-def read_srec_file(file_path, start_address, end_address):
+# lê um arquivo .mot e armazena as informações de uma seção limitada por dois endereços
+def binary_gen(destination_path, file_path, start_address, end_address):
     records = []
     within_range = False
 
-    with open(file_path, "rb") as srec:
-        for line in srec:
-            line = line.strip()
-            record = parse_srec_line(line)
-            if int(record["address"], 16) >= start_address and int(record["address"], 16) <= end_address:
-                within_range = True
-                records.append(record)
-            elif within_range and int(record["address"], 16) > end_address:
-                break
+    with open(destination_path, "wb") as destination:
+        with open(file_path, "rb") as srec:
+            for line in srec:
+                line = line.strip()
+                record = parse_srec_line(line)
+                if record["record_type"] == b'S1':
+                    if int(record["address"], 16) >= start_address and int(record["address"], 16) <= end_address:
+                        within_range = True
+                        records.append(record)
+                        destination.write(record["data"])
+                    elif within_range and int(record["address"], 16) > end_address:
+                        break
 
     return records
 
 
 # testando
+destination_path = r'Arquivos WPS\comparar.bin'
 file_path = r"Arquivos WPS\rl_application.mot"
-start_address = 0x0050
-end_address = 0x2000
-srec_records = read_srec_file(file_path, start_address, end_address)
+start_address = 0x0000
+end_address = 0x0FFF
+srec_records = binary_gen(
+    destination_path, file_path, start_address, end_address)
 
 print(srec_records)
-
-# hv = 0x02
-# hvalid = 0x34
-# pid = "WECC300"
-# pv = "V2.0145"
-# le = 199786
-
-# header = buildHeader(hv, hvalid, pid, pv, le)
-# concatFiles(r'Arquivos Wps\sask.bin', header, r'C:\Users\clara\OneDrive\Documentos\GitHub\weg-lesc\Arquivos WPS\Application_PADRAO_vector124.bin',
-#             r'C:\Users\clara\OneDrive\Documentos\GitHub\weg-lesc\Arquivos WPS\rl_application.mot')
-# # print(readBinaryFile('sask.bin'))
-# print(fileSize(r'Arquivos Wps\sask.bin'))
-# print(fileSize(r'C:\Users\clara\OneDrive\Documentos\GitHub\weg-lesc\Arquivos WPS\Application_PADRAO_vector124.bin') +
-#       fileSize(r'C:\Users\clara\OneDrive\Documentos\GitHub\weg-lesc\Arquivos WPS\rl_application.mot')+32)
-
-# header2 = buildHeader(hv, hvalid, pid, pv, le)
-# concatFiles(r'Arquivos Wps\teste.bin', header)
