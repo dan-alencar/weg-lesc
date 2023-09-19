@@ -1,5 +1,6 @@
 import os
 import struct
+from crc import calculate_crc16
 
 
 # Lê um arquivo .bin a partir do seu path e retorna este arquivo.
@@ -63,7 +64,7 @@ def mul64(data):
         return data + int(64-(length % 64)) * 'FF'
 
 
-#transforma um arquivo .mot em binário
+# transforma um arquivo .mot em binário
 def mot_to_binary(destination_path, file_path):
     code1 = ''  # string que contém a primera parte do código
     code2 = ''  # string que contém a segunda parte do código
@@ -116,26 +117,55 @@ def mot_to_binary(destination_path, file_path):
         code1_size = len(bytearray.fromhex(code1))
         code2_size = len(bytearray.fromhex(code2))
         binary_data = bytearray.fromhex(code1 + code2)
-        #destination.write(binary_data)
+        # destination.write(binary_data)
         return binary_data
 
 
-#gerador de binário
-def binary_gen(destination_path, file_path, header_ver, header_valid, prod_id, prod_version, length):
-    header_data = build_header(header_ver,header_valid, prod_id, prod_version, length)
-    binary_data = mot_to_binary(destination_path,file_path)
+# gerador de binário
+def binary_gen(destination_path, ver_path, file_path, header):
+
+    # informações do código
+    binary_data = mot_to_binary(destination_path, file_path)
+
+    # abre o e guarda as informações de versionamento
+    with open(ver_path, 'rb') as versionamento:
+        version = versionamento.read()
+
+    length_total = len(binary_data) + len(version) + 36
+
+    # cabeçalho
+    header_data = build_header(
+        header['header_ver'], header['header_valid'], header['prod_id'], header['prod_ver'], length_total)
+
+    print(length_total)
+
+    content = header_data + version + binary_data
+    crc = calculate_crc16(header_data + version + binary_data)
+    crc = hex(crc)+'0000'
+    crc = bytearray.fromhex(crc[2:])
+
+    # escreve o conteúdo no arquivo binário de destino
     with open(destination_path, 'wb') as destination:
-        destination.write(header_data+binary_data)
+        destination.write(content+crc)
 
 
 # testando
 
-header_ver = 0x02
-header_valid = 0x00
-prod_id = "CFW510"
-prod_ver = "V2.01"
-length = 0x1000
+header = {
+    "header_ver": 0x02,
+    "header_valid": 0x00,
+    "prod_id": "CFW510",
+    "prod_ver": "V2.01",
+}
+
+# header_ver = 0x02
+# header_valid = 0x00
+# prod_id = "CFW510"
+# prod_ver = "V2.01"
+# length = 0x1000
 destination_path = r'Arquivos WPS\comparar.bin'
-file_path = r"Arquivos WPS\rl_application.mot"
+versionamento = r'Arquivos WPS\binary\versionamento.bin'
+file_path = r'Arquivos WPS\rl_application.mot'
+
 srec_records = binary_gen(
-    destination_path, file_path,header_ver, header_valid, prod_id, prod_ver, length)
+    destination_path, versionamento, file_path, header)
