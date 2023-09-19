@@ -53,9 +53,8 @@ def parse_srec_line(line):
         "checksum": checksum
     }
 
+
 # completa a string de dados quando o tamanho não é multiplo de 64
-
-
 def mul64(data):
     length = len(data)/2
     if length % 64 == 0:
@@ -64,7 +63,8 @@ def mul64(data):
         return data + int(64-(length % 64)) * 'FF'
 
 
-def binary_gen(destination_path, file_path):
+#transforma um arquivo .mot em binário
+def mot_to_binary(destination_path, file_path):
     code1 = ''  # string que contém a primera parte do código
     code2 = ''  # string que contém a segunda parte do código
     end_address = 0  # guarda o último endereço preenchido
@@ -116,11 +116,26 @@ def binary_gen(destination_path, file_path):
         code1_size = len(bytearray.fromhex(code1))
         code2_size = len(bytearray.fromhex(code2))
         binary_data = bytearray.fromhex(code1 + code2)
-        destination.write(binary_data)
+        #destination.write(binary_data)
+        return binary_data
+
+
+#gerador de binário
+def binary_gen(destination_path, file_path, header_ver, header_valid, prod_id, prod_version, length):
+    header_data = build_header(header_ver,header_valid, prod_id, prod_version, length)
+    binary_data = mot_to_binary(destination_path,file_path)
+    with open(destination_path, 'wb') as destination:
+        destination.write(header_data+binary_data)
 
 
 # testando
+
+header_ver = 0x02
+header_valid = 0x00
+prod_id = "CFW510"
+prod_ver = "V2.01"
+length = 0x1000
 destination_path = r'Arquivos WPS\comparar.bin'
 file_path = r"Arquivos WPS\rl_application.mot"
 srec_records = binary_gen(
-    destination_path, file_path)
+    destination_path, file_path,header_ver, header_valid, prod_id, prod_ver, length)
