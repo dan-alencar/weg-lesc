@@ -1,31 +1,30 @@
 import customtkinter as ctk
 from tkinter import filedialog
-import tkinter as tk
 from PIL import Image
-from FileSelectionFrameList import FileSelectionFrameList
 
-class FileSelectionFrame(ctk.CTkFrame):
+
+class ControllerSelectionFrame(ctk.CTkFrame):
     '''
     Cria novo frame com widgets para seleção de arquivos 
     '''
 
-    def __init__(self, master, repository, index, **kwargs):
+    def __init__(self, master, repository, **kwargs):
         super().__init__(master, **kwargs)
-        
+
         # guarda a lista de frames do app
-        validate_length = self.register((self.validate_input), "%P")
         self.repository = repository
-        self.index = index
-        self.name = "FW " + str(self.index + 1)
-        
-        #label para identificar o código na tela de seleção
-        self.label = ctk.CTkLabel(self, text = self.name)
-        self.label.pack(padx=10, pady=15, side=ctk.LEFT, anchor=ctk.N)
-        
+
         # checkbox
         self.checkbox = ctk.CTkCheckBox(
             self, text='', height=35, width=25, command=self.toggleCheckbox)
         self.checkbox.pack(padx=10, pady=10, side=ctk.LEFT, anchor=ctk.N)
+        
+        # menu de escolha de firmware
+        self.optionmenu_var = ctk.StringVar(value="Selecione uma opção")
+        self.optionmenu = ctk.CTkOptionMenu(self,state=ctk.DISABLED, values=["option 1 ", "option 2"],
+                                         command=self.optionmenu_callback,
+                                         variable=self.optionmenu_var)
+        self.optionmenu.pack(padx=10, pady=10, side=ctk.LEFT, anchor=ctk.N)
 
         # primeira entrada de texto (endereço)
         self.address = ctk.CTkEntry(
@@ -33,23 +32,18 @@ class FileSelectionFrame(ctk.CTkFrame):
         self.address.pack(expand=True, padx=10, pady=10,
                           side=ctk.LEFT, anchor=ctk.N)
 
-        # botão para abrir a seleção de arquivos
-        self.btn = ctk.CTkButton(
-            self, text="Escolher Arquivo", state=ctk.DISABLED, height=35, font=('', 15, 'bold'), command=self.chooseFile)
-        self.btn.pack(pady=10, padx=10, side=ctk.LEFT, anchor=ctk.N)
-
         # campo de texto que exibe o path do arquivo selecionado
         self.file = ctk.CTkEntry(self, state=ctk.DISABLED, height=35)
         self.file.pack(expand=True, padx=10, pady=10,
                        side=ctk.LEFT, anchor=ctk.N)
 
         # segunda entrada de texto
-        self.txt1 = ctk.CTkEntry(self, state=ctk.DISABLED, validate = "key", validatecommand = validate_length, height=35, width=60)
+        self.txt1 = ctk.CTkEntry(self, state=ctk.DISABLED, height=35, width=60)
         self.txt1.pack(expand=True, padx=10, pady=10,
                        side=ctk.LEFT, anchor=ctk.N)
 
         # terceira entrada de texto
-        self.txt2 = ctk.CTkEntry(self, state=ctk.DISABLED, validate = "key", validatecommand = validate_length, height=35, width=60)
+        self.txt2 = ctk.CTkEntry(self, state=ctk.DISABLED, height=35, width=60)
         self.txt2.pack(expand=True, padx=10, pady=10,
                        side=ctk.LEFT, anchor=ctk.N)
 
@@ -67,29 +61,21 @@ class FileSelectionFrame(ctk.CTkFrame):
 
         # ativa os widgets quando a checkbox é marcada e desativa quando desmarcada
         if (self.checkbox.get()==1):
-            self.btn.configure(state=ctk.NORMAL)
             self.address.configure(state=ctk.NORMAL)
             self.file.configure(state=ctk.NORMAL)
             self.txt1.configure(state=ctk.NORMAL)
             self.txt2.configure(state=ctk.NORMAL)
             self.address.configure(placeholder_text="Endereço")
-            self.repository.fwValidation(self)
+            self.optionmenu.configure(state=ctk.NORMAL)
+            self.repository.updateFrames()
         else:
-            self.btn.configure(state=ctk.DISABLED)
             self.address.configure(placeholder_text="")
             self.address.configure(state=ctk.DISABLED)
+            self.optionmenu.configure(state=ctk.DISABLED)
             self.file.configure(state=ctk.DISABLED)
             self.txt1.configure(state=ctk.DISABLED)
             self.txt2.configure(state=ctk.DISABLED)
-            self.repository.fwRemove(self)
 
-    def chooseFile(self):
-        '''
-        Permite a seleção de arquivos .txt e .hex 
-        '''
-        self.filename = filedialog.askopenfilename(title="Selecione o arquivo do seu firmware", filetypes=[
-            ("Arquivos .txt", ".txt"), ("Arquivos .hex", ".hex")])
-        self.file.insert('end', self.filename)
 
     def delFrame(self, repository):
         '''
@@ -98,8 +84,6 @@ class FileSelectionFrame(ctk.CTkFrame):
         self.pack_forget()
         repository.removeFrame(self)
     
-    def validate_input(self, input):
-        if len(input) <= 8:
-            return True
-        else:
-            return False
+    #debugging da opção selecionada
+    def optionmenu_callback(self, choice):
+        print("optionmenu dropdown clicked:", choice)
