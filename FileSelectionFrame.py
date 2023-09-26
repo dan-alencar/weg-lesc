@@ -28,7 +28,7 @@ class FileSelectionFrame(ctk.CTkFrame):
 
         # botão para abrir a seleção de arquivos
         self.btn = ctk.CTkButton(
-            self, text="Escolher Arquivo", state=ctk.DISABLED, height=35, command=self.chooseFile)
+            self, text="Escolher Arquivo", state=ctk.DISABLED, height=35, font=('', 15, 'bold'), command=self.chooseFile)
         self.btn.pack(pady=10, padx=10, side=ctk.LEFT, anchor=ctk.N)
 
         # campo de texto que exibe o path do arquivo selecionado
