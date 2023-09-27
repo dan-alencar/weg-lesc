@@ -1,11 +1,11 @@
 import customtkinter as ctk
-import crc
+from binary import binary_gen
 from TabbedPanel import TabbedPanel
 from FileSelectionFrameList import FileSelectionFrameList
 from ControllerSelectionFrameList import ControllerSelectionFrameList
 from MenuFrame import MenuFrame
 from PIL import Image
-from tkinter import messagebox
+from tkinter import filedialog
 
 
 class App(ctk.CTk):
@@ -19,7 +19,7 @@ class App(ctk.CTk):
         # configuração inicial da janela
 
         self.geometry("1000x800")
-        self.resizable('false', 'false')
+        self.resizable('true', 'true')
         self.title("Seleção de Arquivos")
         self.iconbitmap("img\weg-logo-5.ico")
         ctk.set_appearance_mode('light ')
@@ -49,14 +49,10 @@ class App(ctk.CTk):
         '''
         Função chamada pelo botão gerar binário
         '''
-        for frame in self.frame_list.all_frames:
-            if frame.file.get() != "":
-                response = messagebox.showinfo(
-                    title="Mensagem", message="Seu arquivo binário foi gerado com sucesso")
-                return
-
-        response = messagebox.showerror(
-            title="Mensagem", message="Selecione pelo menos um arquivo")
+        data = [('Arquivos binários', '*.bin')]
+        file = filedialog.asksaveasfilename(
+            initialdir="/", title="Salvar como", filetypes=data, defaultextension=data)
+        binary_gen(file,)
 
 
 # janela funcionando
