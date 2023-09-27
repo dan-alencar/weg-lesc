@@ -122,27 +122,32 @@ def mot_to_binary(destination_path, file_path):
 
 
 # gerador de binário
-def binary_gen(destination_path, ver_path, file_path, header):
+def binary_gen(destination_path, file_path, header):
+
+    version = b'\x01\x01\x01\x01\x01\x01\x01\x01\x01\x01\x01\x01\x01\x01\x02\x02\x02\x02\x02\x02\x02\x02\x02\x02\x02\x02\x02\x02\x03\x03\x03\x03\x03\x03\x03\x03\x03\x03\x03\x03\x03\x03\x04\x04\x04\x04\x04\x04\x04\x04\x04\x04\x04\x04\x04\x04\x05\x05\x05\x05\x05\x05\x05\x05\x05\x05\x05\x05\x05\x05'
 
     # informações do código
     binary_data = mot_to_binary(destination_path, file_path)
 
     # abre o e guarda as informações de versionamento
-    with open(ver_path, 'rb') as versionamento:
-        version = versionamento.read()
+    # with open(ver_path, 'rb') as versionamento:
+    #     version = versionamento.read()
 
+    # calcula o tamanho total do arquivo com o cabeçalho e o crc
     length_total = len(binary_data) + len(version) + 36
+    print(length_total)
 
     # cabeçalho
     header_data = build_header(
         header['header_ver'], header['header_valid'], header['prod_id'], header['prod_ver'], length_total)
 
-    print(length_total)
-
+    # concatena o conteúdo dos arquivos
     content = header_data + version + binary_data
+
+    # calcula o crc
     crc = calculate_crc16(header_data + version + binary_data)
-    crc = hex(crc)+'0000'
-    crc = bytearray.fromhex(crc[2:])
+    crc = hex(crc)+'0000'  # adiciona 2 bytes
+    crc = bytearray.fromhex(crc[2:])  # transforma em bytearray
 
     # escreve o conteúdo no arquivo binário de destino
     with open(destination_path, 'wb') as destination:
@@ -158,14 +163,9 @@ header = {
     "prod_ver": "V2.01",
 }
 
-# header_ver = 0x02
-# header_valid = 0x00
-# prod_id = "CFW510"
-# prod_ver = "V2.01"
-# length = 0x1000
 destination_path = r'Arquivos WPS\comparar.bin'
 versionamento = r'Arquivos WPS\binary\versionamento.bin'
 file_path = r'Arquivos WPS\rl_application.mot'
 
 srec_records = binary_gen(
-    destination_path, versionamento, file_path, header)
+    destination_path, file_path, header)
