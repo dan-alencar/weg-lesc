@@ -3,6 +3,7 @@ from tkinter import messagebox
 import xml.etree.ElementTree as ET
 from tkinter import filedialog
 from FileSelectionFrame import FileSelectionFrame
+from ControllerSelectionFrame import ControllerSelectionFrame
 
 
 class MenuFrame(ctk.CTkFrame):
@@ -40,27 +41,38 @@ class MenuFrame(ctk.CTkFrame):
 
         # apaga os frames do aplicativo e do repositório
 
-        self.master.frame_list.unpackFrames()
-        self.master.frame_list.clearFrames()
+        self.clear()
 
         # carrega os frames do arquivo
 
         for frames in root:
             for frame in frames:
-                new_frame = FileSelectionFrame(
-                    self.master.body_frame, self.master.frame_list)
-                self.master.frame_list.addFrame(
-                    new_frame)  # adiciona no repositório
-                new_frame.pack(side=ctk.TOP, fill=ctk.BOTH, expand=ctk.TRUE)
-                address = frame.get('address')
-                filepath = frame.get('filepath')
-                bin = frame.get('bin')
-                hex = frame.get('hex')
-                new_frame.checkbox.toggle()
-                new_frame.address.insert('1',  address)
-                new_frame.file.insert('1', filepath)
-                new_frame.txt1.insert('1', bin)
-                new_frame.txt2.insert('1', hex)
+                if (frame.tag=='codeframe'):
+                    new_frame = FileSelectionFrame(self.master.tab_view.codeframe, self.master.codeframe_list, self.master.tab_view.codeframe.index)
+                    self.master.tab_view.codeframe.index += 1
+                    self.master.codeframe_list.addFrame(new_frame)  # adiciona no repositório
+                    new_frame.pack(side=ctk.TOP, fill=ctk.BOTH, expand=ctk.TRUE)
+                    new_frame.checkbox.toggle()
+                    new_frame.address.insert('1',  frame.get('address'))
+                    new_frame.file.insert('1', frame.get('filepath'))
+                    new_frame.txt1.insert('1', frame.get('bin'))
+                    new_frame.txt2.insert('1', frame.get('hex'))
+                if (frame.tag=='controllerframe'):
+                    new_frame = ControllerSelectionFrame(self.master.tab_view.controllerframe, self.master.controllerframe_list)
+                    self.master.controllerframe_list.addFrame(new_frame)
+                    new_frame.pack(side=ctk.TOP, fill=ctk.BOTH, expand=ctk.TRUE)
+                    new_frame.checkbox.toggle()
+                    new_frame.address.insert('1',  frame.get('address'))
+                    new_frame.file.insert('1', frame.get('filepath'))
+                    new_frame.txt1.insert('1', frame.get('bin'))
+                    new_frame.txt2.insert('1', frame.get('hex'))
+                    option = frame.get('option')
+                    if option[:2] == 'FW':
+                        new_frame.optionmenu.set(option)
+                    else:
+                        new_frame.optionmenu.set('Selecione uma opção')
+        #teste
+        # self.master.controllerframe_list.updateList()
 
     def onSave(self, master):
         '''
@@ -71,25 +83,53 @@ class MenuFrame(ctk.CTkFrame):
 
         data = [('Arquivos .lesc', '*.lesc')]
         file = filedialog.asksaveasfilename(
-            initialdir="/", title="Salvar como aaa", filetypes=data, defaultextension=data)
+            initialdir="/", title="Salvar como", filetypes=data, defaultextension=data)
 
         # chama a função que cria o arquivo XML
 
-        file = self.toXML(master.frame_list, file)
+        file = self.toXML(master.codeframe_list, master.controllerframe_list, file)
 
-    def toXML(self, repository, file):
+    def toXML(self, codeframe_list, controllerframe_list, file):
         '''
         Cria um arquivo xml
         '''
 
         xml_doc = ET.Element('App')
-        frames = ET.SubElement(xml_doc, 'frames')
-        for frame in repository.all_frames:
-            ET.SubElement(frames, 'frame', address=frame.address.get(
-            ), filepath=frame.file.get(), bin=frame.txt1.get(), hex=frame.txt2.get())
+        codeframes = ET.SubElement(xml_doc, 'codeframes')
+        controllerframes = ET.SubElement(xml_doc, 'controllerframes')
+        for frame in codeframe_list.valid_firmware:
+            if frame.checkbox.get() == 1:
+                if (isinstance(frame, FileSelectionFrame)):
+                    ET.SubElement(codeframes, 'codeframe', address=frame.address.get(
+                    ), filepath=frame.file.get(), bin=frame.txt1.get(), hex=frame.txt2.get())
+        
+        for frame in controllerframe_list.controllerframes:
+            if frame.checkbox.get() == 1:
+                if (isinstance(frame, ControllerSelectionFrame)):
+                    optionSelected = frame.optionmenu.get()
+                    if optionSelected[:2] == 'FW':
+                        optionIndex = codeframe_list.searchbyName(codeframe_list.aux, optionSelected)
+                        if optionIndex != -1:
+                            optionSelected = 'FW ' + str(optionIndex+1)
+                        else:
+                            optionSelected = "Selecione uma opção"
+                    ET.SubElement(controllerframes, 'controllerframe', address=frame.address.get(
+                    ), filepath=frame.file.get(), bin=frame.txt1.get(), hex=frame.txt2.get(), option = optionSelected)
+            
 
         tree = ET.ElementTree(xml_doc)
         tree.write(file)
+    
+    def clear(self):
+        '''
+        Limpa todos os frames do aplicativo
+        '''
+        self.master.codeframe_list.unpackFrames()
+        self.master.codeframe_list.clearFrames()
+        self.master.controllerframe_list.unpackFrames()
+        self.master.controllerframe_list.clearFrames()
+        self.master.tab_view.codeframe.index = 0
+        
 
     def about(self):
         messagebox.showinfo("Help", "Custom Menu Example")
