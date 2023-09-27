@@ -38,6 +38,15 @@ def build_header(header_ver, header_valid, prod_id, prod_version, length):
     return header_data
 
 
+# Monta o versionamento do arquivo.
+def build_version(binary, version_h, version_l, offset_adds, interface, comm_address, code_id):
+    header_format = 'HHIIBBB'
+    length = len(binary)
+    version_data = struct.pack(
+        header_format, version_h, version_l, offset_adds, length, interface, comm_address, code_id)
+    return version_data
+
+
 # percorre uma linha de um aquivo .mot e separa as informações em sua estrutura
 def parse_srec_line(line):
     record_type = line[0:2]
@@ -71,67 +80,61 @@ def mot_to_binary(destination_path, file_path):
     end_address = 0  # guarda o último endereço preenchido
     previous_end_address = 0  # guarda o último endereço preenchido na iteração anterior
 
-    with open(destination_path, 'wb') as destination:
-        with open(file_path, 'rb') as mot:
-            for line in mot:
-                line = line.strip()
-                record = parse_srec_line(line)
+    
+    with open(file_path, 'rb') as mot:
+        for line in mot:
+            line = line.strip()
+            record = parse_srec_line(line)
 
-                # endereço inicial do dado
-                init_address = record['address']
-                # endereço final do dado
-                end_address = record['address'] + record['data_length'] - 3
+            # endereço inicial do dado
+            init_address = record['address']
+            # endereço final do dado
+            end_address = record['address'] + record['data_length'] - 3
 
-                # verifica se a linha pertence à primeira parte
-                if record['record_type'] == b'S1' and record['address'] < int(0xFFF):
+            # verifica se a linha pertence à primeira parte
+            if record['record_type'] == b'S1' and record['address'] < int(0xFFF):
 
-                    # preenche bytes vazios quando o endereço do início da linha é maior que o endereço do fim da linha anterior
-                    if previous_end_address < init_address:
-                        code1 += (init_address-previous_end_address)*'FF'
+                # preenche bytes vazios quando o endereço do início da linha é maior que o endereço do fim da linha anterior
+                if previous_end_address < init_address:
+                    code1 += (init_address-previous_end_address)*'FF'
 
-                    # junta o dado à primeira string
-                    code1 += record["data"]
+                # junta o dado à primeira string
+                code1 += record["data"]
 
-                # verifica se a linha pertence à segunda parte
-                elif record['record_type'] == b'S1' and record['address'] >= int(0x3000):
+            # verifica se a linha pertence à segunda parte
+            elif record['record_type'] == b'S1' and record['address'] >= int(0x3000):
 
-                    # se a linha for a primeira da segunda parte, altera o valor do endereço final da linha anterior
-                    if record['address'] == int(0x3000):
-                        previous_end_address = 0x3000
+                # se a linha for a primeira da segunda parte, altera o valor do endereço final da linha anterior
+                if record['address'] == int(0x3000):
+                    previous_end_address = 0x3000
 
-                    # preenche bytes vazios quando o endereço do início da linha é maior que o endereço do fim da linha anterior
-                    if previous_end_address < init_address:
-                        code2 += (init_address-previous_end_address)*'FF'
+                # preenche bytes vazios quando o endereço do início da linha é maior que o endereço do fim da linha anterior
+                if previous_end_address < init_address:
+                    code2 += (init_address-previous_end_address)*'FF'
 
-                    # junta o dado à segunda string
-                    code2 += record["data"]
+                # junta o dado à segunda string
+                code2 += record["data"]
 
-                # atualiza o endereço final anterior
-                previous_end_address = end_address
+            # atualiza o endereço final anterior
+            previous_end_address = end_address
 
-        # completando os códigos para que o tamanho seja múltiplo de 64
-        code1 = mul64(code1)
-        code2 = mul64(code2)
+    # completando os códigos para que o tamanho seja múltiplo de 64
+    code1 = mul64(code1)
+    code2 = mul64(code2)
 
-        # escrevendo o arquivo binário
-        code1_size = len(bytearray.fromhex(code1))
-        code2_size = len(bytearray.fromhex(code2))
-        binary_data = bytearray.fromhex(code1 + code2)
-        # destination.write(binary_data)
-        return binary_data
+    # escrevendo o arquivo binário
+    code1_size = len(bytearray.fromhex(code1))
+    code2_size = len(bytearray.fromhex(code2))
+    binary_data = bytearray.fromhex(code1 + code2)
+    # destination.write(binary_data)
+    return binary_data
 
 
 # gerador de binário
-def binary_gen(destination_path, file_path, header):
-
-    version = b'\x01\x01\x01\x01\x01\x01\x01\x01\x01\x01\x01\x01\x01\x01\x02\x02\x02\x02\x02\x02\x02\x02\x02\x02\x02\x02\x02\x02\x03\x03\x03\x03\x03\x03\x03\x03\x03\x03\x03\x03\x03\x03\x04\x04\x04\x04\x04\x04\x04\x04\x04\x04\x04\x04\x04\x04\x05\x05\x05\x05\x05\x05\x05\x05\x05\x05\x05\x05\x05\x05'
+def binary_gen(destination_path, file_path, header, version):
 
     # informações do código
     binary_data = mot_to_binary(destination_path, file_path)
-
-    # abre o e guarda as informações de versionamento
-    # with open(ver_path, 'rb') as versionamento:
-    #     version = versionamento.read()
 
     # calcula o tamanho total do arquivo com o cabeçalho e o crc
     length_total = len(binary_data) + len(version) + 36
@@ -160,7 +163,16 @@ header = {
     "header_ver": 0x02,
     "header_valid": 0x00,
     "prod_id": "CFW510",
-    "prod_ver": "V2.01",
+    "prod_ver": "V2.01"
+}
+
+version = {
+    "version_h": 0x0002,
+    "version_l": 0x0002,
+    "offset_adds": 0x00000045,
+    "interface": 2,
+    "comm_address": 0x46,
+    "code_id": 0x12
 }
 
 destination_path = r'Arquivos WPS\comparar.bin'

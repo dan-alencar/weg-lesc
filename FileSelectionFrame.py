@@ -88,7 +88,7 @@ class FileSelectionFrame(ctk.CTkFrame):
         Permite a seleção de arquivos .txt e .hex 
         '''
         self.filename = filedialog.askopenfilename(title="Selecione o arquivo do seu firmware", filetypes=[
-            ("Arquivos .txt", ".txt"), ("Arquivos .hex", ".hex")])
+            ("Arquivos .mot", "*.mot")])
         self.file.insert('end', self.filename)
 
     def delFrame(self, repository):

@@ -4,14 +4,12 @@ class FileSelectionFrameList:
         self.codeframes = []
         self.valid_firmware = []
         self.master = master
-        # self.aux = []
 
     def addFrame(self, frame):
         self.codeframes.append(frame)
         
     def fwValidation(self, frame):
         self.valid_firmware.append(frame)
-        # print(frame.name + " adicionado com sucesso")
         self.aux = []
         for option in self.valid_firmware:
             self.aux.append(option.index)
@@ -22,7 +20,6 @@ class FileSelectionFrameList:
     def fwRemove(self,frame):
         self.valid_firmware.remove(frame)
         index = self.searchbyIndex(self.aux, frame)
-        # print(frame.name + " removido com sucesso")
         if index!=-1:
             self.aux.pop(index)
         self.master.controllerframe_list.updateList(self.aux)

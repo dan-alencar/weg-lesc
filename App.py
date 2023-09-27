@@ -49,9 +49,11 @@ class App(ctk.CTk):
         '''
         Função chamada pelo botão gerar binário
         '''
-        data = [('Arquivos binários', '*.bin')]
+        data = [('Arquivo .bin', '*.bin')]
         file = filedialog.asksaveasfilename(
             initialdir="/", title="Salvar como", filetypes=data, defaultextension=data)
+        for mot_file in self.codeframe_list.valid_firmware:
+            mot_file = mot_file.address
         binary_gen(file,)
 
 
