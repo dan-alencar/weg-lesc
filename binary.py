@@ -74,7 +74,7 @@ def mul64(data):
 
 
 # transforma um arquivo .mot em binário
-def mot_to_binary(destination_path, file_path):
+def mot_to_binary(file_path):
     code1 = ''  # string que contém a primera parte do código
     code2 = ''  # string que contém a segunda parte do código
     end_address = 0  # guarda o último endereço preenchido
@@ -126,7 +126,6 @@ def mot_to_binary(destination_path, file_path):
     code1_size = len(bytearray.fromhex(code1))
     code2_size = len(bytearray.fromhex(code2))
     binary_data = bytearray.fromhex(code1 + code2)
-    # destination.write(binary_data)
     return binary_data
 
 
@@ -134,7 +133,7 @@ def mot_to_binary(destination_path, file_path):
 def binary_gen(destination_path, file_path, header, version):
 
     # informações do código
-    binary_data = mot_to_binary(destination_path, file_path)
+    binary_data = mot_to_binary(file_path)
 
     # calcula o tamanho total do arquivo com o cabeçalho e o crc
     length_total = len(binary_data) + len(version) + 36
