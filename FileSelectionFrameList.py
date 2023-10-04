@@ -1,8 +1,8 @@
-
 class FileSelectionFrameList:
     def __init__(self,master):
         self.codeframes = []
         self.valid_firmware = []
+        self.valid_firmware_index = [] #testando a declaração da variável
         self.master = master
 
     def addFrame(self, frame):
@@ -10,19 +10,20 @@ class FileSelectionFrameList:
         
     def fwValidation(self, frame):
         self.valid_firmware.append(frame)
-        self.aux = []
+        self.valid_firmware_index = []
         for option in self.valid_firmware:
-            self.aux.append(option.index)
-        self.aux.sort()
-        print(self.aux)
-        self.master.controllerframe_list.updateList(self.aux)
+            self.valid_firmware_index.append(option.index)
+        self.valid_firmware_index.sort()
+        print(self.valid_firmware_index)
+        print(self.valid_firmware)
+        self.master.controllerframe_list.updateList(self.valid_firmware_index)
         
     def fwRemove(self,frame):
         self.valid_firmware.remove(frame)
-        index = self.searchbyIndex(self.aux, frame)
+        index = self.searchbyIndex(self.valid_firmware_index, frame)
         if index!=-1:
-            self.aux.pop(index)
-        self.master.controllerframe_list.updateList(self.aux)
+            self.valid_firmware_index.pop(index)
+        self.master.controllerframe_list.updateList(self.valid_firmware_index)
 
     def removeFrame(self, frame):
         self.codeframes.remove(frame)
@@ -35,6 +36,11 @@ class FileSelectionFrameList:
     def unpackFrames(self):
         for frame in self.codeframes:
             frame.pack_forget()
+    
+    def searchFrameFile(self, file):
+        for frame in self.valid_firmware:
+            if frame.name == file:
+                return frame
     
     def searchbyIndex(self, repository, frame):
         try:

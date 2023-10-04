@@ -178,5 +178,5 @@ destination_path = r'Arquivos WPS\comparar.bin'
 versionamento = r'Arquivos WPS\binary\versionamento.bin'
 file_path = r'Arquivos WPS\rl_application.mot'
 
-srec_records = binary_gen(
-    destination_path, file_path, header)
+# srec_records = binary_gen(
+#     destination_path, file_path, header)

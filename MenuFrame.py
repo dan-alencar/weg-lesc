@@ -62,17 +62,17 @@ class MenuFrame(ctk.CTkFrame):
                     self.master.controllerframe_list.addFrame(new_frame)
                     new_frame.pack(side=ctk.TOP, fill=ctk.BOTH, expand=ctk.TRUE)
                     new_frame.checkbox.toggle()
-                    new_frame.address.insert('1',  frame.get('address'))
-                    new_frame.file.insert('1', frame.get('filepath'))
-                    new_frame.txt1.insert('1', frame.get('bin'))
-                    new_frame.txt2.insert('1', frame.get('hex'))
+                    new_frame.version_h.insert('1',  frame.get('version_h'))
+                    new_frame.version_l.insert('1', frame.get('version_l'))
+                    new_frame.offset.insert('1', frame.get('offset'))
+                    new_frame.interface.insert('1', frame.get('interface'))
+                    new_frame.comm_address.insert('1', frame.get('comm_address'))
+                    new_frame.code_id.insert('1', frame.get('code_id'))
                     option = frame.get('option')
                     if option[:2] == 'FW':
                         new_frame.optionmenu.set(option)
                     else:
                         new_frame.optionmenu.set('Selecione uma opção')
-        #teste
-        # self.master.controllerframe_list.updateList()
 
     def onSave(self, master):
         '''
@@ -108,13 +108,13 @@ class MenuFrame(ctk.CTkFrame):
                 if (isinstance(frame, ControllerSelectionFrame)):
                     optionSelected = frame.optionmenu.get()
                     if optionSelected[:2] == 'FW':
-                        optionIndex = codeframe_list.searchbyName(codeframe_list.aux, optionSelected)
+                        optionIndex = codeframe_list.searchbyName(codeframe_list.valid_firmware_index, optionSelected)
                         if optionIndex != -1:
                             optionSelected = 'FW ' + str(optionIndex+1)
                         else:
                             optionSelected = "Selecione uma opção"
-                    ET.SubElement(controllerframes, 'controllerframe', address=frame.address.get(
-                    ), filepath=frame.file.get(), bin=frame.txt1.get(), hex=frame.txt2.get(), option = optionSelected)
+                    ET.SubElement(controllerframes, 'controllerframe', version_h=frame.version_h.get(
+                    ), version_l=frame.version_l.get(), offset=frame.offset.get(), interface=frame.interface.get(), comm_address = frame.comm_address.get(), code_id = frame.code_id.get(),  option = optionSelected)
             
 
         tree = ET.ElementTree(xml_doc)

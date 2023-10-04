@@ -26,27 +26,37 @@ class ControllerSelectionFrame(ctk.CTkFrame):
                                          variable=self.optionmenu_var)
         self.optionmenu.pack(padx=10, pady=10, side=ctk.LEFT, anchor=ctk.N)
 
-        # primeira entrada de texto (endereço)
-        self.address = ctk.CTkEntry(
+        # entrada para o version_high
+        self.version_h = ctk.CTkEntry(
             self, state=ctk.DISABLED, height=35, width=70)
-        self.address.pack(expand=True, padx=10, pady=10,
+        self.version_h.pack(expand=True, padx=10, pady=10,
                           side=ctk.LEFT, anchor=ctk.N)
 
-        # campo de texto que exibe o path do arquivo selecionado
-        self.file = ctk.CTkEntry(self, state=ctk.DISABLED, height=35)
-        self.file.pack(expand=True, padx=10, pady=10,
+        # entrada para o version_lower
+        self.version_l = ctk.CTkEntry(self, state=ctk.DISABLED, height=35)
+        self.version_l.pack(expand=True, padx=10, pady=10,
                        side=ctk.LEFT, anchor=ctk.N)
 
-        # segunda entrada de texto
-        self.txt1 = ctk.CTkEntry(self, state=ctk.DISABLED, height=35, width=60)
-        self.txt1.pack(expand=True, padx=10, pady=10,
+        # entrada para o offset address
+        self.offset = ctk.CTkEntry(self, state=ctk.DISABLED, height=35, width=60)
+        self.offset.pack(expand=True, padx=10, pady=10,
                        side=ctk.LEFT, anchor=ctk.N)
 
-        # terceira entrada de texto
-        self.txt2 = ctk.CTkEntry(self, state=ctk.DISABLED, height=35, width=60)
-        self.txt2.pack(expand=True, padx=10, pady=10,
+        # entrada para a interface
+        self.interface = ctk.CTkEntry(self, state=ctk.DISABLED, height=35, width=60)
+        self.interface.pack(expand=True, padx=10, pady=10,
                        side=ctk.LEFT, anchor=ctk.N)
-
+        
+        # entrada para o communication address
+        self.comm_address = ctk.CTkEntry(self, state=ctk.DISABLED, height=35, width=60)
+        self.comm_address.pack(expand=True, padx=10, pady=10,
+                       side=ctk.LEFT, anchor=ctk.N)
+        
+        # entrada para o code_id
+        self.code_id = ctk.CTkEntry(self, state=ctk.DISABLED, height=35, width=60)
+        self.code_id.pack(expand=True, padx=10, pady=10,
+                       side=ctk.LEFT, anchor=ctk.N)
+        
         # botão para apagar o frame
         img = ctk.CTkImage(Image.open('img\excluir.png'), size=(20, 20))
         self.bin = ctk.CTkButton(
@@ -61,20 +71,22 @@ class ControllerSelectionFrame(ctk.CTkFrame):
 
         # ativa os widgets quando a checkbox é marcada e desativa quando desmarcada
         if (self.checkbox.get()==1):
-            self.address.configure(state=ctk.NORMAL)
-            self.file.configure(state=ctk.NORMAL)
-            self.txt1.configure(state=ctk.NORMAL)
-            self.txt2.configure(state=ctk.NORMAL)
-            self.address.configure(placeholder_text="Endereço")
+            self.version_h.configure(state=ctk.NORMAL)
+            self.version_l.configure(state=ctk.NORMAL)
+            self.offset.configure(state=ctk.NORMAL)
+            self.interface.configure(state=ctk.NORMAL)
+            self.comm_address.configure(state=ctk.NORMAL)
+            self.code_id.configure(state=ctk.NORMAL)
             self.optionmenu.configure(state=ctk.NORMAL)
             self.repository.updateFrames()
         else:
-            self.address.configure(placeholder_text="")
-            self.address.configure(state=ctk.DISABLED)
+            self.version_h.configure(state=ctk.DISABLED)
             self.optionmenu.configure(state=ctk.DISABLED)
-            self.file.configure(state=ctk.DISABLED)
-            self.txt1.configure(state=ctk.DISABLED)
-            self.txt2.configure(state=ctk.DISABLED)
+            self.version_l.configure(state=ctk.DISABLED)
+            self.offset.configure(state=ctk.DISABLED)
+            self.interface.configure(state=ctk.DISABLED)
+            self.comm_address.configure(state=ctk.DISABLED)
+            self.code_id.configure(state=ctk.DISABLED)
 
 
     def delFrame(self, repository):

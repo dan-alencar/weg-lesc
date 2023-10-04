@@ -52,9 +52,12 @@ class App(ctk.CTk):
         data = [('Arquivo .bin', '*.bin')]
         file = filedialog.asksaveasfilename(
             initialdir="/", title="Salvar como", filetypes=data, defaultextension=data)
-        for mot_file in self.codeframe_list.valid_firmware:
-            mot_file = mot_file.address
-        binary_gen(file,)
+        
+        for frame in self.controllerframe_list.controllerframes:
+            option_selected = frame.optionmenu.get()
+            if option_selected[:2] == 'FW':
+                        option_frame = self.codeframe_list.searchFrameFile(option_selected)
+                        firmware_selected = option_frame.file.get()
 
 
 # janela funcionando
