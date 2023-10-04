@@ -58,6 +58,7 @@ class App(ctk.CTk):
             if option_selected[:2] == 'FW':
                         option_frame = self.codeframe_list.searchFrameFile(option_selected)
                         firmware_selected = option_frame.file.get()
+                        # print(firmware_selected)
 
 
 # janela funcionando

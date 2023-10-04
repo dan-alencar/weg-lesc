@@ -53,17 +53,15 @@ class MenuFrame(ctk.CTkFrame):
                     self.master.codeframe_list.addFrame(new_frame)  # adiciona no repositório
                     new_frame.pack(side=ctk.TOP, fill=ctk.BOTH, expand=ctk.TRUE)
                     new_frame.checkbox.toggle()
-                    new_frame.address.insert('1',  frame.get('address'))
+                    new_frame.length.insert('1',  frame.get('address'))
                     new_frame.file.insert('1', frame.get('filepath'))
-                    new_frame.txt1.insert('1', frame.get('bin'))
-                    new_frame.txt2.insert('1', frame.get('hex'))
+                    new_frame.version_h.insert('1',  frame.get('version_h'))
+                    new_frame.version_l.insert('1', frame.get('version_l'))
                 if (frame.tag=='controllerframe'):
                     new_frame = ControllerSelectionFrame(self.master.tab_view.controllerframe, self.master.controllerframe_list)
                     self.master.controllerframe_list.addFrame(new_frame)
                     new_frame.pack(side=ctk.TOP, fill=ctk.BOTH, expand=ctk.TRUE)
                     new_frame.checkbox.toggle()
-                    new_frame.version_h.insert('1',  frame.get('version_h'))
-                    new_frame.version_l.insert('1', frame.get('version_l'))
                     new_frame.offset.insert('1', frame.get('offset'))
                     new_frame.interface.insert('1', frame.get('interface'))
                     new_frame.comm_address.insert('1', frame.get('comm_address'))
@@ -100,8 +98,8 @@ class MenuFrame(ctk.CTkFrame):
         for frame in codeframe_list.valid_firmware:
             if frame.checkbox.get() == 1:
                 if (isinstance(frame, FileSelectionFrame)):
-                    ET.SubElement(codeframes, 'codeframe', address=frame.address.get(
-                    ), filepath=frame.file.get(), bin=frame.txt1.get(), hex=frame.txt2.get())
+                    ET.SubElement(codeframes, 'codeframe', address=frame.length.get(
+                    ), filepath=frame.file.get(), version_h=frame.version_h.get(), version_l=frame.version_l.get())
         
         for frame in controllerframe_list.controllerframes:
             if frame.checkbox.get() == 1:
@@ -113,8 +111,7 @@ class MenuFrame(ctk.CTkFrame):
                             optionSelected = 'FW ' + str(optionIndex+1)
                         else:
                             optionSelected = "Selecione uma opção"
-                    ET.SubElement(controllerframes, 'controllerframe', version_h=frame.version_h.get(
-                    ), version_l=frame.version_l.get(), offset=frame.offset.get(), interface=frame.interface.get(), comm_address = frame.comm_address.get(), code_id = frame.code_id.get(),  option = optionSelected)
+                    ET.SubElement(controllerframes, 'controllerframe', offset=frame.offset.get(), interface=frame.interface.get(), comm_address = frame.comm_address.get(), code_id = frame.code_id.get(),  option = optionSelected)
             
 
         tree = ET.ElementTree(xml_doc)

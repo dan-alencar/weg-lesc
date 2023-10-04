@@ -3,6 +3,7 @@ from tkinter import filedialog
 import tkinter as tk
 from PIL import Image
 from FileSelectionFrameList import FileSelectionFrameList
+from binary import mot_to_binary
 
 class FileSelectionFrame(ctk.CTkFrame):
     '''
@@ -28,9 +29,9 @@ class FileSelectionFrame(ctk.CTkFrame):
         self.checkbox.pack(padx=10, pady=10, side=ctk.LEFT, anchor=ctk.N)
 
         # primeira entrada de texto (endereço)
-        self.address = ctk.CTkEntry(
+        self.length = ctk.CTkEntry(
             self, state=ctk.DISABLED, height=35, width=70)
-        self.address.pack(expand=True, padx=10, pady=10,
+        self.length.pack(expand=True, padx=10, pady=10,
                           side=ctk.LEFT, anchor=ctk.N)
 
         # botão para abrir a seleção de arquivos
@@ -43,14 +44,14 @@ class FileSelectionFrame(ctk.CTkFrame):
         self.file.pack(expand=True, padx=10, pady=10,
                        side=ctk.LEFT, anchor=ctk.N)
 
-        # segunda entrada de texto
-        self.txt1 = ctk.CTkEntry(self, state=ctk.DISABLED, validate = "key", validatecommand = validate_length, height=35, width=60)
-        self.txt1.pack(expand=True, padx=10, pady=10,
-                       side=ctk.LEFT, anchor=ctk.N)
+        # entrada para o version_high
+        self.version_h = ctk.CTkEntry(self, state=ctk.DISABLED, height=35, width=70)
+        self.version_h.pack(expand=True, padx=10, pady=10,
+                          side=ctk.LEFT, anchor=ctk.N)
 
-        # terceira entrada de texto
-        self.txt2 = ctk.CTkEntry(self, state=ctk.DISABLED, validate = "key", validatecommand = validate_length, height=35, width=60)
-        self.txt2.pack(expand=True, padx=10, pady=10,
+        # entrada para o version_lower
+        self.version_l = ctk.CTkEntry(self, state=ctk.DISABLED, height=35)
+        self.version_l.pack(expand=True, padx=10, pady=10,
                        side=ctk.LEFT, anchor=ctk.N)
 
         # botão para apagar o frame
@@ -68,19 +69,19 @@ class FileSelectionFrame(ctk.CTkFrame):
         # ativa os widgets quando a checkbox é marcada e desativa quando desmarcada
         if (self.checkbox.get()==1):
             self.btn.configure(state=ctk.NORMAL)
-            self.address.configure(state=ctk.NORMAL)
+            self.length.configure(state=ctk.NORMAL)
             self.file.configure(state=ctk.NORMAL)
-            self.txt1.configure(state=ctk.NORMAL)
-            self.txt2.configure(state=ctk.NORMAL)
-            self.address.configure(placeholder_text="Endereço")
+            self.version_h.configure(state=ctk.NORMAL)
+            self.version_l.configure(state=ctk.NORMAL)
+            self.length.configure(placeholder_text="Endereço")
             self.repository.fwValidation(self)
         else:
             self.btn.configure(state=ctk.DISABLED)
-            self.address.configure(placeholder_text="")
-            self.address.configure(state=ctk.DISABLED)
+            self.length.configure(placeholder_text="")
+            self.length.configure(state=ctk.DISABLED)
             self.file.configure(state=ctk.DISABLED)
-            self.txt1.configure(state=ctk.DISABLED)
-            self.txt2.configure(state=ctk.DISABLED)
+            self.version_h.configure(state=ctk.DISABLED)
+            self.version_l.configure(state=ctk.DISABLED)
             self.repository.fwRemove(self)
 
     def chooseFile(self):
@@ -90,6 +91,12 @@ class FileSelectionFrame(ctk.CTkFrame):
         self.filename = filedialog.askopenfilename(title="Selecione o arquivo do seu firmware", filetypes=[
             ("Arquivos .mot", "*.mot")])
         self.file.insert('end', self.filename)
+        binary_string = mot_to_binary(self.filename)
+        binary_length = len(binary_string)
+        self.length.insert('end', binary_length)
+        print(binary_string)
+        print(binary_length)
+        
 
     def delFrame(self, repository):
         '''

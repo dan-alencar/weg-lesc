@@ -26,17 +26,6 @@ class ControllerSelectionFrame(ctk.CTkFrame):
                                          variable=self.optionmenu_var)
         self.optionmenu.pack(padx=10, pady=10, side=ctk.LEFT, anchor=ctk.N)
 
-        # entrada para o version_high
-        self.version_h = ctk.CTkEntry(
-            self, state=ctk.DISABLED, height=35, width=70)
-        self.version_h.pack(expand=True, padx=10, pady=10,
-                          side=ctk.LEFT, anchor=ctk.N)
-
-        # entrada para o version_lower
-        self.version_l = ctk.CTkEntry(self, state=ctk.DISABLED, height=35)
-        self.version_l.pack(expand=True, padx=10, pady=10,
-                       side=ctk.LEFT, anchor=ctk.N)
-
         # entrada para o offset address
         self.offset = ctk.CTkEntry(self, state=ctk.DISABLED, height=35, width=60)
         self.offset.pack(expand=True, padx=10, pady=10,
@@ -71,8 +60,6 @@ class ControllerSelectionFrame(ctk.CTkFrame):
 
         # ativa os widgets quando a checkbox é marcada e desativa quando desmarcada
         if (self.checkbox.get()==1):
-            self.version_h.configure(state=ctk.NORMAL)
-            self.version_l.configure(state=ctk.NORMAL)
             self.offset.configure(state=ctk.NORMAL)
             self.interface.configure(state=ctk.NORMAL)
             self.comm_address.configure(state=ctk.NORMAL)
@@ -80,9 +67,7 @@ class ControllerSelectionFrame(ctk.CTkFrame):
             self.optionmenu.configure(state=ctk.NORMAL)
             self.repository.updateFrames()
         else:
-            self.version_h.configure(state=ctk.DISABLED)
             self.optionmenu.configure(state=ctk.DISABLED)
-            self.version_l.configure(state=ctk.DISABLED)
             self.offset.configure(state=ctk.DISABLED)
             self.interface.configure(state=ctk.DISABLED)
             self.comm_address.configure(state=ctk.DISABLED)
