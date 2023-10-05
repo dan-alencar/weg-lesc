@@ -134,9 +134,12 @@ def binary_gen(destination_path, header, version_header, binary_data):
     # calcula o tamanho total do arquivo com o cabeçalho e o crc
     length_total = len(binary_data) + len(version) + 36
     print(length_total)
+    
+    header_data = build_header(
+        header['header_ver'], header['header_valid'], header['prod_id'], header['prod_ver'], length_total)
 
     # concatena o conteúdo dos arquivos
-    content = header + bytes(version_header, encoding='utf-8') + binary_data
+    content = header_data + version_header + binary_data
 
     # calcula o crc
     crc = calculate_crc16(content)
@@ -198,7 +201,7 @@ file_path = r'Arquivos WPS\rl_application.mot'
 
 h_versionamento = build_version_header(version['version_h'], version['version_l'],
                                        version['offset_adds'], 76, version['interface'], version['comm_address'], version['code_id'])
-print(bytes(h_versionamento, encoding='utf-8'))
+# print(bytes(h_versionamento, encoding='utf-8'))
 
 # srec_records = binary_gen(
 #     destination_path, file_path, header, h_versionamento)

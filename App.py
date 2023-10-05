@@ -72,18 +72,22 @@ class App(ctk.CTk):
                 interface = int(controller_frame.interface.get())
                 comm_address = int(controller_frame.comm_address.get())
                 code_id = int(controller_frame.code_id.get())
-                version.extend(build_version(file_length, version_h, version_l, offset, interface, comm_address, code_id))
-            
-        # print(version)
-        # print(mot_list)
+                version.extend(build_version_header(file_length, version_h, version_l, offset, interface, comm_address, code_id))
         
         for file_path in mot_list:
             total_l += len(mot_to_binary(file_path))
             binary_data.extend(mot_to_binary(file_path))
         
-        # print(total_l)
-        # print(binary_data)
-            
+        header = {
+            "header_ver": 0x02,
+            "header_valid": 0x00,
+            "prod_id": "CFW510",
+            "prod_ver": "V2.01"
+        }
+        binary_gen(file, header, version, binary_data)
+        
+        print(version)
+        print(binary_data)
 
 # janela funcionando
 app = App()
