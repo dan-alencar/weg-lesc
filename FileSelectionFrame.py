@@ -50,7 +50,7 @@ class FileSelectionFrame(ctk.CTkFrame):
                           side=ctk.LEFT, anchor=ctk.N)
 
         # entrada para o version_lower
-        self.version_l = ctk.CTkEntry(self, state=ctk.DISABLED, height=35)
+        self.version_l = ctk.CTkEntry(self, state=ctk.DISABLED, height=35, width=70)
         self.version_l.pack(expand=True, padx=10, pady=10,
                        side=ctk.LEFT, anchor=ctk.N)
 
@@ -69,17 +69,11 @@ class FileSelectionFrame(ctk.CTkFrame):
         # ativa os widgets quando a checkbox é marcada e desativa quando desmarcada
         if (self.checkbox.get()==1):
             self.btn.configure(state=ctk.NORMAL)
-            self.length.configure(state=ctk.NORMAL)
-            self.file.configure(state=ctk.NORMAL)
             self.version_h.configure(state=ctk.NORMAL)
             self.version_l.configure(state=ctk.NORMAL)
-            self.length.configure(placeholder_text="Endereço")
             self.repository.fwValidation(self)
         else:
             self.btn.configure(state=ctk.DISABLED)
-            self.length.configure(placeholder_text="")
-            self.length.configure(state=ctk.DISABLED)
-            self.file.configure(state=ctk.DISABLED)
             self.version_h.configure(state=ctk.DISABLED)
             self.version_l.configure(state=ctk.DISABLED)
             self.repository.fwRemove(self)
@@ -88,14 +82,20 @@ class FileSelectionFrame(ctk.CTkFrame):
         '''
         Permite a seleção de arquivos .txt e .hex 
         '''
+        self.length.configure(state=ctk.NORMAL)
+        self.file.configure(state=ctk.NORMAL)
         self.filename = filedialog.askopenfilename(title="Selecione o arquivo do seu firmware", filetypes=[
             ("Arquivos .mot", "*.mot")])
-        self.file.insert('end', self.filename)
         binary_string = mot_to_binary(self.filename)
-        binary_length = len(binary_string)
-        self.length.insert('end', binary_length)
-        print(binary_string)
-        print(binary_length)
+        self.binary_length = len(binary_string)
+        self.file.delete(0, tk.END)
+        self.length.delete(0, tk.END)
+        self.file.insert(0, self.filename)
+        self.length.insert(0, self.binary_length)
+        self.length.configure(state=ctk.DISABLED)
+        self.file.configure(state=ctk.DISABLED)
+        # print(self.binary_string)
+        print(self.binary_length)
         
 
     def delFrame(self, repository):

@@ -1,5 +1,5 @@
 import customtkinter as ctk
-from binary import binary_gen
+from binary import *
 from TabbedPanel import TabbedPanel
 from FileSelectionFrameList import FileSelectionFrameList
 from ControllerSelectionFrameList import ControllerSelectionFrameList
@@ -53,13 +53,37 @@ class App(ctk.CTk):
         file = filedialog.asksaveasfilename(
             initialdir="/", title="Salvar como", filetypes=data, defaultextension=data)
         
-        for frame in self.controllerframe_list.controllerframes:
-            option_selected = frame.optionmenu.get()
-            if option_selected[:2] == 'FW':
-                        option_frame = self.codeframe_list.searchFrameFile(option_selected)
-                        firmware_selected = option_frame.file.get()
-                        # print(firmware_selected)
-
+        version = bytearray()
+        binary_data = bytearray()
+        mot_list = []
+        total_l = 0
+        
+        for controller_frame in self.controllerframe_list.controllerframes:
+            option_selected = controller_frame.optionmenu.get()
+            if option_selected[:2] == 'FW' and controller_frame.checkbox.get() == 1 :
+                firmware_frame = self.codeframe_list.searchFrameFile(option_selected)
+                firmware_file = firmware_frame.file.get()
+                if firmware_file not in mot_list:
+                    mot_list.append(firmware_file)
+                file_length = firmware_frame.binary_length
+                version_h = int(firmware_frame.version_h.get())
+                version_l = int(firmware_frame.version_l.get())
+                offset = int(controller_frame.offset.get())
+                interface = int(controller_frame.interface.get())
+                comm_address = int(controller_frame.comm_address.get())
+                code_id = int(controller_frame.code_id.get())
+                version.extend(build_version(file_length, version_h, version_l, offset, interface, comm_address, code_id))
+            
+        # print(version)
+        # print(mot_list)
+        
+        for file_path in mot_list:
+            total_l += len(mot_to_binary(file_path))
+            binary_data.extend(mot_to_binary(file_path))
+        
+        # print(total_l)
+        # print(binary_data)
+            
 
 # janela funcionando
 app = App()

@@ -39,11 +39,9 @@ def build_header(header_ver, header_valid, prod_id, prod_version, length):
 
 
 # Monta o versionamento do arquivo.
-def build_version(binary, version_h, version_l, offset_adds, interface, comm_address, code_id):
+def build_version(length, version_h, version_l, offset_adds, interface, comm_address, code_id):
     header_format = 'HHIIBBB'
-    length = len(binary)
-    version_data = struct.pack(
-        header_format, version_h, version_l, offset_adds, length, interface, comm_address, code_id)
+    version_data = struct.pack(header_format, version_h, version_l, offset_adds, length, interface, comm_address, code_id)
     return version_data
 
 
@@ -147,7 +145,7 @@ def binary_gen(destination_path, file_path, header, version):
     content = header_data + version + binary_data
 
     # calcula o crc
-    crc = calculate_crc16(header_data + version + binary_data)
+    crc = calculate_crc16(content)
     crc = hex(crc)+'0000'  # adiciona 2 bytes
     crc = bytearray.fromhex(crc[2:])  # transforma em bytearray
 

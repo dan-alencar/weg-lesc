@@ -53,10 +53,16 @@ class MenuFrame(ctk.CTkFrame):
                     self.master.codeframe_list.addFrame(new_frame)  # adiciona no repositório
                     new_frame.pack(side=ctk.TOP, fill=ctk.BOTH, expand=ctk.TRUE)
                     new_frame.checkbox.toggle()
-                    new_frame.length.insert('1',  frame.get('address'))
+                    new_frame.length.configure(state=ctk.NORMAL)
+                    new_frame.file.configure(state=ctk.NORMAL)
+                    new_frame.length.insert('1',  frame.get('length'))
                     new_frame.file.insert('1', frame.get('filepath'))
                     new_frame.version_h.insert('1',  frame.get('version_h'))
                     new_frame.version_l.insert('1', frame.get('version_l'))
+                    if frame.get('length')!= '':
+                        new_frame.binary_length = int(frame.get('length'))
+                    new_frame.length.configure(state=ctk.DISABLED)
+                    new_frame.file.configure(state=ctk.DISABLED)
                 if (frame.tag=='controllerframe'):
                     new_frame = ControllerSelectionFrame(self.master.tab_view.controllerframe, self.master.controllerframe_list)
                     self.master.controllerframe_list.addFrame(new_frame)
@@ -98,7 +104,7 @@ class MenuFrame(ctk.CTkFrame):
         for frame in codeframe_list.valid_firmware:
             if frame.checkbox.get() == 1:
                 if (isinstance(frame, FileSelectionFrame)):
-                    ET.SubElement(codeframes, 'codeframe', address=frame.length.get(
+                    ET.SubElement(codeframes, 'codeframe', length=frame.length.get(
                     ), filepath=frame.file.get(), version_h=frame.version_h.get(), version_l=frame.version_l.get())
         
         for frame in controllerframe_list.controllerframes:

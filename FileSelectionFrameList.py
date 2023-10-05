@@ -15,7 +15,7 @@ class FileSelectionFrameList:
             self.valid_firmware_index.append(option.index)
         self.valid_firmware_index.sort()
         print(self.valid_firmware_index)
-        print(self.valid_firmware)
+        # print(self.valid_firmware)
         self.master.controllerframe_list.updateList(self.valid_firmware_index)
         
     def fwRemove(self,frame):
@@ -37,9 +37,9 @@ class FileSelectionFrameList:
         for frame in self.codeframes:
             frame.pack_forget()
     
-    def searchFrameFile(self, file):
+    def searchFrameFile(self, option):
         for frame in self.valid_firmware:
-            if frame.name == file:
+            if frame.name == option:
                 return frame
     
     def searchbyIndex(self, repository, frame):
