@@ -40,9 +40,10 @@ def build_header(header_ver, header_valid, prod_id, prod_version, length):
 
 def build_version_header(version_H, version_L, offset_adds, lenght, interface, comm_address, code_id):
     header_format = 'HHIIBBB'
-    version_header_data = struct.pack(header_format, version_H, version_L, offset_adds, lenght, interface, comm_address, code_id)
-    return str(version_header_data, encoding='utf-8')
-    
+    version_header_data = struct.pack(
+        header_format, version_H, version_L, offset_adds, lenght, interface, comm_address, code_id)
+    return version_header_data
+
 
 # percorre uma linha de um aquivo .mot e separa as informações em sua estrutura
 def parse_srec_line(line):
@@ -77,7 +78,6 @@ def mot_to_binary(file_path):
     end_address = 0  # guarda o último endereço preenchido
     previous_end_address = 0  # guarda o último endereço preenchido na iteração anterior
 
-    
     with open(file_path, 'rb') as mot:
         for line in mot:
             line = line.strip()
@@ -128,21 +128,15 @@ def mot_to_binary(file_path):
 
 
 # gerador de binário
-def binary_gen(destination_path, file_path, header, version_header):
 
-    # informações do código
-    binary_data = mot_to_binary(file_path)
+def binary_gen(destination_path, header, version_header, binary_data):
 
     # calcula o tamanho total do arquivo com o cabeçalho e o crc
     length_total = len(binary_data) + len(version) + 36
     print(length_total)
 
-    # cabeçalho
-    header_data = build_header(
-        header['header_ver'], header['header_valid'], header['prod_id'], header['prod_ver'], length_total)
-
     # concatena o conteúdo dos arquivos
-    content = header_data + bytes(version_header, encoding='utf-8') + binary_data
+    content = header + bytes(version_header, encoding='utf-8') + binary_data
 
     # calcula o crc
     crc = calculate_crc16(content)
@@ -152,6 +146,32 @@ def binary_gen(destination_path, file_path, header, version_header):
     # escreve o conteúdo no arquivo binário de destino
     with open(destination_path, 'wb') as destination:
         destination.write(content+crc)
+
+
+# def binary_gen(destination_path, file_path, header, version_header):
+
+#     # informações do código
+#     binary_data = mot_to_binary(file_path)
+
+#     # calcula o tamanho total do arquivo com o cabeçalho e o crc
+#     length_total = len(binary_data) + len(version) + 36
+#     print(length_total)
+
+#     # cabeçalho
+#     header_data = build_header(
+#         header['header_ver'], header['header_valid'], header['prod_id'], header['prod_ver'], length_total)
+
+#     # concatena o conteúdo dos arquivos
+#     content = header_data + bytes(version_header, encoding='utf-8') + binary_data
+
+#     # calcula o crc
+#     crc = calculate_crc16(content)
+#     crc = hex(crc)+'0000'  # adiciona 2 bytes
+#     crc = bytearray.fromhex(crc[2:])  # transforma em bytearray
+
+#     # escreve o conteúdo no arquivo binário de destino
+#     with open(destination_path, 'wb') as destination:
+#         destination.write(content+crc)
 
 
 # testando
@@ -176,9 +196,9 @@ destination_path = r'Arquivos WPS\comparar.bin'
 versionamento = r'Arquivos WPS\binary\versionamento.bin'
 file_path = r'Arquivos WPS\rl_application.mot'
 
-h_versionamento = build_version_header(version['version_h'], version['version_l'], version['offset_adds'], 76, version['interface'], version['comm_address'], version['code_id'])
+h_versionamento = build_version_header(version['version_h'], version['version_l'],
+                                       version['offset_adds'], 76, version['interface'], version['comm_address'], version['code_id'])
 print(bytes(h_versionamento, encoding='utf-8'))
 
-srec_records = binary_gen(
-    destination_path, file_path, header, h_versionamento)
-
+# srec_records = binary_gen(
+#     destination_path, file_path, header, h_versionamento)
