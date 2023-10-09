@@ -69,6 +69,8 @@ class App(ctk.CTk):
                 version_h = int(firmware_frame.version_h.get())
                 version_l = int(firmware_frame.version_l.get())
                 offset = int(controller_frame.offset.get())
+                #lembrar de relacionar retorno das interfaces a uma struct
+                #lembrar de relacionar os tipos de aplicação do .mot (RX e RL)
                 interface = int(controller_frame.interface.get())
                 comm_address = int(controller_frame.comm_address.get())
                 code_id = int(controller_frame.code_id.get())
