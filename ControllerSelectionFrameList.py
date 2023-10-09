@@ -1,6 +1,6 @@
 
 class ControllerSelectionFrameList:
-    def __init__(self):
+    def __init__(self, master):
         self.controllerframes = []
         self.optionList = []
 

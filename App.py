@@ -36,7 +36,7 @@ class App(ctk.CTk):
         
         #Menu de abas
         self.codeframe_list = FileSelectionFrameList(self)  # cria lista de frames de seleção
-        self.controllerframe_list = ControllerSelectionFrameList()  # cria lista de frames de seleção
+        self.controllerframe_list = ControllerSelectionFrameList(self)  # cria lista de frames de seleção
         self.tab_view = TabbedPanel(self)
         self.tab_view.pack(fill=ctk.BOTH,expand=ctk.TRUE)
         
@@ -77,17 +77,15 @@ class App(ctk.CTk):
         for file_path in mot_list:
             total_l += len(mot_to_binary(file_path))
             binary_data.extend(mot_to_binary(file_path))
-        
+
         header = {
-            "header_ver": 0x02,
-            "header_valid": 0x00,
-            "prod_id": "CFW510",
-            "prod_ver": "V2.01"
+            "header_ver": int(self.tab_view.configframe.header_version.get(), 16),
+            "header_valid": int(self.tab_view.configframe.header_valid.get(), 16),
+            "prod_id": self.tab_view.configframe.prod_id.get(),
+            "prod_ver": self.tab_view.configframe.prod_ver.get()
         }
-        binary_gen(file, header, version, binary_data)
         
-        print(version)
-        print(binary_data)
+        binary_gen(file, header, version, binary_data)
 
 # janela funcionando
 app = App()

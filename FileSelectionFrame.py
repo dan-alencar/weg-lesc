@@ -53,6 +53,11 @@ class FileSelectionFrame(ctk.CTkFrame):
         self.version_l = ctk.CTkEntry(self, state=ctk.DISABLED, height=35, width=70)
         self.version_l.pack(expand=True, padx=10, pady=10,
                        side=ctk.LEFT, anchor=ctk.N)
+        
+        self.app_var = ctk.StringVar(value="Selecione uma aplicação")
+        self.app = ctk.CTkOptionMenu(self,state=ctk.DISABLED, values=["RX", "RL"], variable=self.app_var)
+        self.app.pack(expand=True, padx=10, pady=10,
+                       side=ctk.LEFT, anchor=ctk.N)
 
         # botão para apagar o frame
         img = ctk.CTkImage(Image.open('img\excluir.png'), size=(20, 20))
@@ -71,11 +76,13 @@ class FileSelectionFrame(ctk.CTkFrame):
             self.btn.configure(state=ctk.NORMAL)
             self.version_h.configure(state=ctk.NORMAL)
             self.version_l.configure(state=ctk.NORMAL)
+            self.app.configure(state=ctk.NORMAL)
             self.repository.fwValidation(self)
         else:
             self.btn.configure(state=ctk.DISABLED)
             self.version_h.configure(state=ctk.DISABLED)
             self.version_l.configure(state=ctk.DISABLED)
+            self.app.configure(state=ctk.DISABLED)
             self.repository.fwRemove(self)
 
     def chooseFile(self):

@@ -32,7 +32,8 @@ class ControllerSelectionFrame(ctk.CTkFrame):
                        side=ctk.LEFT, anchor=ctk.N)
 
         # entrada para a interface
-        self.interface = ctk.CTkEntry(self, state=ctk.DISABLED, height=35, width=60)
+        self.interface_var = ctk.StringVar(value="Selecione uma interface")
+        self.interface = ctk.CTkOptionMenu(self,state=ctk.DISABLED, values=["I2C", "CAN", "Serial"], variable=self.interface_var)
         self.interface.pack(expand=True, padx=10, pady=10,
                        side=ctk.LEFT, anchor=ctk.N)
         

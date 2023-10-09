@@ -4,6 +4,7 @@ import xml.etree.ElementTree as ET
 from tkinter import filedialog
 from FileSelectionFrame import FileSelectionFrame
 from ControllerSelectionFrame import ControllerSelectionFrame
+from ConfigurationFrame import ConfigurationFrame
 
 
 class MenuFrame(ctk.CTkFrame):
@@ -59,6 +60,11 @@ class MenuFrame(ctk.CTkFrame):
                     new_frame.file.insert('1', frame.get('filepath'))
                     new_frame.version_h.insert('1',  frame.get('version_h'))
                     new_frame.version_l.insert('1', frame.get('version_l'))
+                    app_option = frame.get('app')
+                    if app_option != 'Selecione uma aplicação':
+                        new_frame.app.set(app_option)
+                    else:
+                        new_frame.app.set('Selecione uma aplicação')
                     if frame.get('length')!= '':
                         new_frame.binary_length = int(frame.get('length'))
                     new_frame.length.configure(state=ctk.DISABLED)
@@ -69,14 +75,23 @@ class MenuFrame(ctk.CTkFrame):
                     new_frame.pack(side=ctk.TOP, fill=ctk.BOTH, expand=ctk.TRUE)
                     new_frame.checkbox.toggle()
                     new_frame.offset.insert('1', frame.get('offset'))
-                    new_frame.interface.insert('1', frame.get('interface'))
+                    interface_option = frame.get('interface')
+                    if interface_option != 'Selecione uma interface':
+                        new_frame.interface.set(interface_option)
+                    else:
+                        new_frame.interface.set('Selecione uma interface')
                     new_frame.comm_address.insert('1', frame.get('comm_address'))
                     new_frame.code_id.insert('1', frame.get('code_id'))
-                    option = frame.get('option')
-                    if option[:2] == 'FW':
-                        new_frame.optionmenu.set(option)
+                    fw_option = frame.get('option')
+                    if fw_option[:2] == 'FW':
+                        new_frame.optionmenu.set(fw_option)
                     else:
                         new_frame.optionmenu.set('Selecione uma opção')
+                if (frame.tag=='configurations'):  
+                    self.master.tab_view.configframe.header_version.insert('1', frame.get('header_ver'))
+                    self.master.tab_view.configframe.header_valid.insert('1', frame.get('header_val'))
+                    self.master.tab_view.configframe.prod_id.insert('1', frame.get('prod_id'))
+                    self.master.tab_view.configframe.prod_ver.insert('1', frame.get('prod_ver'))
 
     def onSave(self, master):
         '''
@@ -91,9 +106,9 @@ class MenuFrame(ctk.CTkFrame):
 
         # chama a função que cria o arquivo XML
 
-        file = self.toXML(master.codeframe_list, master.controllerframe_list, file)
+        file = self.toXML(master.codeframe_list, master.controllerframe_list, master.tab_view.configframe, file)
 
-    def toXML(self, codeframe_list, controllerframe_list, file):
+    def toXML(self, codeframe_list, controllerframe_list, configurations, file):
         '''
         Cria um arquivo xml
         '''
@@ -101,11 +116,12 @@ class MenuFrame(ctk.CTkFrame):
         xml_doc = ET.Element('App')
         codeframes = ET.SubElement(xml_doc, 'codeframes')
         controllerframes = ET.SubElement(xml_doc, 'controllerframes')
+        configs = ET.SubElement(xml_doc, 'configs')
         for frame in codeframe_list.valid_firmware:
             if frame.checkbox.get() == 1:
                 if (isinstance(frame, FileSelectionFrame)):
                     ET.SubElement(codeframes, 'codeframe', length=frame.length.get(
-                    ), filepath=frame.file.get(), version_h=frame.version_h.get(), version_l=frame.version_l.get())
+                    ), filepath=frame.file.get(), version_h=frame.version_h.get(), version_l=frame.version_l.get(), app=frame.app.get())
         
         for frame in controllerframe_list.controllerframes:
             if frame.checkbox.get() == 1:
@@ -118,7 +134,7 @@ class MenuFrame(ctk.CTkFrame):
                         else:
                             optionSelected = "Selecione uma opção"
                     ET.SubElement(controllerframes, 'controllerframe', offset=frame.offset.get(), interface=frame.interface.get(), comm_address = frame.comm_address.get(), code_id = frame.code_id.get(),  option = optionSelected)
-            
+        ET.SubElement(configs, 'configurations', header_ver = configurations.header_version.get(), header_val = configurations.header_valid.get(), prod_id = configurations.prod_id.get(), prod_ver = configurations.prod_ver.get())
 
         tree = ET.ElementTree(xml_doc)
         tree.write(file)
@@ -131,6 +147,7 @@ class MenuFrame(ctk.CTkFrame):
         self.master.codeframe_list.clearFrames()
         self.master.controllerframe_list.unpackFrames()
         self.master.controllerframe_list.clearFrames()
+        self.master.tab_view.configframe.clearFields()
         self.master.tab_view.codeframe.index = 0
         
 
