@@ -6,6 +6,7 @@ from ControllerSelectionFrameList import ControllerSelectionFrameList
 from MenuFrame import MenuFrame
 from PIL import Image
 from tkinter import filedialog
+from dictionary import *
 
 
 class App(ctk.CTk):
@@ -71,7 +72,7 @@ class App(ctk.CTk):
                 offset = int(controller_frame.offset.get())
                 #lembrar de relacionar retorno das interfaces a uma struct
                 #lembrar de relacionar os tipos de aplicação do .mot (RX e RL)
-                interface = int(controller_frame.interface.get())
+                interface = controller_frame.interface_var
                 comm_address = int(controller_frame.comm_address.get())
                 code_id = int(controller_frame.code_id.get())
                 version.extend(build_version_header(file_length, version_h, version_l, offset, interface, comm_address, code_id))

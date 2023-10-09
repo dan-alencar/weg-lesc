@@ -4,8 +4,6 @@ import xml.etree.ElementTree as ET
 from tkinter import filedialog
 from FileSelectionFrame import FileSelectionFrame
 from ControllerSelectionFrame import ControllerSelectionFrame
-from ConfigurationFrame import ConfigurationFrame
-
 
 class MenuFrame(ctk.CTkFrame):
     def __init__(self, master, **kwargs):
@@ -63,8 +61,10 @@ class MenuFrame(ctk.CTkFrame):
                     app_option = frame.get('app')
                     if app_option != 'Selecione uma aplicação':
                         new_frame.app.set(app_option)
+                        new_frame.app_callback(app_option)
                     else:
                         new_frame.app.set('Selecione uma aplicação')
+                        new_frame.app_var = -1
                     if frame.get('length')!= '':
                         new_frame.binary_length = int(frame.get('length'))
                     new_frame.length.configure(state=ctk.DISABLED)
@@ -78,8 +78,10 @@ class MenuFrame(ctk.CTkFrame):
                     interface_option = frame.get('interface')
                     if interface_option != 'Selecione uma interface':
                         new_frame.interface.set(interface_option)
+                        new_frame.interface_callback(interface_option)
                     else:
                         new_frame.interface.set('Selecione uma interface')
+                        new_frame.interface_var = -1
                     new_frame.comm_address.insert('1', frame.get('comm_address'))
                     new_frame.code_id.insert('1', frame.get('code_id'))
                     fw_option = frame.get('option')
@@ -92,6 +94,17 @@ class MenuFrame(ctk.CTkFrame):
                     self.master.tab_view.configframe.header_valid.insert('1', frame.get('header_val'))
                     self.master.tab_view.configframe.prod_id.insert('1', frame.get('prod_id'))
                     self.master.tab_view.configframe.prod_ver.insert('1', frame.get('prod_ver'))
+        
+        if len(self.master.codeframe_list.codeframes) == 0:
+            new_codeframe = FileSelectionFrame(self.master.tab_view.codeframe, self.master.codeframe_list, self.master.tab_view.codeframe.index)
+            self.master.tab_view.codeframe.index += 1
+            self.master.codeframe_list.addFrame(new_codeframe)  # adiciona no repositório
+            new_codeframe.pack(side=ctk.TOP, fill=ctk.BOTH, expand=ctk.TRUE)
+            
+        if len(self.master.controllerframe_list.controllerframes) == 0:
+            new_controllerframe = ControllerSelectionFrame(self.master.tab_view.controllerframe, self.master.controllerframe_list)
+            self.master.controllerframe_list.addFrame(new_controllerframe)
+            new_controllerframe.pack(side=ctk.TOP, fill=ctk.BOTH, expand=ctk.TRUE)
 
     def onSave(self, master):
         '''

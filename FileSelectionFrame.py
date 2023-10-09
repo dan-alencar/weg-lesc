@@ -4,6 +4,7 @@ import tkinter as tk
 from PIL import Image
 from FileSelectionFrameList import FileSelectionFrameList
 from binary import mot_to_binary
+from dictionary import app_enum
 
 class FileSelectionFrame(ctk.CTkFrame):
     '''
@@ -55,7 +56,7 @@ class FileSelectionFrame(ctk.CTkFrame):
                        side=ctk.LEFT, anchor=ctk.N)
         
         self.app_var = ctk.StringVar(value="Selecione uma aplicação")
-        self.app = ctk.CTkOptionMenu(self,state=ctk.DISABLED, values=["RX", "RL"], variable=self.app_var)
+        self.app = ctk.CTkOptionMenu(self,state=ctk.DISABLED, height=35, width=70, values=["RX", "RL"], command=self.app_callback, variable=self.app_var)
         self.app.pack(expand=True, padx=10, pady=10,
                        side=ctk.LEFT, anchor=ctk.N)
 
@@ -117,3 +118,7 @@ class FileSelectionFrame(ctk.CTkFrame):
             return True
         else:
             return False
+        
+    def app_callback(self, choice):
+        self.app_var = app_enum[choice]
+        print(self.app_var)

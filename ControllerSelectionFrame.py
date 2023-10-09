@@ -1,7 +1,7 @@
 import customtkinter as ctk
 from tkinter import filedialog
 from PIL import Image
-
+from dictionary import interface_enum
 
 class ControllerSelectionFrame(ctk.CTkFrame):
     '''
@@ -21,20 +21,12 @@ class ControllerSelectionFrame(ctk.CTkFrame):
         
         # menu de escolha de firmware
         self.optionmenu_var = ctk.StringVar(value="Selecione uma opção")
-        self.optionmenu = ctk.CTkOptionMenu(self,state=ctk.DISABLED, values=["option 1 ", "option 2"],
-                                         command=self.optionmenu_callback,
-                                         variable=self.optionmenu_var)
+        self.optionmenu = ctk.CTkOptionMenu(self,state=ctk.DISABLED, height=35, width=70, variable=self.optionmenu_var)
         self.optionmenu.pack(padx=10, pady=10, side=ctk.LEFT, anchor=ctk.N)
 
         # entrada para o offset address
         self.offset = ctk.CTkEntry(self, state=ctk.DISABLED, height=35, width=60)
         self.offset.pack(expand=True, padx=10, pady=10,
-                       side=ctk.LEFT, anchor=ctk.N)
-
-        # entrada para a interface
-        self.interface_var = ctk.StringVar(value="Selecione uma interface")
-        self.interface = ctk.CTkOptionMenu(self,state=ctk.DISABLED, values=["I2C", "CAN", "Serial"], variable=self.interface_var)
-        self.interface.pack(expand=True, padx=10, pady=10,
                        side=ctk.LEFT, anchor=ctk.N)
         
         # entrada para o communication address
@@ -45,6 +37,12 @@ class ControllerSelectionFrame(ctk.CTkFrame):
         # entrada para o code_id
         self.code_id = ctk.CTkEntry(self, state=ctk.DISABLED, height=35, width=60)
         self.code_id.pack(expand=True, padx=10, pady=10,
+                       side=ctk.LEFT, anchor=ctk.N)
+        
+        # entrada para a interface
+        self.interface_var = ctk.StringVar(value="Selecione uma interface")
+        self.interface = ctk.CTkOptionMenu(self,state=ctk.DISABLED, height=35, width=70, values=["I2C", "CAN", "Serial"], command=self.interface_callback, variable=self.interface_var)
+        self.interface.pack(expand=True, padx=10, pady=10,
                        side=ctk.LEFT, anchor=ctk.N)
         
         # botão para apagar o frame
@@ -82,6 +80,7 @@ class ControllerSelectionFrame(ctk.CTkFrame):
         self.pack_forget()
         repository.removeFrame(self)
     
-    #debugging da opção selecionada
-    def optionmenu_callback(self, choice):
-        print("optionmenu dropdown clicked:", choice)
+    #debugging da opção selecionada    
+    def interface_callback(self, choice):
+        self.interface_var = interface_enum[choice]
+        print(self.interface_var)
