@@ -94,44 +94,50 @@ def mot_to_binary(file_path, firmware):
     code2 = ''  # string que contém a segunda parte do código
     end_address = 0  # guarda o último endereço preenchido
     previous_end_address = 0  # guarda o último endereço preenchido na iteração anterior
+    lines = 0 # guarda a quantidade de linhas para determinar os endereços de inicio
 
     if firmware == 'rl':
         with open(file_path, 'rb') as mot:
             for line in mot:
                 line = line.strip()
                 record = parse_srec_line(line, firmware)
+                
+                # testa se a linha armazena dados
+                if record['record_type'] != b'S1':
+                    pass
+                
+                else:
+                    # endereço inicial do dado
+                    init_address = record['address']
+                    # endereço final do dado
+                    end_address = record['address'] + record['data_length'] - 3
 
-                # endereço inicial do dado
-                init_address = record['address']
-                # endereço final do dado
-                end_address = record['address'] + record['data_length'] - 3
+                    # verifica se a linha pertence à primeira parte
+                    if record['address'] < int(0xFFF):
 
-                # verifica se a linha pertence à primeira parte
-                if record['record_type'] == b'S1' and record['address'] < int(0xFFF):
+                        # preenche bytes vazios quando o endereço do início da linha é maior que o endereço do fim da linha anterior
+                        if previous_end_address < init_address:
+                            code1 += (init_address-previous_end_address)*'FF'
 
-                    # preenche bytes vazios quando o endereço do início da linha é maior que o endereço do fim da linha anterior
-                    if previous_end_address < init_address:
-                        code1 += (init_address-previous_end_address)*'FF'
+                        # junta o dado à primeira string
+                        code1 += record["data"]
 
-                    # junta o dado à primeira string
-                    code1 += record["data"]
+                    # verifica se a linha pertence à segunda parte
+                    elif record['address'] >= int(0x3000):
 
-                # verifica se a linha pertence à segunda parte
-                elif record['record_type'] == b'S1' and record['address'] >= int(0x3000):
+                        # se a linha for a primeira da segunda parte, altera o valor do endereço final da linha anterior
+                        if record['address'] == int(0x3000):
+                            previous_end_address = 0x3000
 
-                    # se a linha for a primeira da segunda parte, altera o valor do endereço final da linha anterior
-                    if record['address'] == int(0x3000):
-                        previous_end_address = 0x3000
+                        # preenche bytes vazios quando o endereço do início da linha é maior que o endereço do fim da linha anterior
+                        if previous_end_address < init_address:
+                            code2 += (init_address-previous_end_address)*'FF'
 
-                    # preenche bytes vazios quando o endereço do início da linha é maior que o endereço do fim da linha anterior
-                    if previous_end_address < init_address:
-                        code2 += (init_address-previous_end_address)*'FF'
+                        # junta o dado à segunda string
+                        code2 += record["data"]
 
-                    # junta o dado à segunda string
-                    code2 += record["data"]
-
-                # atualiza o endereço final anterior
-                previous_end_address = end_address
+                    # atualiza o endereço final anterior
+                    previous_end_address = end_address
 
         # completando os códigos para que o tamanho seja múltiplo de 64
         code1 = mul64(code1)
@@ -142,37 +148,43 @@ def mot_to_binary(file_path, firmware):
             for line in mot:
                 line = line.strip()
                 record = parse_srec_line(line, firmware)
-
-                # endereço inicial do dado
-                init_address = record['address']
-                # endereço final do dado
-                end_address = record['address'] + record['data_length'] - 5
                 
-                if previous_end_address < int(0xFFC10000) and record['record_type'] == b'S3':
-                    previous_end_address = record['address']
+                # testa se a linha armazena dados
+                if record['record_type'] != b'S3':
+                    pass
+                
+                else:
+                    # endereço inicial do dado
+                    init_address = record['address']
+                    # endereço final do dado
+                    end_address = record['address'] + record['data_length'] - 5
+                    
+                    if lines == 0:
+                        previous_end_address = record['address']
 
-                # verifica se a linha pertence à primeira parte
-                if record['record_type'] == b'S3' and record['address'] < int(0xFFFFFEE4):
+                    # verifica se a linha pertence à primeira parte
+                    if record['address'] < int(0xFFFFFEE4):
 
-                    # preenche bytes vazios quando o endereço do início da linha é maior que o endereço do fim da linha anterior
-                    if previous_end_address < init_address:
-                        code1 += (init_address-previous_end_address)*'FF'
+                        # preenche bytes vazios quando o endereço do início da linha é maior que o endereço do fim da linha anterior
+                        if previous_end_address < init_address:
+                            code1 += (init_address-previous_end_address)*'FF'
 
-                    # junta o dado à primeira string
-                    code1 += record["data"]
+                        # junta o dado à primeira string
+                        code1 += record["data"]
 
-                # verifica se a linha pertence à segunda parte
-                elif record['record_type'] == b'S3' and record['address'] >= int(0xFFFFFEE4):
+                    # verifica se a linha pertence à segunda parte
+                    elif record['address'] >= int(0xFFFFFEE4):
 
-                    # se a linha for a primeira da segunda parte, altera o valor do endereço final da linha anterior
-                    if record['address'] == int(0xFFFFFEE4):
-                        previous_end_address = 0xFFFFFEE4
+                        # se a linha for a primeira da segunda parte, altera o valor do endereço final da linha anterior
+                        if record['address'] == int(0xFFFFFEE4):
+                            previous_end_address = 0xFFFFFEE4
 
-                    # junta o dado à segunda string
-                    code2 += record["data"]
+                        # junta o dado à segunda string
+                        code2 += record["data"]
 
-                # atualiza o endereço final anterior
-                previous_end_address = end_address
+                    # atualiza o endereço final anterior
+                    previous_end_address = end_address
+                    lines += 1 # incrementa o número de linhas
 
     # escrevendo o arquivo binário
         code1_size = len(bytearray.fromhex(code1))
