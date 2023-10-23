@@ -4,7 +4,7 @@ interface_enum = {
     "Serial": 3
 }
 
-app_enum = {
+micro_enum = {
     "RX": 1,
     "RL": 2
 }

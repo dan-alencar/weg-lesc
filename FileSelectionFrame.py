@@ -4,7 +4,7 @@ import tkinter as tk
 from PIL import Image
 from FileSelectionFrameList import FileSelectionFrameList
 from binary import mot_to_binary
-from dictionary import app_enum
+from dictionary import micro_enum
 
 class FileSelectionFrame(ctk.CTkFrame):
     '''
@@ -55,9 +55,9 @@ class FileSelectionFrame(ctk.CTkFrame):
         self.version_l.pack(expand=True, padx=10, pady=10,
                        side=ctk.LEFT, anchor=ctk.N)
         
-        self.app_var = ctk.StringVar(value="Selecione uma aplicação")
-        self.app = ctk.CTkOptionMenu(self,state=ctk.DISABLED, height=35, width=70, values=["RX", "RL"], command=self.app_callback, variable=self.app_var)
-        self.app.pack(expand=True, padx=10, pady=10,
+        self.micro_var = ctk.StringVar(value="Selecione uma aplicação")
+        self.micro_fam = ctk.CTkOptionMenu(self,state=ctk.DISABLED, height=35, width=70, values=["RX", "RL"], command=self.app_callback, variable=self.app_var)
+        self.micro_fam.pack(expand=True, padx=10, pady=10,
                        side=ctk.LEFT, anchor=ctk.N)
 
         # botão para apagar o frame
@@ -77,13 +77,13 @@ class FileSelectionFrame(ctk.CTkFrame):
             self.btn.configure(state=ctk.NORMAL)
             self.version_h.configure(state=ctk.NORMAL)
             self.version_l.configure(state=ctk.NORMAL)
-            self.app.configure(state=ctk.NORMAL)
+            self.micro_fam.configure(state=ctk.NORMAL)
             self.repository.fwValidation(self)
         else:
             self.btn.configure(state=ctk.DISABLED)
             self.version_h.configure(state=ctk.DISABLED)
             self.version_l.configure(state=ctk.DISABLED)
-            self.app.configure(state=ctk.DISABLED)
+            self.micro_fam.configure(state=ctk.DISABLED)
             self.repository.fwRemove(self)
 
     def chooseFile(self):
@@ -119,6 +119,6 @@ class FileSelectionFrame(ctk.CTkFrame):
         else:
             return False
         
-    def app_callback(self, choice):
-        self.app_var = app_enum[choice]
-        print(self.app_var)
+    def micro_callback(self, choice):
+        self.micro_var = micro_enum[choice]
+        print(self.micro_var)

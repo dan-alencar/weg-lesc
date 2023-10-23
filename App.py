@@ -64,13 +64,13 @@ class App(ctk.CTk):
             if option_selected[:2] == 'FW' and controller_frame.checkbox.get() == 1 :
                 firmware_frame = self.codeframe_list.searchFrameFile(option_selected)
                 firmware_file = firmware_frame.file.get()
+                micro_fam = firmware_frame.micro_var
                 if firmware_file not in mot_list:
-                    mot_list.append(firmware_file)
+                    mot_list.append((firmware_file, micro_fam)) #agora está passando uma tuple como parametro para a função do .mot
                 file_length = firmware_frame.binary_length
                 version_h = int(firmware_frame.version_h.get())
                 version_l = int(firmware_frame.version_l.get())
                 offset = int(controller_frame.offset.get())
-                #lembrar de relacionar retorno das interfaces a uma struct
                 #lembrar de relacionar os tipos de aplicação do .mot (RX e RL)
                 interface = controller_frame.interface_var
                 comm_address = int(controller_frame.comm_address.get())
@@ -78,8 +78,9 @@ class App(ctk.CTk):
                 version.extend(build_version_header(file_length, version_h, version_l, offset, interface, comm_address, code_id))
         
         for file_path in mot_list:
-            total_l += len(mot_to_binary(file_path))
-            binary_data.extend(mot_to_binary(file_path))
+            holder = mot_to_binary(file_path) #mudar nome da variável depois
+            total_l += len(holder)
+            binary_data.extend(holder)
 
         header = {
             "header_ver": int(self.tab_view.configframe.header_version.get(), 16),
@@ -90,6 +91,5 @@ class App(ctk.CTk):
         
         binary_gen(file, header, version, binary_data)
 
-# janela funcionando
 app = App()
 app.mainloop()

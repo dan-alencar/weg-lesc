@@ -60,10 +60,10 @@ class MenuFrame(ctk.CTkFrame):
                     new_frame.version_l.insert('1', frame.get('version_l'))
                     app_option = frame.get('app')
                     if app_option != 'Selecione uma aplicação':
-                        new_frame.app.set(app_option)
+                        new_frame.micro_fam.set(app_option)
                         new_frame.app_callback(app_option)
                     else:
-                        new_frame.app.set('Selecione uma aplicação')
+                        new_frame.micro_fam.set('Selecione uma aplicação')
                         new_frame.app_var = -1
                     if frame.get('length')!= '':
                         new_frame.binary_length = int(frame.get('length'))
@@ -134,7 +134,7 @@ class MenuFrame(ctk.CTkFrame):
             if frame.checkbox.get() == 1:
                 if (isinstance(frame, FileSelectionFrame)):
                     ET.SubElement(codeframes, 'codeframe', length=frame.length.get(
-                    ), filepath=frame.file.get(), version_h=frame.version_h.get(), version_l=frame.version_l.get(), app=frame.app.get())
+                    ), filepath=frame.file.get(), version_h=frame.version_h.get(), version_l=frame.version_l.get(), app=frame.micro_fam.get())
         
         for frame in controllerframe_list.controllerframes:
             if frame.checkbox.get() == 1:
