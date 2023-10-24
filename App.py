@@ -23,7 +23,7 @@ class App(ctk.CTk):
         self.resizable('true', 'true')
         self.title("Seleção de Arquivos")
         self.iconbitmap("img\weg-logo-5.ico")
-        ctk.set_appearance_mode('light ')
+        ctk.set_appearance_mode('light')
         
         # frame de menu
         self.menu_frame = MenuFrame(
