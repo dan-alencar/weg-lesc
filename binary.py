@@ -31,10 +31,10 @@ def concat_files(destination_path, header, *paths):
 
 
 # Monta o cabeçalho do arquivo.
-def build_header(header_ver, header_valid, prod_id, prod_version, length):
+def build_header(header):
     header_format = 'BB16s10sI'
     header_data = struct.pack(
-        header_format, header_ver, header_valid, bytes(prod_id, 'utf-8'), bytes(prod_version, 'utf-8'), length)
+        header_format, header['header_ver'], header['header_valid'], bytes(header['prod_id'], 'utf-8'), bytes(header['prod_ver'], 'utf-8'), header['length'])
     return header_data
 
 
@@ -94,18 +94,18 @@ def mot_to_binary(file_path, firmware):
     code2 = ''  # string que contém a segunda parte do código
     end_address = 0  # guarda o último endereço preenchido
     previous_end_address = 0  # guarda o último endereço preenchido na iteração anterior
-    lines = 0 # guarda a quantidade de linhas para determinar os endereços de inicio
+    lines = 0  # guarda a quantidade de linhas para determinar os endereços de inicio
 
     if firmware == 2:
         with open(file_path, 'rb') as mot:
             for line in mot:
                 line = line.strip()
                 record = parse_srec_line(line, firmware)
-                
+
                 # testa se a linha armazena dados
                 if record['record_type'] != b'S1':
                     pass
-                
+
                 else:
                     # endereço inicial do dado
                     init_address = record['address']
@@ -148,17 +148,17 @@ def mot_to_binary(file_path, firmware):
             for line in mot:
                 line = line.strip()
                 record = parse_srec_line(line, firmware)
-                
+
                 # testa se a linha armazena dados
                 if record['record_type'] != b'S3':
                     pass
-                
+
                 else:
                     # endereço inicial do dado
                     init_address = record['address']
                     # endereço final do dado
                     end_address = record['address'] + record['data_length'] - 5
-                    
+
                     if lines == 0:
                         previous_end_address = record['address']
 
@@ -184,9 +184,9 @@ def mot_to_binary(file_path, firmware):
 
                     # atualiza o endereço final anterior
                     previous_end_address = end_address
-                    lines += 1 # incrementa o número de linhas
+                    lines += 1  # incrementa o número de linhas
 
-# escrevendo o arquivo binário
+    # escrevendo o arquivo binário
     code1_size = len(bytearray.fromhex(code1))
     code2_size = len(bytearray.fromhex(code2))
     binary_data = bytearray.fromhex(code1 + code2)
@@ -194,14 +194,17 @@ def mot_to_binary(file_path, firmware):
 
 # gerador de binário
 
+
 def binary_gen(destination_path, header, version_header, binary_data):
 
     # calcula o tamanho total do arquivo com o cabeçalho e o crc
     length_total = len(binary_data) + len(version) + 36
     print(length_total)
 
+    header_data = build_header(header)
+
     # concatena o conteúdo dos arquivos
-    content = header + bytes(version_header, encoding='utf-8') + binary_data
+    content = header_data + version_header + binary_data
 
     # calcula o crc
     crc = calculate_crc16(content)
