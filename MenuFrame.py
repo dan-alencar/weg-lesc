@@ -55,16 +55,17 @@ class MenuFrame(ctk.CTkFrame):
                     new_frame.length.configure(state=ctk.NORMAL)
                     new_frame.file.configure(state=ctk.NORMAL)
                     new_frame.length.insert('1',  frame.get('length'))
+                    new_frame.filename = frame.get('filepath')
                     new_frame.file.insert('1', frame.get('filepath'))
                     new_frame.version_h.insert('1',  frame.get('version_h'))
                     new_frame.version_l.insert('1', frame.get('version_l'))
-                    app_option = frame.get('app')
-                    if app_option != 'Selecione uma aplicação':
-                        new_frame.micro_fam.set(app_option)
-                        new_frame.app_callback(app_option)
+                    micro_option = frame.get('micro')
+                    if micro_option != 'Selecione uma aplicação':
+                        new_frame.micro_fam.set(micro_option)
+                        new_frame.micro_callback(micro_option)
                     else:
                         new_frame.micro_fam.set('Selecione uma aplicação')
-                        new_frame.app_var = -1
+                        new_frame.micro_var = -1
                     if frame.get('length')!= '':
                         new_frame.binary_length = int(frame.get('length'))
                     new_frame.length.configure(state=ctk.DISABLED)
@@ -134,7 +135,7 @@ class MenuFrame(ctk.CTkFrame):
             if frame.checkbox.get() == 1:
                 if (isinstance(frame, FileSelectionFrame)):
                     ET.SubElement(codeframes, 'codeframe', length=frame.length.get(
-                    ), filepath=frame.file.get(), version_h=frame.version_h.get(), version_l=frame.version_l.get(), app=frame.micro_fam.get())
+                    ), filepath=frame.file.get(), version_h=frame.version_h.get(), version_l=frame.version_l.get(), micro=frame.micro_fam.get())
         
         for frame in controllerframe_list.controllerframes:
             if frame.checkbox.get() == 1:

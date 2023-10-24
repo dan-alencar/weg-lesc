@@ -75,9 +75,12 @@ class App(ctk.CTk):
                 interface = controller_frame.interface_var
                 comm_address = int(controller_frame.comm_address.get())
                 code_id = int(controller_frame.code_id.get())
-                version.extend(build_version_header(file_length, version_h, version_l, offset, interface, comm_address, code_id))
+                version.extend(build_version_header(version_h, version_l, offset, file_length, interface, comm_address, code_id))
+        
+        print("Version: ", version)
         
         for file_path in mot_list:
+            print(file_path)
             holder = mot_to_binary(file_path) #mudar nome da variável depois
             total_l += len(holder)
             binary_data.extend(holder)

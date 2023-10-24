@@ -83,4 +83,4 @@ class ControllerSelectionFrame(ctk.CTkFrame):
     #debugging da opção selecionada    
     def interface_callback(self, choice):
         self.interface_var = interface_enum[choice]
-        print(self.interface_var)
+        print("Interface: ", self.interface_var)

@@ -47,7 +47,7 @@ def build_version_header(version_H, version_L, offset_adds, lenght, interface, c
 
 # percorre uma linha de um aquivo .mot e separa as informações em sua estrutura
 def parse_srec_line(line, firmware):
-    if firmware == 'rl':
+    if firmware == 2:
         record_type = line[0:2]
         data_length = int(line[2:4], 16)
         address = int(line[4:8], 16)
@@ -62,7 +62,7 @@ def parse_srec_line(line, firmware):
             "checksum": checksum
         }
 
-    if firmware == 'rx':
+    if firmware == 1:
         record_type = line[0:2]
         data_length = int(line[2:4], 16)
         address = int(line[4:12], 16)
@@ -96,7 +96,7 @@ def mot_to_binary(file_path, firmware):
     previous_end_address = 0  # guarda o último endereço preenchido na iteração anterior
     lines = 0 # guarda a quantidade de linhas para determinar os endereços de inicio
 
-    if firmware == 'rl':
+    if firmware == 2:
         with open(file_path, 'rb') as mot:
             for line in mot:
                 line = line.strip()
@@ -143,7 +143,7 @@ def mot_to_binary(file_path, firmware):
         code1 = mul64(code1)
         code2 = mul64(code2)
 
-    if firmware == 'rx':
+    if firmware == 1:
         with open(file_path, 'rb') as mot:
             for line in mot:
                 line = line.strip()
@@ -186,11 +186,11 @@ def mot_to_binary(file_path, firmware):
                     previous_end_address = end_address
                     lines += 1 # incrementa o número de linhas
 
-    # escrevendo o arquivo binário
-        code1_size = len(bytearray.fromhex(code1))
-        code2_size = len(bytearray.fromhex(code2))
-        binary_data = bytearray.fromhex(code1 + code2)
-        return binary_data
+# escrevendo o arquivo binário
+    code1_size = len(bytearray.fromhex(code1))
+    code2_size = len(bytearray.fromhex(code2))
+    binary_data = bytearray.fromhex(code1 + code2)
+    return binary_data
 
 # gerador de binário
 
