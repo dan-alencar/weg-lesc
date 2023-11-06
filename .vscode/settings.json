@@ -1,6 +1,7 @@
 {
-    "[python]": {
-        "editor.defaultFormatter": "ms-python.autopep8"
+    "code-runner.executorMap": {
+        "python": "venv\\Scripts\\python.exe"
     },
-    "python.formatting.provider": "none"
+    "code-runner.runInTerminal": true,
 }
+
