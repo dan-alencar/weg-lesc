@@ -31,37 +31,51 @@ def concat_files(destination_path, header, *paths):
 
 
 # Monta o cabeçalho do arquivo.
-def build_header(header_ver, header_valid, prod_id, prod_version, length):
+def build_header(header):
     header_format = 'BB16s10sI'
     header_data = struct.pack(
-        header_format, header_ver, header_valid, bytes(prod_id, 'utf-8'), bytes(prod_version, 'utf-8'), length)
+        header_format, header['header_ver'], header['header_valid'], bytes(header['prod_id'], 'utf-8'), bytes(header['prod_ver'], 'utf-8'), header['length'])
     return header_data
 
 
-# Monta o versionamento do arquivo.
-def build_version(binary, version_h, version_l, offset_adds, interface, comm_address, code_id):
+def build_version_header(version_H, version_L, offset_adds, lenght, interface, comm_address, code_id):
     header_format = 'HHIIBBB'
-    length = len(binary)
-    version_data = struct.pack(
-        header_format, version_h, version_l, offset_adds, length, interface, comm_address, code_id)
-    return version_data
+    version_header_data = struct.pack(
+        header_format, version_H, version_L, offset_adds, lenght, interface, comm_address, code_id)
+    return version_header_data
 
 
 # percorre uma linha de um aquivo .mot e separa as informações em sua estrutura
-def parse_srec_line(line):
-    record_type = line[0:2]
-    data_length = int(line[2:4], 16)
-    address = int(line[4:8], 16)
-    data = line[8:-2].decode('utf-8')
-    checksum = line[-2:]
+def parse_srec_line(line, firmware):
+    if firmware == 2:
+        record_type = line[0:2]
+        data_length = int(line[2:4], 16)
+        address = int(line[4:8], 16)
+        data = line[8:-2].decode('utf-8')
+        checksum = line[-2:]
 
-    return {
-        "record_type": record_type,
-        "data_length": data_length,
-        "address": address,
-        "data": data,
-        "checksum": checksum
-    }
+        return {
+            "record_type": record_type,
+            "data_length": data_length,
+            "address": address,
+            "data": data,
+            "checksum": checksum
+        }
+
+    if firmware == 1:
+        record_type = line[0:2]
+        data_length = int(line[2:4], 16)
+        address = int(line[4:12], 16)
+        data = line[12:-2].decode('utf-8')
+        checksum = line[-2:]
+
+        return {
+            "record_type": record_type,
+            "data_length": data_length,
+            "address": address,
+            "data": data,
+            "checksum": checksum
+        }
 
 
 # completa a string de dados quando o tamanho não é multiplo de 64
@@ -74,53 +88,103 @@ def mul64(data):
 
 
 # transforma um arquivo .mot em binário
-def mot_to_binary(file_path):
+def mot_to_binary(file_path, firmware):
+
     code1 = ''  # string que contém a primera parte do código
     code2 = ''  # string que contém a segunda parte do código
     end_address = 0  # guarda o último endereço preenchido
     previous_end_address = 0  # guarda o último endereço preenchido na iteração anterior
+    lines = 0  # guarda a quantidade de linhas para determinar os endereços de inicio
 
-    
-    with open(file_path, 'rb') as mot:
-        for line in mot:
-            line = line.strip()
-            record = parse_srec_line(line)
+    if firmware == 2:
+        with open(file_path, 'rb') as mot:
+            for line in mot:
+                line = line.strip()
+                record = parse_srec_line(line, firmware)
 
-            # endereço inicial do dado
-            init_address = record['address']
-            # endereço final do dado
-            end_address = record['address'] + record['data_length'] - 3
+                # testa se a linha armazena dados
+                if record['record_type'] != b'S1':
+                    pass
 
-            # verifica se a linha pertence à primeira parte
-            if record['record_type'] == b'S1' and record['address'] < int(0xFFF):
+                else:
+                    # endereço inicial do dado
+                    init_address = record['address']
+                    # endereço final do dado
+                    end_address = record['address'] + record['data_length'] - 3
 
-                # preenche bytes vazios quando o endereço do início da linha é maior que o endereço do fim da linha anterior
-                if previous_end_address < init_address:
-                    code1 += (init_address-previous_end_address)*'FF'
+                    # verifica se a linha pertence à primeira parte
+                    if record['address'] < int(0xFFF):
 
-                # junta o dado à primeira string
-                code1 += record["data"]
+                        # preenche bytes vazios quando o endereço do início da linha é maior que o endereço do fim da linha anterior
+                        if previous_end_address < init_address:
+                            code1 += (init_address-previous_end_address)*'FF'
 
-            # verifica se a linha pertence à segunda parte
-            elif record['record_type'] == b'S1' and record['address'] >= int(0x3000):
+                        # junta o dado à primeira string
+                        code1 += record["data"]
 
-                # se a linha for a primeira da segunda parte, altera o valor do endereço final da linha anterior
-                if record['address'] == int(0x3000):
-                    previous_end_address = 0x3000
+                    # verifica se a linha pertence à segunda parte
+                    elif record['address'] >= int(0x3000):
 
-                # preenche bytes vazios quando o endereço do início da linha é maior que o endereço do fim da linha anterior
-                if previous_end_address < init_address:
-                    code2 += (init_address-previous_end_address)*'FF'
+                        # se a linha for a primeira da segunda parte, altera o valor do endereço final da linha anterior
+                        if record['address'] == int(0x3000):
+                            previous_end_address = 0x3000
 
-                # junta o dado à segunda string
-                code2 += record["data"]
+                        # preenche bytes vazios quando o endereço do início da linha é maior que o endereço do fim da linha anterior
+                        if previous_end_address < init_address:
+                            code2 += (init_address-previous_end_address)*'FF'
 
-            # atualiza o endereço final anterior
-            previous_end_address = end_address
+                        # junta o dado à segunda string
+                        code2 += record["data"]
 
-    # completando os códigos para que o tamanho seja múltiplo de 64
-    code1 = mul64(code1)
-    code2 = mul64(code2)
+                    # atualiza o endereço final anterior
+                    previous_end_address = end_address
+
+        # completando os códigos para que o tamanho seja múltiplo de 64
+        code1 = mul64(code1)
+        code2 = mul64(code2)
+
+    if firmware == 1:
+        with open(file_path, 'rb') as mot:
+            for line in mot:
+                line = line.strip()
+                record = parse_srec_line(line, firmware)
+
+                # testa se a linha armazena dados
+                if record['record_type'] != b'S3':
+                    pass
+
+                else:
+                    # endereço inicial do dado
+                    init_address = record['address']
+                    # endereço final do dado
+                    end_address = record['address'] + record['data_length'] - 5
+
+                    if lines == 0:
+                        previous_end_address = record['address']
+
+                    # verifica se a linha pertence à primeira parte
+                    if record['address'] < int(0xFFFFFEE4):
+
+                        # preenche bytes vazios quando o endereço do início da linha é maior que o endereço do fim da linha anterior
+                        if previous_end_address < init_address:
+                            code1 += (init_address-previous_end_address)*'FF'
+
+                        # junta o dado à primeira string
+                        code1 += record["data"]
+
+                    # verifica se a linha pertence à segunda parte
+                    elif record['address'] >= int(0xFFFFFEE4):
+
+                        # se a linha for a primeira da segunda parte, altera o valor do endereço final da linha anterior
+                        if record['address'] == int(0xFFFFFEE4):
+                            previous_end_address = 0xFFFFFEE4
+
+                        # junta o dado à segunda string
+                        code2 += record["data"]
+
+                    # atualiza o endereço final anterior
+                    previous_end_address = end_address
+                    lines += 1  # incrementa o número de linhas
 
     # escrevendo o arquivo binário
     code1_size = len(bytearray.fromhex(code1))
@@ -128,32 +192,54 @@ def mot_to_binary(file_path):
     binary_data = bytearray.fromhex(code1 + code2)
     return binary_data
 
-
 # gerador de binário
-def binary_gen(destination_path, file_path, header, version):
 
-    # informações do código
-    binary_data = mot_to_binary(file_path)
+
+def binary_gen(destination_path, header, version_header, binary_data):
 
     # calcula o tamanho total do arquivo com o cabeçalho e o crc
     length_total = len(binary_data) + len(version) + 36
     print(length_total)
 
-    # cabeçalho
-    header_data = build_header(
-        header['header_ver'], header['header_valid'], header['prod_id'], header['prod_ver'], length_total)
+    header_data = build_header(header)
 
     # concatena o conteúdo dos arquivos
-    content = header_data + version + binary_data
+    content = header_data + version_header + binary_data
 
     # calcula o crc
-    crc = calculate_crc16(header_data + version + binary_data)
+    crc = calculate_crc16(content)
     crc = hex(crc)+'0000'  # adiciona 2 bytes
     crc = bytearray.fromhex(crc[2:])  # transforma em bytearray
 
     # escreve o conteúdo no arquivo binário de destino
     with open(destination_path, 'wb') as destination:
         destination.write(content+crc)
+
+
+# def binary_gen(destination_path, file_path, header, version_header):
+
+#     # informações do código
+#     binary_data = mot_to_binary(file_path)
+
+#     # calcula o tamanho total do arquivo com o cabeçalho e o crc
+#     length_total = len(binary_data) + len(version) + 36
+#     print(length_total)
+
+#     # cabeçalho
+#     header_data = build_header(
+#         header['header_ver'], header['header_valid'], header['prod_id'], header['prod_ver'], length_total)
+
+#     # concatena o conteúdo dos arquivos
+#     content = header_data + bytes(version_header, encoding='utf-8') + binary_data
+
+#     # calcula o crc
+#     crc = calculate_crc16(content)
+#     crc = hex(crc)+'0000'  # adiciona 2 bytes
+#     crc = bytearray.fromhex(crc[2:])  # transforma em bytearray
+
+#     # escreve o conteúdo no arquivo binário de destino
+#     with open(destination_path, 'wb') as destination:
+#         destination.write(content+crc)
 
 
 # testando
@@ -166,7 +252,7 @@ header = {
 }
 
 version = {
-    "version_h": 0x0002,
+    "version_h": 0x0001,
     "version_l": 0x0002,
     "offset_adds": 0x00000045,
     "interface": 2,
@@ -178,5 +264,13 @@ version = {
 # versionamento = r'Arquivos WPS\binary\versionamento.bin'
 # file_path = r'Arquivos WPS\rl_application.mot'
 
+# h_versionamento = build_version_header(version['version_h'], version['version_l'],
+#                                        version['offset_adds'], 76, version['interface'], version['comm_address'], version['code_id'])
+# print(bytes(h_versionamento, encoding='utf-8'))
+
 # srec_records = binary_gen(
-#     destination_path, file_path, header)
+#     destination_path, file_path, header, h_versionamento)
+
+# with open(destination_path, 'wb') as destination:
+#     destination.write(mot_to_binary(
+#         r'Arquivos WPS\Binary_RX\rx_application.mot', 'rx'))

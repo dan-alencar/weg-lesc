@@ -1,7 +1,7 @@
 import customtkinter as ctk
 from tkinter import filedialog
 from PIL import Image
-
+from dictionary import interface_enum
 
 class ControllerSelectionFrame(ctk.CTkFrame):
     '''
@@ -21,32 +21,30 @@ class ControllerSelectionFrame(ctk.CTkFrame):
         
         # menu de escolha de firmware
         self.optionmenu_var = ctk.StringVar(value="Selecione uma opção")
-        self.optionmenu = ctk.CTkOptionMenu(self,state=ctk.DISABLED, values=["option 1 ", "option 2"],
-                                         command=self.optionmenu_callback,
-                                         variable=self.optionmenu_var)
+        self.optionmenu = ctk.CTkOptionMenu(self,state=ctk.DISABLED, height=35, width=70, variable=self.optionmenu_var)
         self.optionmenu.pack(padx=10, pady=10, side=ctk.LEFT, anchor=ctk.N)
 
-        # primeira entrada de texto (endereço)
-        self.address = ctk.CTkEntry(
-            self, state=ctk.DISABLED, height=35, width=70)
-        self.address.pack(expand=True, padx=10, pady=10,
-                          side=ctk.LEFT, anchor=ctk.N)
-
-        # campo de texto que exibe o path do arquivo selecionado
-        self.file = ctk.CTkEntry(self, state=ctk.DISABLED, height=35)
-        self.file.pack(expand=True, padx=10, pady=10,
+        # entrada para o offset address
+        self.offset = ctk.CTkEntry(self, state=ctk.DISABLED, height=35, width=60)
+        self.offset.pack(expand=True, padx=10, pady=10,
                        side=ctk.LEFT, anchor=ctk.N)
-
-        # segunda entrada de texto
-        self.txt1 = ctk.CTkEntry(self, state=ctk.DISABLED, height=35, width=60)
-        self.txt1.pack(expand=True, padx=10, pady=10,
+        
+        # entrada para o communication address
+        self.comm_address = ctk.CTkEntry(self, state=ctk.DISABLED, height=35, width=60)
+        self.comm_address.pack(expand=True, padx=10, pady=10,
                        side=ctk.LEFT, anchor=ctk.N)
-
-        # terceira entrada de texto
-        self.txt2 = ctk.CTkEntry(self, state=ctk.DISABLED, height=35, width=60)
-        self.txt2.pack(expand=True, padx=10, pady=10,
+        
+        # entrada para o code_id
+        self.code_id = ctk.CTkEntry(self, state=ctk.DISABLED, height=35, width=60)
+        self.code_id.pack(expand=True, padx=10, pady=10,
                        side=ctk.LEFT, anchor=ctk.N)
-
+        
+        # entrada para a interface
+        self.interface_var = ctk.StringVar(value="Selecione uma interface")
+        self.interface = ctk.CTkOptionMenu(self,state=ctk.DISABLED, height=35, width=70, values=["I2C", "CAN", "Serial"], command=self.interface_callback, variable=self.interface_var)
+        self.interface.pack(expand=True, padx=10, pady=10,
+                       side=ctk.LEFT, anchor=ctk.N)
+        
         # botão para apagar o frame
         img = ctk.CTkImage(Image.open('img\excluir.png'), size=(20, 20))
         self.bin = ctk.CTkButton(
@@ -61,20 +59,18 @@ class ControllerSelectionFrame(ctk.CTkFrame):
 
         # ativa os widgets quando a checkbox é marcada e desativa quando desmarcada
         if (self.checkbox.get()==1):
-            self.address.configure(state=ctk.NORMAL)
-            self.file.configure(state=ctk.NORMAL)
-            self.txt1.configure(state=ctk.NORMAL)
-            self.txt2.configure(state=ctk.NORMAL)
-            self.address.configure(placeholder_text="Endereço")
+            self.offset.configure(state=ctk.NORMAL)
+            self.interface.configure(state=ctk.NORMAL)
+            self.comm_address.configure(state=ctk.NORMAL)
+            self.code_id.configure(state=ctk.NORMAL)
             self.optionmenu.configure(state=ctk.NORMAL)
             self.repository.updateFrames()
         else:
-            self.address.configure(placeholder_text="")
-            self.address.configure(state=ctk.DISABLED)
             self.optionmenu.configure(state=ctk.DISABLED)
-            self.file.configure(state=ctk.DISABLED)
-            self.txt1.configure(state=ctk.DISABLED)
-            self.txt2.configure(state=ctk.DISABLED)
+            self.offset.configure(state=ctk.DISABLED)
+            self.interface.configure(state=ctk.DISABLED)
+            self.comm_address.configure(state=ctk.DISABLED)
+            self.code_id.configure(state=ctk.DISABLED)
 
 
     def delFrame(self, repository):
@@ -84,6 +80,7 @@ class ControllerSelectionFrame(ctk.CTkFrame):
         self.pack_forget()
         repository.removeFrame(self)
     
-    #debugging da opção selecionada
-    def optionmenu_callback(self, choice):
-        print("optionmenu dropdown clicked:", choice)
+    #debugging da opção selecionada    
+    def interface_callback(self, choice):
+        self.interface_var = interface_enum[choice]
+        print("Interface: ", self.interface_var)
