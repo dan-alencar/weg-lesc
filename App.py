@@ -114,6 +114,7 @@ class App(ctk.CTk):
             initialdir="/", title="Salvar como", filetypes=data, defaultextension=data)
 
         binary_gen(file, header, version, binary_data)
+        messagebox.showinfo(title="Concluído", message="O arquivo foi gerado com sucesso!")
         
     def fieldCheck(self, frame, type):
         if type == 'firmware':
