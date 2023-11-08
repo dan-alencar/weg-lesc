@@ -198,7 +198,7 @@ def mot_to_binary(file_path, firmware):
 def binary_gen(destination_path, header, version_header, binary_data):
 
     # calcula o tamanho total do arquivo com o cabeçalho e o crc
-    length_total = len(binary_data) + len(version) + 36
+    length_total = len(binary_data) + len(version_header) + 36
     print(length_total)
 
     header_data = build_header(header)
