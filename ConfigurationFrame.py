@@ -20,25 +20,25 @@ class ConfigurationFrame(ctk.CTkFrame):
         self.headver_label = ctk.CTkLabel(self, height=50, width=100, text="Cabeçalho:")
         self.headver_label.grid(column = 1, row = 0, sticky = tk.S, padx = 5, pady = 5)
         
-        self.header_version = ctk.CTkEntry(self)
+        self.header_version = ctk.CTkEntry(self, placeholder_text="Versão do cabeçalho", width=160)
         self.header_version.grid(column = 1, row = 1, sticky = tk.N, padx = 5, pady = 5)
         
         self.headval_label = ctk.CTkLabel(self, height=50, width=100, text="Validação:")
         self.headval_label.grid(column = 1, row = 2, sticky = tk.S, padx = 5, pady = 5)
         
-        self.header_valid = ctk.CTkEntry(self)
+        self.header_valid = ctk.CTkEntry(self, placeholder_text="Validação do cabeçalho", width=160)
         self.header_valid.grid(column = 1, row = 3, sticky = tk.N, padx = 5, pady = 5)
         
         self.prodID_label = ctk.CTkLabel(self, height=50, width=100, text="Produto:")
         self.prodID_label.grid(column = 1, row = 4, sticky = tk.S, padx = 5, pady = 5)
         
-        self.prod_id = ctk.CTkEntry(self)
+        self.prod_id = ctk.CTkEntry(self, placeholder_text="ID do produto", width=160)
         self.prod_id.grid(column = 1, row = 5, sticky = tk.N, padx = 5, pady = 5)
         
         self.prodVer_label = ctk.CTkLabel(self, height=50, width=100, text="Versão:")
         self.prodVer_label.grid(column = 1, row = 6, sticky = tk.S, padx = 5, pady = 5)
         
-        self.prod_ver = ctk.CTkEntry(self)
+        self.prod_ver = ctk.CTkEntry(self, placeholder_text="Versão do produto", width=160)
         self.prod_ver.grid(column = 1, row = 7, sticky = tk.N, padx = 5, pady = 5)
         
     def clearFields(self):

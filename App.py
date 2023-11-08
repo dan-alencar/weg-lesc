@@ -6,6 +6,7 @@ from ControllerSelectionFrameList import ControllerSelectionFrameList
 from MenuFrame import MenuFrame
 from PIL import Image
 from tkinter import filedialog
+from tkinter import messagebox
 from dictionary import *
 
 
@@ -52,23 +53,31 @@ class App(ctk.CTk):
         '''
         Função chamada pelo botão gerar binário
         '''
-        data = [('Arquivo .bin', '*.bin')]
-        file = filedialog.asksaveasfilename(
-            initialdir="/", title="Salvar como", filetypes=data, defaultextension=data)
-
         version = bytearray()
         binary_data = bytearray()
         mot_list = []
         total_l = 0
-
+        if self.fieldCheck(self.tab_view.configframe, 'header') == -1:
+            messagebox.showerror("Error", "Preencha todos os campos do cabeçalho")
+            raise ValueError
         for controller_frame in self.controllerframe_list.controllerframes:
             option_selected = controller_frame.optionmenu.get()
-            if option_selected[:2] == 'FW' and controller_frame.checkbox.get() == 1:
+            # if option_selected[:2] == 'FW' and controller_frame.checkbox.get() == 1:
+            if controller_frame.checkbox.get() == 1:
+                if self.fieldCheck(controller_frame,'controller') == -1:
+                    messagebox.showerror("Error", "Configure todos os campos dos controladores selecionados")
+                    raise ValueError
                 firmware_frame = self.codeframe_list.searchFrameFile(
                     option_selected)
+                if self.fieldCheck(firmware_frame,'firmware') == -1:
+                    messagebox.showerror("Error", "Configure todos os campos dos firmwares selecionados")
+                    raise ValueError
+                elif self.fieldCheck(firmware_frame,'firmware') == -2:
+                    messagebox.showerror("Error", "Arquivo incompatível com microcontrolador selecionado")
+                    raise ValueError
                 firmware_file = firmware_frame.file.get()
                 micro_fam = firmware_frame.micro_var
-                if firmware_file not in mot_list:
+                if (firmware_file, micro_fam) not in mot_list:
                     # agora está passando uma tuple como parametro para a função do .mot
                     mot_list.append((firmware_file, micro_fam))
                 file_length = firmware_frame.binary_length
@@ -88,7 +97,7 @@ class App(ctk.CTk):
             print(file_path)
             # mudar nome da variável depois
             holder = mot_to_binary(*file_path)
-            total_l += len(holder)
+            # total_l += len(holder)
             binary_data.extend(holder)
 
         header = {
@@ -100,7 +109,33 @@ class App(ctk.CTk):
             "length": len(binary_data) + 32 + 15 + 4
         }
 
+        data = [('Arquivo .bin', '*.bin')]
+        file = filedialog.asksaveasfilename(
+            initialdir="/", title="Salvar como", filetypes=data, defaultextension=data)
+
         binary_gen(file, header, version, binary_data)
+        
+    def fieldCheck(self, frame, type):
+        if type == 'firmware':
+            if '' in {frame.version_h.get(), frame.version_l.get(), frame.length.get(), frame.file.get()} or frame.micro_fam.get() == "Selecione uma aplicação":
+                return -1
+            elif frame.length.get() == '0':
+                return -2
+            else:
+                return 0
+        
+        elif type == 'controller':
+            if '' in {frame.offset.get(), frame.comm_address.get(), frame.code_id.get()} or frame.interface.get() == "Selecione uma interface" or frame.optionmenu.get() == "Selecione uma opção":
+                return -1
+            else:
+                return 0
+        
+        elif type == 'header':
+            if '' in {frame.header_version.get(), frame.header_valid.get(), frame.prod_id.get(), frame.prod_ver.get()}:
+                return -1
+            else:
+                return 0
+            
 
 
 app = App()

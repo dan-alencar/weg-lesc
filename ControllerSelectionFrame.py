@@ -21,27 +21,27 @@ class ControllerSelectionFrame(ctk.CTkFrame):
         
         # menu de escolha de firmware
         self.optionmenu_var = ctk.StringVar(value="Selecione uma opção")
-        self.optionmenu = ctk.CTkOptionMenu(self,state=ctk.DISABLED, height=35, width=70, variable=self.optionmenu_var)
+        self.optionmenu = ctk.CTkOptionMenu(self,state=ctk.DISABLED, dynamic_resizing=False, height=35, width=180, variable=self.optionmenu_var)
         self.optionmenu.pack(padx=10, pady=10, side=ctk.LEFT, anchor=ctk.N)
 
         # entrada para o offset address
-        self.offset = ctk.CTkEntry(self, state=ctk.DISABLED, height=35, width=60)
+        self.offset = ctk.CTkEntry(self, placeholder_text="Offset", height=35, width=80)
         self.offset.pack(expand=True, padx=10, pady=10,
                        side=ctk.LEFT, anchor=ctk.N)
         
         # entrada para o communication address
-        self.comm_address = ctk.CTkEntry(self, state=ctk.DISABLED, height=35, width=60)
+        self.comm_address = ctk.CTkEntry(self, placeholder_text="Endereço", height=35, width=80)
         self.comm_address.pack(expand=True, padx=10, pady=10,
                        side=ctk.LEFT, anchor=ctk.N)
         
         # entrada para o code_id
-        self.code_id = ctk.CTkEntry(self, state=ctk.DISABLED, height=35, width=60)
+        self.code_id = ctk.CTkEntry(self, placeholder_text="Code ID", height=35, width=80)
         self.code_id.pack(expand=True, padx=10, pady=10,
                        side=ctk.LEFT, anchor=ctk.N)
         
         # entrada para a interface
         self.interface_var = ctk.StringVar(value="Selecione uma interface")
-        self.interface = ctk.CTkOptionMenu(self,state=ctk.DISABLED, height=35, width=70, values=["I2C", "CAN", "Serial"], command=self.interface_callback, variable=self.interface_var)
+        self.interface = ctk.CTkOptionMenu(self,state=ctk.DISABLED, dynamic_resizing=False, height=35, width=200, values=["I2C", "CAN", "Serial"], command=self.interface_callback, variable=self.interface_var)
         self.interface.pack(expand=True, padx=10, pady=10,
                        side=ctk.LEFT, anchor=ctk.N)
         
@@ -49,7 +49,11 @@ class ControllerSelectionFrame(ctk.CTkFrame):
         img = ctk.CTkImage(Image.open('img\excluir.png'), size=(20, 20))
         self.bin = ctk.CTkButton(
             self, text='', image=img, width=35, height=35, command=lambda: self.delFrame(self.repository))
-        self.bin.pack(pady=10, padx=10, side=ctk.LEFT, anchor=ctk.N)
+        self.bin.pack(pady=10, padx=10, side=ctk.RIGHT, anchor=ctk.E)
+        
+        self.offset.configure(state=ctk.DISABLED)
+        self.comm_address.configure(state=ctk.DISABLED)
+        self.code_id.configure(state=ctk.DISABLED)
 
     def toggleCheckbox(self):
         '''

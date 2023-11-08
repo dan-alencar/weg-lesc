@@ -20,6 +20,7 @@ class FileSelectionFrame(ctk.CTkFrame):
         self.index = index
         self.name = "FW " + str(self.index + 1)
         self.filename = ''
+        self.binary_length = 0
         
         #label para identificar o código na tela de seleção
         self.label = ctk.CTkLabel(self, text = self.name)
@@ -31,33 +32,32 @@ class FileSelectionFrame(ctk.CTkFrame):
         self.checkbox.pack(padx=10, pady=10, side=ctk.LEFT, anchor=ctk.N)
 
         # primeira entrada de texto (endereço)
-        self.length = ctk.CTkEntry(
-            self, state=ctk.DISABLED, height=35, width=70)
+        self.length = ctk.CTkEntry(self, placeholder_text="Tamanho", height=35, width=75)
         self.length.pack(expand=True, padx=10, pady=10,
                           side=ctk.LEFT, anchor=ctk.N)
 
         # botão para abrir a seleção de arquivos
         self.btn = ctk.CTkButton(
-            self, text="Escolher Arquivo", state=ctk.DISABLED, height=35, font=('', 15, 'bold'), command=self.chooseFile)
+            self, state=ctk.DISABLED, text="Escolher Arquivo", height=35, font=('', 15, 'bold'), command=self.chooseFile)
         self.btn.pack(pady=10, padx=10, side=ctk.LEFT, anchor=ctk.N)
 
         # campo de texto que exibe o path do arquivo selecionado
-        self.file = ctk.CTkEntry(self, state=ctk.DISABLED, height=35)
+        self.file = ctk.CTkEntry(self, placeholder_text="Local do arquivo", height=35, width=160)
         self.file.pack(expand=True, padx=10, pady=10,
                        side=ctk.LEFT, anchor=ctk.N)
 
         # entrada para o version_high
-        self.version_h = ctk.CTkEntry(self, state=ctk.DISABLED, height=35, width=70)
+        self.version_h = ctk.CTkEntry(self, placeholder_text="Version_h", height=35, width=75)
         self.version_h.pack(expand=True, padx=10, pady=10,
                           side=ctk.LEFT, anchor=ctk.N)
 
         # entrada para o version_lower
-        self.version_l = ctk.CTkEntry(self, state=ctk.DISABLED, height=35, width=70)
-        self.version_l.pack(expand=True, padx=10, pady=10,
+        self.version_l = ctk.CTkEntry(self, placeholder_text="Version_l", height=35, width=75)
+        self.version_l.pack(expand=True,  padx=10, pady=10,
                        side=ctk.LEFT, anchor=ctk.N)
         
         self.micro_var = ctk.StringVar(value="Selecione uma aplicação")
-        self.micro_fam = ctk.CTkOptionMenu(self,state=ctk.DISABLED, height=35, width=70, values=["RX", "RL"], command=self.micro_callback, variable=self.micro_var)
+        self.micro_fam = ctk.CTkOptionMenu(self, state=ctk.DISABLED, dynamic_resizing=False, height=35, width=200, values=["RX", "RL"], command=self.micro_callback, variable=self.micro_var)
         self.micro_fam.pack(expand=True, padx=10, pady=10,
                        side=ctk.LEFT, anchor=ctk.N)
 
@@ -65,7 +65,14 @@ class FileSelectionFrame(ctk.CTkFrame):
         img = ctk.CTkImage(Image.open('img\excluir.png'), size=(20, 20))
         self.bin = ctk.CTkButton(
             self, text='', image=img, width=35, height=35, command=lambda: self.delFrame(self.repository))
-        self.bin.pack(pady=10, padx=10, side=ctk.LEFT, anchor=ctk.N)
+        self.bin.pack(pady=10, padx=10, side=ctk.RIGHT, anchor=ctk.E)
+        
+        #Desativação dos campos que foram alterados(placeholders)
+        self.length.configure(state=ctk.DISABLED)
+        self.file.configure(state=ctk.DISABLED)
+        self.version_h.configure(state=ctk.DISABLED)
+        self.version_l.configure(state=ctk.DISABLED)
+        self.micro_fam.configure(state=ctk.DISABLED)
 
     def toggleCheckbox(self):
         '''
@@ -96,15 +103,19 @@ class FileSelectionFrame(ctk.CTkFrame):
         self.filename = filedialog.askopenfilename(title="Selecione o arquivo do seu firmware", filetypes=[
             ("Arquivos .mot", "*.mot")])
         print(self.filename)
+        if self.filename=='':
+            self.length.configure(state=ctk.DISABLED)
+            self.file.configure(state=ctk.DISABLED)
+            return
         self.file.delete(0, tk.END)
         self.length.delete(0, tk.END)
         if self.micro_fam.get() != "Selecione uma aplicação":
             self.binary_length = len(mot_to_binary(self.filename, self.micro_var))
-            self.length.insert(0, self.binary_length)
+            self.length.insert(0, self.binary_length)            
         self.file.insert(0, self.filename)
         self.length.configure(state=ctk.DISABLED)
         self.file.configure(state=ctk.DISABLED)
-        # print(self.binary_length)
+        print(self.binary_length)
         
 
     def delFrame(self, repository):
@@ -122,9 +133,10 @@ class FileSelectionFrame(ctk.CTkFrame):
         
     def micro_callback(self, choice):
         self.micro_var = micro_enum[choice]
-        self.length.configure(state=ctk.NORMAL)
-        self.length.delete(0, tk.END)
-        self.binary_length = len(mot_to_binary(self.filename, self.micro_var))
-        self.length.insert(0, self.binary_length)
-        self.length.configure(state=ctk.DISABLED)
-        print("Microcontrolador: ", self.micro_var)
+        if self.filename != '':
+            self.length.configure(state=ctk.NORMAL)
+            self.length.delete(0, tk.END)
+            self.binary_length = len(mot_to_binary(self.filename, self.micro_var))
+            self.length.insert(0, self.binary_length)
+            self.length.configure(state=ctk.DISABLED)
+            print("Microcontrolador: ", self.micro_var)
