@@ -84,7 +84,7 @@ class App(ctk.CTk):
                 if (firmware_file, firmware_frame.micro_var, init_add, final_add) not in mot_list:
                     # agora está passando uma tuple como parametro para a função do .mot
                     mot_list.append((firmware_file, firmware_frame.micro_var, init_add, final_add))
-                file_length = firmware_frame.binary_length
+                file_length = len(mot_to_binary(firmware_file, firmware_frame.micro_var, init_add, final_add))
                 version_h = int(firmware_frame.version_h.get())
                 version_l = int(firmware_frame.version_l.get())
                 offset = int(controller_frame.offset.get())
@@ -122,13 +122,13 @@ class App(ctk.CTk):
         
     def fieldCheck(self, frame, type):
         if type == 'firmware':
-            if '' in {frame.version_h.get(), frame.version_l.get(), frame.length.get(), frame.file.get()} or frame.micro_fam.get() == "Selecione uma aplicação":
+            if '' in {frame.version_h.get(), frame.version_l.get(), frame.file.get()} or frame.micro_fam.get() == "Selecione uma aplicação":
                 return -1
             #cuidado com esse parenteses
             if frame.micro_fam.get() == "RL" and ('' in {frame.init_offset.get(), frame.final_add.get()}):
                 return -1
-            elif frame.length.get() == '0':
-                return -2
+            # elif frame.length.get() == '0':
+            #     return -2
             else:
                 return 0
         

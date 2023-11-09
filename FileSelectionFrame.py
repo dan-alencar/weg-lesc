@@ -32,9 +32,9 @@ class FileSelectionFrame(ctk.CTkFrame):
         self.checkbox.pack(padx=10, pady=10, side=ctk.LEFT, anchor=ctk.N)
 
         # primeira entrada de texto (endereço)
-        self.length = ctk.CTkEntry(self, placeholder_text="Tamanho", height=35, width=75)
-        self.length.pack(expand=True, padx=10, pady=10,
-                          side=ctk.LEFT, anchor=ctk.N)
+        # self.length = ctk.CTkEntry(self, placeholder_text="Tamanho", height=35, width=75)
+        # self.length.pack(expand=True, padx=10, pady=10,
+        #                   side=ctk.LEFT, anchor=ctk.N)
 
         # botão para abrir a seleção de arquivos
         self.btn = ctk.CTkButton(
@@ -78,7 +78,7 @@ class FileSelectionFrame(ctk.CTkFrame):
         self.bin.pack(pady=10, padx=10, side=ctk.RIGHT, anchor=ctk.E)
         
         #Desativação dos campos que foram alterados(placeholders)
-        self.length.configure(state=ctk.DISABLED)
+        # self.length.configure(state=ctk.DISABLED)
         self.file.configure(state=ctk.DISABLED)
         self.version_h.configure(state=ctk.DISABLED)
         self.version_l.configure(state=ctk.DISABLED)
@@ -110,27 +110,27 @@ class FileSelectionFrame(ctk.CTkFrame):
         '''
         Permite a seleção de arquivos .txt e .hex 
         '''
-        self.length.configure(state=ctk.NORMAL)
+        # self.length.configure(state=ctk.NORMAL)
         self.file.configure(state=ctk.NORMAL)
         self.filename = filedialog.askopenfilename(title="Selecione o arquivo do seu firmware", filetypes=[
             ("Arquivos .mot", "*.mot")])
         print(self.filename)
         if self.filename=='':
-            self.length.configure(state=ctk.DISABLED)
+            # self.length.configure(state=ctk.DISABLED)
             self.file.configure(state=ctk.DISABLED)
             return
         self.file.delete(0, tk.END)
-        self.length.delete(0, tk.END)
-        if self.micro_fam.get() == "RX":
-            self.binary_length = len(mot_to_binary(self.filename, self.micro_var, 0, 0))
-            self.length.insert(0, self.binary_length)
-        if self.micro_fam.get() == "RL":
-            self.binary_length = len(mot_to_binary(self.filename, self.micro_var, int(self.init_offset.get(), 16), int(self.final_add.get(), 16)))
-            self.length.insert(0, self.binary_length)
+        # self.length.delete(0, tk.END)
+        # if self.micro_fam.get() == "RX":
+        #     self.binary_length = len(mot_to_binary(self.filename, self.micro_var, 0, 0))
+            # self.length.insert(0, self.binary_length)
+        # if self.micro_fam.get() == "RL":
+        #     self.binary_length = len(mot_to_binary(self.filename, self.micro_var, int(self.init_offset.get(), 16), int(self.final_add.get(), 16)))
+            # self.length.insert(0, self.binary_length)
         self.file.insert(0, self.filename)
-        self.length.configure(state=ctk.DISABLED)
+        # self.length.configure(state=ctk.DISABLED)
         self.file.configure(state=ctk.DISABLED)
-        print(self.binary_length)
+        # print(self.binary_length)
         
 
     def delFrame(self, repository):
@@ -157,15 +157,15 @@ class FileSelectionFrame(ctk.CTkFrame):
             self.final_add.configure(state=ctk.NORMAL)
             
         self.micro_var = micro_enum[choice]
+        print("Microcontrolador: ", choice)
         
-        if self.filename != '':
-            self.length.configure(state=ctk.NORMAL)
-            self.length.delete(0, tk.END)
-            if self.micro_fam.get() == "RX":
-                self.binary_length = len(mot_to_binary(self.filename, self.micro_var, 0, 0))
-            if self.micro_fam.get() == "RL":
-                self.binary_length = len(mot_to_binary(self.filename, self.micro_var, int(self.init_offset.get(), 16), int(self.final_add.get(), 16)))
+        # if self.filename != '':
+            # self.length.configure(state=ctk.NORMAL)
+            # self.length.delete(0, tk.END)
+            # if self.micro_fam.get() == "RX":
+            #     self.binary_length = len(mot_to_binary(self.filename, self.micro_var, 0, 0))
+            # if self.micro_fam.get() == "RL":
+            #     self.binary_length = len(mot_to_binary(self.filename, self.micro_var, int(self.init_offset.get(), 16), int(self.final_add.get(), 16)))
             #self.binary_length = len(mot_to_binary(self.filename, self.micro_var))
-            self.length.insert(0, self.binary_length)
-            self.length.configure(state=ctk.DISABLED)
-            print("Microcontrolador: ", self.micro_var)
+            # self.length.insert(0, self.binary_length)
+            # self.length.configure(state=ctk.DISABLED)
