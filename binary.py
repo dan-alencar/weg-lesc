@@ -145,7 +145,8 @@ def mot_to_binary(file_path, firmware, init_offset2, final_address):
         # completando os códigos para que o tamanho seja múltiplo de 64
         code1 = mul64(code1)
         code2 = mul64(code2)
-
+        binary_data = bytearray.fromhex(code1 + code2)
+        
     if firmware == 1: #rx
         with open(file_path, 'rb') as mot:
             for line in mot:
@@ -188,11 +189,10 @@ def mot_to_binary(file_path, firmware, init_offset2, final_address):
                     # atualiza o endereço final anterior
                     previous_end_address = end_address
                     lines += 1  # incrementa o número de linhas
-
+        binary_data = bytearray.fromhex(code2 + code1)
     # escrevendo o arquivo binário
     code1_size = len(bytearray.fromhex(code1))
     code2_size = len(bytearray.fromhex(code2))
-    binary_data = bytearray.fromhex(code1 + code2)
     return binary_data
 
 # gerador de binário
@@ -236,12 +236,12 @@ version = {
     "code_id": 0x12
 }
 
-# destination_path = r"D:\SlaveCorporate_Application.bin"
-# # versionamento = r'Arquivos WPS\binary\versionamento.bin'
-# file_path = r"D:\SlaveCorporate_Application.mot"
+destination_path = r"D:\MasterCoporate_Application.bin"
+# versionamento = r'Arquivos WPS\binary\versionamento.bin'
+file_path = r"D:\MasterCoporate_Application.mot"
 
-# init_offset2 = 0x3400
-# final_address = 0x7E00
+init_offset2 = 0x3400
+final_address = 0x7E00
 
 # h_versionamento = build_version_header(version['version_h'], version['version_l'],
 #                                        version['offset_adds'], 76, version['interface'], version['comm_address'], version['code_id'])
@@ -250,5 +250,5 @@ version = {
 # srec_records = binary_gen(
 #     destination_path, file_path, header, h_versionamento)
 
-# with open(destination_path, 'wb') as destination:
-#     destination.write(mot_to_binary(file_path, 2, init_offset2, final_address))
+with open(destination_path, 'wb') as destination:
+    destination.write(mot_to_binary(file_path, 1, init_offset2, final_address))
