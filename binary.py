@@ -88,7 +88,7 @@ def mul64(data):
 
 
 # transforma um arquivo .mot em binário
-def mot_to_binary(file_path, firmware):
+def mot_to_binary(file_path, firmware, init_offset2, final_address):
 
     code1 = ''  # string que contém a primera parte do código
     code2 = ''  # string que contém a segunda parte do código
@@ -96,7 +96,7 @@ def mot_to_binary(file_path, firmware):
     previous_end_address = 0  # guarda o último endereço preenchido na iteração anterior
     lines = 0  # guarda a quantidade de linhas para determinar os endereços de inicio
 
-    if firmware == 2:
+    if firmware == 2: #rl
         with open(file_path, 'rb') as mot:
             for line in mot:
                 line = line.strip()
@@ -123,11 +123,11 @@ def mot_to_binary(file_path, firmware):
                         code1 += record["data"]
 
                     # verifica se a linha pertence à segunda parte
-                    elif record['address'] >= int(0x3000):
+                    elif record['address'] >= int(init_offset2) and record['address'] < final_address:
 
                         # se a linha for a primeira da segunda parte, altera o valor do endereço final da linha anterior
-                        if record['address'] == int(0x3000):
-                            previous_end_address = 0x3000
+                        if record['address'] == int(init_offset2):
+                            previous_end_address = init_offset2
 
                         # preenche bytes vazios quando o endereço do início da linha é maior que o endereço do fim da linha anterior
                         if previous_end_address < init_address:
@@ -135,15 +135,19 @@ def mot_to_binary(file_path, firmware):
 
                         # junta o dado à segunda string
                         code2 += record["data"]
-
+                    
+                    elif record['address'] >= int(final_address):
+                        break
+                    
                     # atualiza o endereço final anterior
                     previous_end_address = end_address
 
         # completando os códigos para que o tamanho seja múltiplo de 64
         code1 = mul64(code1)
         code2 = mul64(code2)
-
-    if firmware == 1:
+        binary_data = bytearray.fromhex(code1 + code2)
+        
+    if firmware == 1: #rx
         with open(file_path, 'rb') as mot:
             for line in mot:
                 line = line.strip()
@@ -185,11 +189,10 @@ def mot_to_binary(file_path, firmware):
                     # atualiza o endereço final anterior
                     previous_end_address = end_address
                     lines += 1  # incrementa o número de linhas
-
+        binary_data = bytearray.fromhex(code2 + code1)
     # escrevendo o arquivo binário
     code1_size = len(bytearray.fromhex(code1))
     code2_size = len(bytearray.fromhex(code2))
-    binary_data = bytearray.fromhex(code1 + code2)
     return binary_data
 
 # gerador de binário
@@ -215,33 +218,6 @@ def binary_gen(destination_path, header, version_header, binary_data):
     with open(destination_path, 'wb') as destination:
         destination.write(content+crc)
 
-
-# def binary_gen(destination_path, file_path, header, version_header):
-
-#     # informações do código
-#     binary_data = mot_to_binary(file_path)
-
-#     # calcula o tamanho total do arquivo com o cabeçalho e o crc
-#     length_total = len(binary_data) + len(version) + 36
-#     print(length_total)
-
-#     # cabeçalho
-#     header_data = build_header(
-#         header['header_ver'], header['header_valid'], header['prod_id'], header['prod_ver'], length_total)
-
-#     # concatena o conteúdo dos arquivos
-#     content = header_data + bytes(version_header, encoding='utf-8') + binary_data
-
-#     # calcula o crc
-#     crc = calculate_crc16(content)
-#     crc = hex(crc)+'0000'  # adiciona 2 bytes
-#     crc = bytearray.fromhex(crc[2:])  # transforma em bytearray
-
-#     # escreve o conteúdo no arquivo binário de destino
-#     with open(destination_path, 'wb') as destination:
-#         destination.write(content+crc)
-
-
 # testando
 
 header = {
@@ -260,9 +236,12 @@ version = {
     "code_id": 0x12
 }
 
-# destination_path = r'Arquivos WPS\comparar.bin'
+destination_path = r"D:\MasterCoporate_Application.bin"
 # versionamento = r'Arquivos WPS\binary\versionamento.bin'
-# file_path = r'Arquivos WPS\rl_application.mot'
+file_path = r"D:\MasterCoporate_Application.mot"
+
+init_offset2 = 0x3400
+final_address = 0x7E00
 
 # h_versionamento = build_version_header(version['version_h'], version['version_l'],
 #                                        version['offset_adds'], 76, version['interface'], version['comm_address'], version['code_id'])
@@ -271,6 +250,5 @@ version = {
 # srec_records = binary_gen(
 #     destination_path, file_path, header, h_versionamento)
 
-# with open(destination_path, 'wb') as destination:
-#     destination.write(mot_to_binary(
-#         r'Arquivos WPS\Binary_RX\rx_application.mot', 'rx'))
+with open(destination_path, 'wb') as destination:
+    destination.write(mot_to_binary(file_path, 1, init_offset2, final_address))

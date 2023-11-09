@@ -76,11 +76,15 @@ class App(ctk.CTk):
                     messagebox.showerror("Error", "Arquivo incompatível com microcontrolador selecionado")
                     raise ValueError
                 firmware_file = firmware_frame.file.get()
-                micro_fam = firmware_frame.micro_var
-                if (firmware_file, micro_fam) not in mot_list:
+                if firmware_frame.micro_var == 2:
+                    init_add = int(firmware_frame.init_offset.get(), 16)
+                    final_add = int(firmware_frame.final_add.get(), 16)
+                if firmware_frame.micro_var == 1:
+                    init_add = final_add = 0
+                if (firmware_file, firmware_frame.micro_var, init_add, final_add) not in mot_list:
                     # agora está passando uma tuple como parametro para a função do .mot
-                    mot_list.append((firmware_file, micro_fam))
-                file_length = firmware_frame.binary_length
+                    mot_list.append((firmware_file, firmware_frame.micro_var, init_add, final_add))
+                file_length = len(mot_to_binary(firmware_file, firmware_frame.micro_var, init_add, final_add))
                 version_h = int(firmware_frame.version_h.get())
                 version_l = int(firmware_frame.version_l.get())
                 offset = int(controller_frame.offset.get())
@@ -118,10 +122,13 @@ class App(ctk.CTk):
         
     def fieldCheck(self, frame, type):
         if type == 'firmware':
-            if '' in {frame.version_h.get(), frame.version_l.get(), frame.length.get(), frame.file.get()} or frame.micro_fam.get() == "Selecione uma aplicação":
+            if '' in {frame.version_h.get(), frame.version_l.get(), frame.file.get()} or frame.micro_fam.get() == "Selecione uma aplicação":
                 return -1
-            elif frame.length.get() == '0':
-                return -2
+            #cuidado com esse parenteses
+            if frame.micro_fam.get() == "RL" and ('' in {frame.init_offset.get(), frame.final_add.get()}):
+                return -1
+            # elif frame.length.get() == '0':
+            #     return -2
             else:
                 return 0
         
