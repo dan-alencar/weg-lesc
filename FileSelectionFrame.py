@@ -56,6 +56,16 @@ class FileSelectionFrame(ctk.CTkFrame):
         self.version_l.pack(expand=True,  padx=10, pady=10,
                        side=ctk.LEFT, anchor=ctk.N)
         
+        #entrada para o endereço inicial
+        self.init_offset = ctk.CTkEntry(self, placeholder_text="Endereço inicial", height=35, width=75)
+        self.init_offset.pack(expand=True,  padx=10, pady=10,
+                       side=ctk.LEFT, anchor=ctk.N)
+        
+        #entrada para o endereço final
+        self.final_add = ctk.CTkEntry(self, placeholder_text="Endereço final", height=35, width=75)
+        self.final_add.pack(expand=True,  padx=10, pady=10,
+                       side=ctk.LEFT, anchor=ctk.N)
+        
         self.micro_var = ctk.StringVar(value="Selecione uma aplicação")
         self.micro_fam = ctk.CTkOptionMenu(self, state=ctk.DISABLED, dynamic_resizing=False, height=35, width=200, values=["RX", "RL"], command=self.micro_callback, variable=self.micro_var)
         self.micro_fam.pack(expand=True, padx=10, pady=10,
@@ -73,6 +83,8 @@ class FileSelectionFrame(ctk.CTkFrame):
         self.version_h.configure(state=ctk.DISABLED)
         self.version_l.configure(state=ctk.DISABLED)
         self.micro_fam.configure(state=ctk.DISABLED)
+        self.init_offset.configure(state=ctk.DISABLED)
+        self.final_add.configure(state=ctk.DISABLED)
 
     def toggleCheckbox(self):
         '''
@@ -109,9 +121,12 @@ class FileSelectionFrame(ctk.CTkFrame):
             return
         self.file.delete(0, tk.END)
         self.length.delete(0, tk.END)
-        if self.micro_fam.get() != "Selecione uma aplicação":
-            self.binary_length = len(mot_to_binary(self.filename, self.micro_var))
-            self.length.insert(0, self.binary_length)            
+        if self.micro_fam.get() == "RX":
+            self.binary_length = len(mot_to_binary(self.filename, self.micro_var, 0, 0))
+            self.length.insert(0, self.binary_length)
+        if self.micro_fam.get() == "RL":
+            self.binary_length = len(mot_to_binary(self.filename, self.micro_var, int(self.init_offset.get(), 16), int(self.final_add.get(), 16)))
+            self.length.insert(0, self.binary_length)
         self.file.insert(0, self.filename)
         self.length.configure(state=ctk.DISABLED)
         self.file.configure(state=ctk.DISABLED)
@@ -132,11 +147,25 @@ class FileSelectionFrame(ctk.CTkFrame):
             return False
         
     def micro_callback(self, choice):
+        if choice == "RX":
+            self.init_offset.delete(0,tk.END)
+            self.final_add.delete(0,tk.END)
+            self.init_offset.configure(state=ctk.DISABLED)
+            self.final_add.configure(state=ctk.DISABLED)
+        elif choice == "RL":
+            self.init_offset.configure(state=ctk.NORMAL)
+            self.final_add.configure(state=ctk.NORMAL)
+            
         self.micro_var = micro_enum[choice]
+        
         if self.filename != '':
             self.length.configure(state=ctk.NORMAL)
             self.length.delete(0, tk.END)
-            self.binary_length = len(mot_to_binary(self.filename, self.micro_var))
+            if self.micro_fam.get() == "RX":
+                self.binary_length = len(mot_to_binary(self.filename, self.micro_var, 0, 0))
+            if self.micro_fam.get() == "RL":
+                self.binary_length = len(mot_to_binary(self.filename, self.micro_var, int(self.init_offset.get(), 16), int(self.final_add.get(), 16)))
+            #self.binary_length = len(mot_to_binary(self.filename, self.micro_var))
             self.length.insert(0, self.binary_length)
             self.length.configure(state=ctk.DISABLED)
             print("Microcontrolador: ", self.micro_var)

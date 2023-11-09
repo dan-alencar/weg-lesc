@@ -236,12 +236,12 @@ version = {
     "code_id": 0x12
 }
 
-destination_path = r"D:\SlaveCorporate_Application.bin"
-# versionamento = r'Arquivos WPS\binary\versionamento.bin'
-file_path = r"D:\SlaveCorporate_Application.mot"
+# destination_path = r"D:\SlaveCorporate_Application.bin"
+# # versionamento = r'Arquivos WPS\binary\versionamento.bin'
+# file_path = r"D:\SlaveCorporate_Application.mot"
 
-init_offset2 = 0x3400
-final_address = 0x7E00
+# init_offset2 = 0x3400
+# final_address = 0x7E00
 
 # h_versionamento = build_version_header(version['version_h'], version['version_l'],
 #                                        version['offset_adds'], 76, version['interface'], version['comm_address'], version['code_id'])
@@ -250,5 +250,5 @@ final_address = 0x7E00
 # srec_records = binary_gen(
 #     destination_path, file_path, header, h_versionamento)
 
-with open(destination_path, 'wb') as destination:
-    destination.write(mot_to_binary(file_path, 2, init_offset2, final_address))
+# with open(destination_path, 'wb') as destination:
+#     destination.write(mot_to_binary(file_path, 2, init_offset2, final_address))

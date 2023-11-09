@@ -54,12 +54,17 @@ class MenuFrame(ctk.CTkFrame):
                     new_frame.checkbox.toggle()
                     new_frame.length.configure(state=ctk.NORMAL)
                     new_frame.file.configure(state=ctk.NORMAL)
+                    micro_option = frame.get('micro')
+                    if micro_option == 'RL':
+                        new_frame.init_offset.configure(state=ctk.NORMAL)
+                        new_frame.final_add.configure(state=ctk.NORMAL)
+                        new_frame.init_offset.insert('1', frame.get('init_offset'))
+                        new_frame.final_add.insert('1', frame.get('final_add'))
                     new_frame.length.insert('1',  frame.get('length'))
                     new_frame.filename = frame.get('filepath')
                     new_frame.file.insert('1', frame.get('filepath'))
                     new_frame.version_h.insert('1',  frame.get('version_h'))
                     new_frame.version_l.insert('1', frame.get('version_l'))
-                    micro_option = frame.get('micro')
                     if micro_option != 'Selecione uma aplicação':
                         new_frame.micro_fam.set(micro_option)
                         new_frame.micro_callback(micro_option)
@@ -135,7 +140,7 @@ class MenuFrame(ctk.CTkFrame):
             if frame.checkbox.get() == 1:
                 if (isinstance(frame, FileSelectionFrame)):
                     ET.SubElement(codeframes, 'codeframe', length=frame.length.get(
-                    ), filepath=frame.file.get(), version_h=frame.version_h.get(), version_l=frame.version_l.get(), micro=frame.micro_fam.get())
+                    ), filepath=frame.file.get(), version_h=frame.version_h.get(), version_l=frame.version_l.get(), micro=frame.micro_fam.get(), init_offset=frame.init_offset.get(), final_add=frame.final_add.get())
         
         for frame in controllerframe_list.controllerframes:
             if frame.checkbox.get() == 1:
