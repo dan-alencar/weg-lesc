@@ -25,18 +25,27 @@ class ControllerSelectionFrame(ctk.CTkFrame):
         self.optionmenu.pack(padx=10, pady=10, side=ctk.LEFT, anchor=ctk.N)
 
         # entrada para o offset address
-        self.offset = ctk.CTkEntry(self, placeholder_text="Offset", height=35, width=80)
-        self.offset.pack(expand=True, padx=10, pady=10,
+        self.label_offadd = ctk.CTkLabel(self, text="Offset:", font=("", 12, "bold"), height=35, anchor=ctk.E)
+        self.label_offadd.pack(fill=ctk.X, expand=True, side=ctk.LEFT, padx=5, pady=10, anchor=ctk.N)
+
+        self.offset = ctk.CTkEntry(self, placeholder_text="Ex: 00000000", height=35, width=85)
+        self.offset.pack(fill=ctk.X, expand=True, pady=10,
                        side=ctk.LEFT, anchor=ctk.N)
         
         # entrada para o communication address
-        self.comm_address = ctk.CTkEntry(self, placeholder_text="Endereço", height=35, width=80)
-        self.comm_address.pack(expand=True, padx=10, pady=10,
+        self.label_commadd = ctk.CTkLabel(self, text="End. de comunicação:", font=("", 12, "bold"), height=35, anchor=ctk.E)
+        self.label_commadd.pack(fill=ctk.X, expand=True, side=ctk.LEFT, padx=5, pady=10, anchor=ctk.N)
+
+        self.comm_address = ctk.CTkEntry(self, placeholder_text="Ex: 00", height=35, width=85)
+        self.comm_address.pack(fill=ctk.X, expand=True, pady=10,
                        side=ctk.LEFT, anchor=ctk.N)
         
         # entrada para o code_id
-        self.code_id = ctk.CTkEntry(self, placeholder_text="Code ID", height=35, width=80)
-        self.code_id.pack(expand=True, padx=10, pady=10,
+        self.label_codeid = ctk.CTkLabel(self, text="Code ID:", font=("", 12, "bold"), height=35, anchor=ctk.E)
+        self.label_codeid.pack(fill=ctk.X, expand=True, side=ctk.LEFT, padx=5, pady=10, anchor=ctk.N)
+
+        self.code_id = ctk.CTkEntry(self, placeholder_text="Ex: FF", height=35, width=85)
+        self.code_id.pack(fill=ctk.X, expand=True, pady=10,
                        side=ctk.LEFT, anchor=ctk.N)
         
         # entrada para a interface
@@ -62,7 +71,7 @@ class ControllerSelectionFrame(ctk.CTkFrame):
         '''
 
         # ativa os widgets quando a checkbox é marcada e desativa quando desmarcada
-        if (self.checkbox.get()==1):
+        if self.checkbox.get()==1:
             self.offset.configure(state=ctk.NORMAL)
             self.interface.configure(state=ctk.NORMAL)
             self.comm_address.configure(state=ctk.NORMAL)
