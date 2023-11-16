@@ -92,8 +92,7 @@ class App(ctk.CTk):
                 interface = controller_frame.interface_var
                 comm_address = int(controller_frame.comm_address.get(), 16)
                 code_id = int(controller_frame.code_id.get(), 16)
-                version.extend(build_version_header(
-                    version_h, version_l, offset, file_length, interface, comm_address, code_id))
+                version.extend(build_version_header(version_h, version_l, offset, file_length, interface, comm_address, code_id))
 
         print("Version: ", version)
 

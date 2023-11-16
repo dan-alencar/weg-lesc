@@ -15,7 +15,6 @@ class FileSelectionFrame(ctk.CTkFrame):
         super().__init__(master, **kwargs)
         
         # guarda a lista de frames do app
-        validate_length = self.register((self.validate_input), "%P")
         self.repository = repository
         self.index = index
         self.name = "FW " + str(self.index + 1)
@@ -37,44 +36,44 @@ class FileSelectionFrame(ctk.CTkFrame):
         #                   side=ctk.LEFT, anchor=ctk.N)
 
         # botão para abrir a seleção de arquivos
-        self.btn = ctk.CTkButton(
-            self, state=ctk.DISABLED, text="Escolher Arquivo", height=35, font=('', 14, 'bold'), command=self.chooseFile)
+        fileicon = ctk.CTkImage(Image.open("img\pathicon.png"), size=(30, 30))
+        self.btn = ctk.CTkButton(self, state=ctk.DISABLED, text="", image=fileicon, height=35, width=50, font=('', 14, 'bold'), command=self.chooseFile)
         self.btn.pack(pady=10, padx=5, side=ctk.LEFT, anchor=ctk.N)
 
         # campo de texto que exibe o path do arquivo selecionado
-        self.file = ctk.CTkEntry(self, placeholder_text="Local do arquivo", height=35, width=150)
+        self.file = ctk.CTkEntry(self, placeholder_text="Local do arquivo", height=35, width=100)
         self.file.pack(expand=True, fill=ctk.X, pady=10, anchor=ctk.N, side=ctk.LEFT)
 
         # entrada para o version_high
-        self.label_VersionH = ctk.CTkLabel(self, text="Version High:", font=("", 12, "bold"), height=35, anchor=ctk.E)
+        self.label_VersionH = ctk.CTkLabel(self, text="V. High:", font=("", 12, "bold"), height=35, anchor=ctk.E)
         self.label_VersionH.pack(fill=ctk.X, expand=True, side=ctk.LEFT, padx=5, pady=10, anchor=ctk.N)
 
         self.version_h = ctk.CTkEntry(self, placeholder_text="Ex: 0000", height=35, width=90)
         self.version_h.pack(fill=ctk.X, expand=True, pady=10, side=ctk.LEFT, anchor=ctk.N)
 
         # entrada para o version_lower
-        self.label_VersionL = ctk.CTkLabel(self, text="Version Low:", font=("", 12, "bold"), height=35, anchor=ctk.E)
+        self.label_VersionL = ctk.CTkLabel(self, text="V. Low:", font=("", 12, "bold"), height=35, anchor=ctk.E)
         self.label_VersionL.pack(fill=ctk.X, expand=True, side=ctk.LEFT, padx=5, pady=10, anchor=ctk.N)
 
         self.version_l = ctk.CTkEntry(self, placeholder_text="Ex: FFFF", height=35, width=90)
         self.version_l.pack(fill=ctk.X, expand=True, pady=10, side=ctk.LEFT, anchor=ctk.N)
         
         #entrada para o endereço inicial
-        self.label_offset = ctk.CTkLabel(self, text="End. Inicial:", font=("", 12, "bold"), height=35, anchor=ctk.E)
+        self.label_offset = ctk.CTkLabel(self, text="Init. Add:", font=("", 12, "bold"), height=35, anchor=ctk.E)
         self.label_offset.pack(fill=ctk.X, expand=True, side=ctk.LEFT, padx=5, pady=10, anchor=ctk.N)
 
         self.init_offset = ctk.CTkEntry(self, placeholder_text="Ex: 00000000", height=35, width=90)
         self.init_offset.pack(fill=ctk.X, expand=True, pady=10, side=ctk.LEFT, anchor=ctk.N)
         
         #entrada para o endereço final
-        self.label_final_add = ctk.CTkLabel(self, text="End. Final:", font=("", 12, "bold"), height=35, anchor=ctk.E)
+        self.label_final_add = ctk.CTkLabel(self, text="Final Add:", font=("", 12, "bold"), height=35, anchor=ctk.E)
         self.label_final_add.pack(fill=ctk.X, expand=True, side=ctk.LEFT, padx=5, pady=10, anchor=ctk.N)
 
         self.final_add = ctk.CTkEntry(self, placeholder_text="Ex: FFFFFFFF", height=35, width=90)
         self.final_add.pack(fill=ctk.X, expand=True, pady=10, side=ctk.LEFT, anchor=ctk.N)
         
-        self.micro_var = ctk.StringVar(value="Selecione uma aplicação")
-        self.micro_fam = ctk.CTkOptionMenu(self, state=ctk.DISABLED, dynamic_resizing=False, height=35, width=190, values=["RX", "RL"], command=self.micro_callback, variable=self.micro_var)
+        self.micro_var = ctk.StringVar(value="RX/RL")
+        self.micro_fam = ctk.CTkOptionMenu(self, state=ctk.DISABLED, dynamic_resizing=False, height=35, width=90, values=["RX", "RL"], command=self.micro_callback, variable=self.micro_var)
         self.micro_fam.pack(expand=True, padx=10, pady=10,
                        side=ctk.LEFT, anchor=ctk.N)
 
