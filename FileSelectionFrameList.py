@@ -19,7 +19,8 @@ class FileSelectionFrameList:
         self.master.controllerframe_list.updateList(self.valid_firmware_index)
         
     def fwRemove(self,frame):
-        self.valid_firmware.remove(frame)
+        if frame in self.valid_firmware:
+            self.valid_firmware.remove(frame)
         index = self.searchbyIndex(self.valid_firmware_index, frame)
         if index!=-1:
             self.valid_firmware_index.pop(index)

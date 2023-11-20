@@ -20,7 +20,7 @@ class App(ctk.CTk):
 
         # configuração inicial da janela
 
-        self.geometry("1000x800")
+        self.geometry("1400x800")
         self.resizable('true', 'true')
         self.title("Seleção de Arquivos")
         self.iconbitmap("img\weg-logo-5.ico")
@@ -85,15 +85,14 @@ class App(ctk.CTk):
                     # agora está passando uma tuple como parametro para a função do .mot
                     mot_list.append((firmware_file, firmware_frame.micro_var, init_add, final_add))
                 file_length = len(mot_to_binary(firmware_file, firmware_frame.micro_var, init_add, final_add))
-                version_h = int(firmware_frame.version_h.get())
-                version_l = int(firmware_frame.version_l.get())
-                offset = int(controller_frame.offset.get())
+                version_h = int(firmware_frame.version_h.get(), 16)
+                version_l = int(firmware_frame.version_l.get(), 16)
+                offset = int(controller_frame.offset.get(), 16)
                 # lembrar de relacionar os tipos de aplicação do .mot (RX e RL)
                 interface = controller_frame.interface_var
-                comm_address = int(controller_frame.comm_address.get())
-                code_id = int(controller_frame.code_id.get())
-                version.extend(build_version_header(
-                    version_h, version_l, offset, file_length, interface, comm_address, code_id))
+                comm_address = int(controller_frame.comm_address.get(), 16)
+                code_id = int(controller_frame.code_id.get(), 16)
+                version.extend(build_version_header(version_h, version_l, offset, file_length, interface, comm_address, code_id))
 
         print("Version: ", version)
 

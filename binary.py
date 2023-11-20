@@ -38,10 +38,10 @@ def build_header(header):
     return header_data
 
 
-def build_version_header(version_H, version_L, offset_adds, lenght, interface, comm_address, code_id):
+def build_version_header(version_H, version_L, offset_adds, length, interface, comm_address, code_id):
     header_format = 'HHIIBBB'
     version_header_data = struct.pack(
-        header_format, version_H, version_L, offset_adds, lenght, interface, comm_address, code_id)
+        header_format, version_H, version_L, offset_adds, length, interface, comm_address, code_id)
     return version_header_data
 
 
