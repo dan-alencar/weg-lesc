@@ -36,7 +36,7 @@ class FileSelectionFrame(ctk.CTkFrame):
         #                   side=ctk.LEFT, anchor=ctk.N)
 
         # botão para abrir a seleção de arquivos
-        fileicon = ctk.CTkImage(Image.open("img\pathicon.png"), size=(30, 30))
+        fileicon = ctk.CTkImage(Image.open("img\pathicon.png"), size=(25, 25))
         self.btn = ctk.CTkButton(self, state=ctk.DISABLED, text="", image=fileicon, height=35, width=50, font=('', 14, 'bold'), command=self.chooseFile)
         self.btn.pack(pady=10, padx=5, side=ctk.LEFT, anchor=ctk.N)
 
