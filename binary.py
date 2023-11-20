@@ -34,14 +34,17 @@ def concat_files(destination_path, header, *paths):
 def build_header(header):
     header_format = 'BB16s10sI'
     header_data = struct.pack(
-        header_format, header['header_ver'], header['header_valid'], bytes(header['prod_id'], 'utf-8'), bytes(header['prod_ver'], 'utf-8'), header['length'])
+        header_format, header['header_ver'], header['header_valid'], bytes(header['prod_id'], 'utf-8'),
+        bytes(header['prod_ver'], 'utf-8'), header['length'])
     return header_data
 
 
-def build_version_header(version_H, version_L, offset_adds, length, interface, comm_address, code_id):
-    header_format = 'HHIIBBB'
+def build_version_header(version_h, version_l
+                         , offset_adds, length, interface, comm_address, code_id, offset_vec, offset_app):
+    header_format = 'HHIIBBBII'
     version_header_data = struct.pack(
-        header_format, version_H, version_L, offset_adds, length, interface, comm_address, code_id)
+        header_format, version_h, version_l
+        , offset_adds, length, interface, comm_address, code_id, offset_vec, offset_app)
     return version_header_data
 
 
@@ -80,23 +83,23 @@ def parse_srec_line(line, firmware):
 
 # completa a string de dados quando o tamanho não é multiplo de 64
 def mul64(data):
-    length = len(data)/2
+    length = len(data) / 2
     if length % 64 == 0:
         return data
     else:
-        return data + int(64-(length % 64)) * 'FF'
+        return data + int(64 - (length % 64)) * 'FF'
 
 
 # transforma um arquivo .mot em binário
 def mot_to_binary(file_path, firmware, init_offset2, final_address):
-
     code1 = ''  # string que contém a primera parte do código
     code2 = ''  # string que contém a segunda parte do código
     end_address = 0  # guarda o último endereço preenchido
     previous_end_address = 0  # guarda o último endereço preenchido na iteração anterior
     lines = 0  # guarda a quantidade de linhas para determinar os endereços de inicio
+    binary_data = ''
 
-    if firmware == 2: #rl
+    if firmware == 2:  # rl
         with open(file_path, 'rb') as mot:
             for line in mot:
                 line = line.strip()
@@ -117,13 +120,13 @@ def mot_to_binary(file_path, firmware, init_offset2, final_address):
 
                         # preenche bytes vazios quando o endereço do início da linha é maior que o endereço do fim da linha anterior
                         if previous_end_address < init_address:
-                            code1 += (init_address-previous_end_address)*'FF'
+                            code1 += (init_address - previous_end_address) * 'FF'
 
                         # junta o dado à primeira string
                         code1 += record["data"]
 
                     # verifica se a linha pertence à segunda parte
-                    elif record['address'] >= int(init_offset2) and record['address'] < final_address:
+                    elif int(init_offset2) <= record['address'] < final_address:
 
                         # se a linha for a primeira da segunda parte, altera o valor do endereço final da linha anterior
                         if record['address'] == int(init_offset2):
@@ -131,14 +134,14 @@ def mot_to_binary(file_path, firmware, init_offset2, final_address):
 
                         # preenche bytes vazios quando o endereço do início da linha é maior que o endereço do fim da linha anterior
                         if previous_end_address < init_address:
-                            code2 += (init_address-previous_end_address)*'FF'
+                            code2 += (init_address - previous_end_address) * 'FF'
 
                         # junta o dado à segunda string
                         code2 += record["data"]
-                    
+
                     elif record['address'] >= int(final_address):
                         break
-                    
+
                     # atualiza o endereço final anterior
                     previous_end_address = end_address
 
@@ -146,8 +149,8 @@ def mot_to_binary(file_path, firmware, init_offset2, final_address):
         code1 = mul64(code1)
         code2 = mul64(code2)
         binary_data = bytearray.fromhex(code1 + code2)
-        
-    if firmware == 1: #rx
+
+    if firmware == 1:  # rx
         with open(file_path, 'rb') as mot:
             for line in mot:
                 line = line.strip()
@@ -171,7 +174,7 @@ def mot_to_binary(file_path, firmware, init_offset2, final_address):
 
                         # preenche bytes vazios quando o endereço do início da linha é maior que o endereço do fim da linha anterior
                         if previous_end_address < init_address:
-                            code1 += (init_address-previous_end_address)*'FF'
+                            code1 += (init_address - previous_end_address) * 'FF'
 
                         # junta o dado à primeira string
                         code1 += record["data"]
@@ -195,11 +198,10 @@ def mot_to_binary(file_path, firmware, init_offset2, final_address):
     code2_size = len(bytearray.fromhex(code2))
     return binary_data
 
+
 # gerador de binário
 
-
 def binary_gen(destination_path, header, version_header, binary_data):
-
     # calcula o tamanho total do arquivo com o cabeçalho e o crc
     length_total = len(binary_data) + len(version_header) + 36
     print(length_total)
@@ -211,21 +213,15 @@ def binary_gen(destination_path, header, version_header, binary_data):
 
     # calcula o crc
     crc = calculate_crc16(content)
-    crc = hex(crc)+'0000'  # adiciona 2 bytes
+    crc = hex(crc) + '0000'  # adiciona 2 bytes
     crc = bytearray.fromhex(crc[2:])  # transforma em bytearray
 
     # escreve o conteúdo no arquivo binário de destino
     with open(destination_path, 'wb') as destination:
-        destination.write(content+crc)
+        destination.write(content + crc)
+
 
 # testando
-
-header = {
-    "header_ver": 0x02,
-    "header_valid": 0x00,
-    "prod_id": "CFW510",
-    "prod_ver": "V2.01"
-}
 
 version = {
     "version_h": 0x0001,

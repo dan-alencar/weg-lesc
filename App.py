@@ -23,6 +23,8 @@ class App(ctk.CTk):
         self.geometry("1400x800")
         self.resizable('true', 'true')
         self.title("Seleção de Arquivos")
+
+
         self.iconbitmap("img\weg-logo-5.ico")
         ctk.set_appearance_mode('light')
 
