@@ -58,90 +58,86 @@ class App(ctk.CTk):
         binary_data = bytearray()
         mot_list = []
         total_l = 0
-        if self.fieldCheck(self.tab_view.configframe, 'header') == -1:
-            messagebox.showerror("Error", "Preencha todos os campos do cabeçalho")
-            raise ValueError
-        for controller_frame in self.controllerframe_list.controllerframes:
-            option_selected = controller_frame.optionmenu.get()
-            # if option_selected[:2] == 'FW' and controller_frame.checkbox.get() == 1:
-            if controller_frame.checkbox.get() == 1:
-                if self.fieldCheck(controller_frame,'controller') == -1:
-                    messagebox.showerror("Error", "Configure todos os campos dos controladores selecionados")
-                    raise ValueError
-                firmware_frame = self.codeframe_list.searchFrameFile(
-                    option_selected)
-                if self.fieldCheck(firmware_frame,'firmware') == -1:
-                    messagebox.showerror("Error", "Configure todos os campos dos firmwares selecionados")
-                    raise ValueError
-                elif self.fieldCheck(firmware_frame,'firmware') == -2:
-                    messagebox.showerror("Error", "Arquivo incompatível com microcontrolador selecionado")
-                    raise ValueError
-                firmware_file = firmware_frame.file.get()
-                if firmware_frame.micro_var == 2:
-                    init_add = int(firmware_frame.initadd.get(), 16)
-                    final_add = int(firmware_frame.finaladd.get(), 16)
-                if firmware_frame.micro_var == 1:
-                    init_add = final_add = 0
-                if (firmware_file, firmware_frame.micro_var, init_add, final_add) not in mot_list:
-                    # agora está passando uma tuple como parametro para a função do .mot
-                    mot_list.append((firmware_file, firmware_frame.micro_var, init_add, final_add))
-                file_length = len(mot_to_binary(firmware_file, firmware_frame.micro_var, init_add, final_add))
-                version_h = int(firmware_frame.version_h.get(), 16)
-                version_l = int(firmware_frame.version_l.get(), 16)
-                offset = int(firmware_frame.offset.get(), 16)
-                # lembrar de relacionar os tipos de aplicação do .mot (RX e RL)
-                interface = controller_frame.interface_var
-                comm_address = int(controller_frame.comm_address.get(), 16)
-                version.extend(build_version_header(version_h, version_l, offset, file_length, interface, comm_address, init_add, final_add))
+        try:
+            self.fieldCheck(self.tab_view.configframe, 'header')
 
-        print("Version: ", version)
+            for controller_frame in self.controllerframe_list.controllerframes:
+                option_selected = controller_frame.optionmenu.get()
+                # if option_selected[:2] == 'FW' and controller_frame.checkbox.get() == 1:
+                if controller_frame.checkbox.get() == 1:
+                    self.fieldCheck(controller_frame,'controller')
+                    firmware_frame = self.codeframe_list.searchFrameFile(
+                        option_selected)
+                    self.fieldCheck(firmware_frame,'firmware')
+                    firmware_file = firmware_frame.file.get()
+                    if firmware_frame.micro_var == 2:
+                        init_add = int(firmware_frame.initadd.get(), 16)
+                        final_add = int(firmware_frame.finaladd.get(), 16)
+                    if firmware_frame.micro_var == 1:
+                        init_add = final_add = 0
+                    if (firmware_file, firmware_frame.micro_var, init_add, final_add) not in mot_list:
+                        # agora está passando uma tuple como parametro para a função do .mot
+                        mot_list.append((firmware_file, firmware_frame.micro_var, init_add, final_add))
+                    file_length = len(mot_to_binary(firmware_file, firmware_frame.micro_var, init_add, final_add))
+                    version_h = int(firmware_frame.version_h.get(), 16)
+                    version_l = int(firmware_frame.version_l.get(), 16)
+                    offset = int(firmware_frame.offset.get(), 16)
+                    # lembrar de relacionar os tipos de aplicação do .mot (RX e RL)
+                    interface = controller_frame.interface_var
+                    comm_address = int(controller_frame.comm_address.get(), 16)
+                    version.extend(build_version_header(version_h, version_l, offset, file_length, interface, comm_address, init_add, final_add))
 
-        for file_path in mot_list:
-            print(file_path)
-            # mudar nome da variável depois
-            holder = mot_to_binary(*file_path)
-            # total_l += len(holder)
-            binary_data.extend(holder)
+            print("Version: ", version)
 
-        header = {
-            "header_ver": int(self.tab_view.configframe.header_version.get(), 16),
-            "header_valid": int(self.tab_view.configframe.header_valid.get(), 16),
-            "prod_id": self.tab_view.configframe.prod_id.get(),
-            "prod_ver": self.tab_view.configframe.prod_ver.get(),
-            # tamanho dos dados + cabeçalho wps + cabeçalho versionamento + crc
-            "length": len(binary_data) + 32 + 15 + 4
-        }
+            for file_path in mot_list:
+                print(file_path)
+                # mudar nome da variável depois
+                holder = mot_to_binary(*file_path)
+                # total_l += len(holder)
+                binary_data.extend(holder)
 
-        data = [('Arquivo .bin', '*.bin')]
-        file = filedialog.asksaveasfilename(
-            initialdir="/", title="Salvar como", filetypes=data, defaultextension=data)
+            header = {
+                "header_ver": int(self.tab_view.configframe.header_version.get(), 16),
+                "header_valid": int(self.tab_view.configframe.header_valid.get(), 16),
+                "prod_id": self.tab_view.configframe.prod_id.get(),
+                "prod_ver": self.tab_view.configframe.prod_ver.get(),
+                # tamanho dos dados + cabeçalho wps + cabeçalho versionamento + crc
+                "length": len(binary_data) + 32 + 15 + 4
+            }
 
-        binary_gen(file, header, version, binary_data)
-        messagebox.showinfo(title="Concluído", message="O arquivo foi gerado com sucesso!")
-        
+            data = [('Arquivo .bin', '*.bin')]
+            file = filedialog.asksaveasfilename(
+                initialdir="/", title="Salvar como", filetypes=data, defaultextension=data)
+
+            binary_gen(file, header, version, binary_data)
+            messagebox.showinfo(title="Concluído", message="O arquivo foi gerado com sucesso!")
+        except ValueError as e:
+            messagebox.showerror("Erro", str(e))
+        except Exception:
+            messagebox.showerror("Erro", "Erro na geração do binário.")
+
+
     def fieldCheck(self, frame, type):
         if type == 'firmware':
             if '' in {frame.version_h.get(), frame.version_l.get(), frame.offset.get(), frame.file.get()} or frame.micro_fam.get() == "Selecione uma aplicação":
-                return -1
+                raise ValueError('Configure todos os campos dos firmwares selecionados')
             #cuidado com esse parenteses
             if frame.micro_fam.get() == "RL" and ('' in {frame.initadd.get(), frame.finaladd.get()}):
-                return -1
-            # elif frame.length.get() == '0':
-            #     return -2
+                raise ValueError('Configure todos os campos dos firmwares selecionados')
             else:
-                return 0
+                return
         
         elif type == 'controller':
             if '' in {frame.comm_address.get()} or frame.interface.get() == "Selecione uma interface" or frame.optionmenu.get() == "Selecione uma opção":
-                return -1
+                raise ValueError('Configure todos os campos dos controladores selecionados')
             else:
-                return 0
+                return
         
         elif type == 'header':
             if '' in {frame.header_version.get(), frame.header_valid.get(), frame.prod_id.get(), frame.prod_ver.get()}:
-                return -1
+                raise ValueError('Preencha todos os campos do cabeçalho')
             else:
-                return 0
+                return
             
 
 

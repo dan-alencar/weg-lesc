@@ -40,11 +40,11 @@ def build_header(header):
 
 
 def build_version_header(version_h, version_l
-                         , offset_adds, length, interface, comm_address, code_id, offset_vec, offset_app):
-    header_format = 'HHIIBBBII'
+                         , offset_adds, length, interface, comm_address, offset_vec, offset_app):
+    header_format = 'HHIIBBII'
     version_header_data = struct.pack(
         header_format, version_h, version_l
-        , offset_adds, length, interface, comm_address, code_id, offset_vec, offset_app)
+        , offset_adds, length, interface, comm_address, offset_vec, offset_app)
     return version_header_data
 
 
