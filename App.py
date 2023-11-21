@@ -7,7 +7,6 @@ from MenuFrame import MenuFrame
 from PIL import Image
 from tkinter import filedialog
 from tkinter import messagebox
-from dictionary import *
 
 
 class App(ctk.CTk):
@@ -79,8 +78,8 @@ class App(ctk.CTk):
                     raise ValueError
                 firmware_file = firmware_frame.file.get()
                 if firmware_frame.micro_var == 2:
-                    init_add = int(firmware_frame.init_offset.get(), 16)
-                    final_add = int(firmware_frame.final_add.get(), 16)
+                    init_add = int(firmware_frame.initadd.get(), 16)
+                    final_add = int(firmware_frame.finaladd.get(), 16)
                 if firmware_frame.micro_var == 1:
                     init_add = final_add = 0
                 if (firmware_file, firmware_frame.micro_var, init_add, final_add) not in mot_list:
@@ -89,12 +88,11 @@ class App(ctk.CTk):
                 file_length = len(mot_to_binary(firmware_file, firmware_frame.micro_var, init_add, final_add))
                 version_h = int(firmware_frame.version_h.get(), 16)
                 version_l = int(firmware_frame.version_l.get(), 16)
-                offset = int(controller_frame.offset.get(), 16)
+                offset = int(firmware_frame.offset.get(), 16)
                 # lembrar de relacionar os tipos de aplicação do .mot (RX e RL)
                 interface = controller_frame.interface_var
                 comm_address = int(controller_frame.comm_address.get(), 16)
-                code_id = int(controller_frame.code_id.get(), 16)
-                version.extend(build_version_header(version_h, version_l, offset, file_length, interface, comm_address, code_id))
+                version.extend(build_version_header(version_h, version_l, offset, file_length, interface, comm_address, init_add, final_add))
 
         print("Version: ", version)
 
@@ -123,10 +121,10 @@ class App(ctk.CTk):
         
     def fieldCheck(self, frame, type):
         if type == 'firmware':
-            if '' in {frame.version_h.get(), frame.version_l.get(), frame.file.get()} or frame.micro_fam.get() == "Selecione uma aplicação":
+            if '' in {frame.version_h.get(), frame.version_l.get(), frame.offset.get(), frame.file.get()} or frame.micro_fam.get() == "Selecione uma aplicação":
                 return -1
             #cuidado com esse parenteses
-            if frame.micro_fam.get() == "RL" and ('' in {frame.init_offset.get(), frame.final_add.get()}):
+            if frame.micro_fam.get() == "RL" and ('' in {frame.initadd.get(), frame.finaladd.get()}):
                 return -1
             # elif frame.length.get() == '0':
             #     return -2
@@ -134,7 +132,7 @@ class App(ctk.CTk):
                 return 0
         
         elif type == 'controller':
-            if '' in {frame.offset.get(), frame.comm_address.get(), frame.code_id.get()} or frame.interface.get() == "Selecione uma interface" or frame.optionmenu.get() == "Selecione uma opção":
+            if '' in {frame.comm_address.get()} or frame.interface.get() == "Selecione uma interface" or frame.optionmenu.get() == "Selecione uma opção":
                 return -1
             else:
                 return 0

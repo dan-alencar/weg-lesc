@@ -52,35 +52,32 @@ class MenuFrame(ctk.CTkFrame):
                     self.master.codeframe_list.addFrame(new_frame)  # adiciona no repositório
                     new_frame.pack(side=ctk.TOP, fill=ctk.BOTH, expand=ctk.TRUE)
                     new_frame.checkbox.toggle()
-                    # new_frame.length.configure(state=ctk.NORMAL)
                     new_frame.file.configure(state=ctk.NORMAL)
                     micro_option = frame.get('micro')
                     if micro_option == 'RL':
-                        new_frame.init_offset.configure(state=ctk.NORMAL)
-                        new_frame.final_add.configure(state=ctk.NORMAL)
-                        new_frame.init_offset.insert('1', frame.get('init_offset'))
-                        new_frame.final_add.insert('1', frame.get('final_add'))
+                        new_frame.initadd.configure(state=ctk.NORMAL)
+                        new_frame.finaladd.configure(state=ctk.NORMAL)
+                        new_frame.initadd.insert('1', frame.get('initadd'))
+                        new_frame.finaladd.insert('1', frame.get('finaladd'))
                     # new_frame.length.insert('1',  frame.get('length'))
                     new_frame.filename = frame.get('filepath')
                     new_frame.file.insert('1', frame.get('filepath'))
                     new_frame.version_h.insert('1',  frame.get('version_h'))
                     new_frame.version_l.insert('1', frame.get('version_l'))
+                    new_frame.offset.insert('1', frame.get('offset'))
                     if micro_option != 'Selecione uma aplicação':
                         new_frame.micro_fam.set(micro_option)
                         new_frame.micro_callback(micro_option)
                     else:
                         new_frame.micro_fam.set('Selecione uma aplicação')
                         new_frame.micro_var = -1
-                    # if frame.get('length')!= '':
-                    #     new_frame.binary_length = int(frame.get('length'))
-                    # new_frame.length.configure(state=ctk.DISABLED)
                     new_frame.file.configure(state=ctk.DISABLED)
                 if (frame.tag=='controllerframe'):
                     new_frame = ControllerSelectionFrame(self.master.tab_view.controllerframe, self.master.controllerframe_list)
                     self.master.controllerframe_list.addFrame(new_frame)
                     new_frame.pack(side=ctk.TOP, fill=ctk.BOTH, expand=ctk.TRUE)
                     new_frame.checkbox.toggle()
-                    new_frame.offset.insert('1', frame.get('offset'))
+                    # new_frame.offset.insert('1', frame.get('offset'))
                     interface_option = frame.get('interface')
                     if interface_option != 'Selecione uma interface':
                         new_frame.interface.set(interface_option)
@@ -89,7 +86,6 @@ class MenuFrame(ctk.CTkFrame):
                         new_frame.interface.set('Selecione uma interface')
                         new_frame.interface_var = -1
                     new_frame.comm_address.insert('1', frame.get('comm_address'))
-                    new_frame.code_id.insert('1', frame.get('code_id'))
                     fw_option = frame.get('option')
                     if fw_option[:2] == 'FW':
                         new_frame.optionmenu.set(fw_option)
@@ -139,7 +135,7 @@ class MenuFrame(ctk.CTkFrame):
         for frame in codeframe_list.valid_firmware:
             if frame.checkbox.get() == 1:
                 if (isinstance(frame, FileSelectionFrame)):
-                    ET.SubElement(codeframes, 'codeframe', filepath=frame.file.get(), version_h=frame.version_h.get(), version_l=frame.version_l.get(), micro=frame.micro_fam.get(), init_offset=frame.init_offset.get(), final_add=frame.final_add.get())
+                    ET.SubElement(codeframes, 'codeframe', filepath=frame.file.get(), version_h=frame.version_h.get(), version_l=frame.version_l.get(), offset=frame.offset.get(), micro=frame.micro_fam.get(), initadd=frame.initadd.get(), finaladd=frame.finaladd.get())
         
         for frame in controllerframe_list.controllerframes:
             if frame.checkbox.get() == 1:
@@ -151,8 +147,8 @@ class MenuFrame(ctk.CTkFrame):
                             optionSelected = 'FW ' + str(optionIndex+1)
                         else:
                             optionSelected = "Selecione uma opção"
-                    ET.SubElement(controllerframes, 'controllerframe', offset=frame.offset.get(), interface=frame.interface.get(), comm_address = frame.comm_address.get(), code_id = frame.code_id.get(),  option = optionSelected)
-        ET.SubElement(configs, 'configurations', header_ver = configurations.header_version.get(), header_val = configurations.header_valid.get(), prod_id = configurations.prod_id.get(), prod_ver = configurations.prod_ver.get())
+                    ET.SubElement(controllerframes, 'controllerframe', interface=frame.interface.get(), comm_address=frame.comm_address.get(),  option=optionSelected)
+        ET.SubElement(configs, 'configurations', header_ver=configurations.header_version.get(), header_val=configurations.header_valid.get(), prod_id=configurations.prod_id.get(), prod_ver=configurations.prod_ver.get())
 
         tree = ET.ElementTree(xml_doc)
         tree.write(file)
