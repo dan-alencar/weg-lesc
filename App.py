@@ -85,7 +85,8 @@ class App(ctk.CTk):
                     # lembrar de relacionar os tipos de aplicação do .mot (RX e RL)
                     interface = controller_frame.interface_var
                     comm_address = int(controller_frame.comm_address.get(), 16)
-                    version.extend(build_version_header(version_h, version_l, offset, file_length, interface, comm_address, init_add, final_add))
+                    code_id = int(controller_frame.code_id.get(), 16)
+                    version.extend(build_version_header(version_h, version_l, offset, file_length, interface, comm_address, code_id, init_add, final_add))
 
             print("Version: ", version)
 
@@ -128,7 +129,7 @@ class App(ctk.CTk):
                 return
         
         elif type == 'controller':
-            if '' in {frame.comm_address.get()} or frame.interface.get() == "Selecione uma interface" or frame.optionmenu.get() == "Selecione uma opção":
+            if '' in {frame.comm_address.get(), frame.code_id.get()} or frame.interface.get() == "Selecione uma interface" or frame.optionmenu.get() == "Selecione uma opção":
                 raise ValueError('Configure todos os campos dos controladores selecionados')
             else:
                 return

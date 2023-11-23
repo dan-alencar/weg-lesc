@@ -86,6 +86,7 @@ class MenuFrame(ctk.CTkFrame):
                         new_frame.interface.set('Selecione uma interface')
                         new_frame.interface_var = -1
                     new_frame.comm_address.insert('1', frame.get('comm_address'))
+                    new_frame.code_id.insert('1', frame.get('code_id'))
                     fw_option = frame.get('option')
                     if fw_option[:2] == 'FW':
                         new_frame.optionmenu.set(fw_option)
@@ -147,7 +148,7 @@ class MenuFrame(ctk.CTkFrame):
                             optionSelected = 'FW ' + str(optionIndex+1)
                         else:
                             optionSelected = "Selecione uma opção"
-                    ET.SubElement(controllerframes, 'controllerframe', interface=frame.interface.get(), comm_address=frame.comm_address.get(),  option=optionSelected)
+                    ET.SubElement(controllerframes, 'controllerframe', interface=frame.interface.get(), comm_address=frame.comm_address.get(), code_id=frame.code_id.get(),  option=optionSelected)
         ET.SubElement(configs, 'configurations', header_ver=configurations.header_version.get(), header_val=configurations.header_valid.get(), prod_id=configurations.prod_id.get(), prod_ver=configurations.prod_ver.get())
 
         tree = ET.ElementTree(xml_doc)
