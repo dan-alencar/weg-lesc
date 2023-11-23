@@ -56,6 +56,7 @@ class App(ctk.CTk):
         '''
         version = bytearray()
         binary_data = bytearray()
+        header_len = 0
         mot_list = []
         total_l = 0
         try:
@@ -97,13 +98,18 @@ class App(ctk.CTk):
                 # total_l += len(holder)
                 binary_data.extend(holder)
 
+            if self.tab_view.configframe.header_version.get() == '01':
+                header_len = 28
+            elif self.tab_view.configframe.header_version.get() == '02':
+                header_len = 32
+
             header = {
                 "header_ver": int(self.tab_view.configframe.header_version.get(), 16),
                 "header_valid": int(self.tab_view.configframe.header_valid.get(), 16),
                 "prod_id": self.tab_view.configframe.prod_id.get(),
                 "prod_ver": self.tab_view.configframe.prod_ver.get(),
                 # tamanho dos dados + cabeçalho wps + cabeçalho versionamento + crc
-                "length": len(binary_data) + 32 + 15 + 4
+                "length": len(binary_data) + header_len + len(version) + 4
             }
 
             data = [('Arquivo .bin', '*.bin')]
