@@ -32,16 +32,29 @@ def concat_files(destination_path, header, *paths):
 
 # Monta o cabeçalho do arquivo.
 def build_header(header):
-    header_format = 'BB16s10sI'
+    header_ver = int(header['header_ver'])
+
+    match header_ver:
+        case 1:
+            header_format = 'BB12s10sI'
+            header['prod_id'] = header['prod_id'].ljust(12)
+        case 2:
+            header_format = 'BB16s10sI'
+            header['prod_id'] = header['prod_id'].ljust(16)
+        case _:
+            raise ValueError(f"Versão do cabeçalho não suportada.")
+
+    header['prod_ver'] = header['prod_ver'].ljust(10)
     header_data = struct.pack(
-        header_format, header['header_ver'], header['header_valid'], bytes(header['prod_id'], 'utf-8'),
+        header_format, header_ver, header['header_valid'], bytes(header['prod_id'], 'utf-8'),
         bytes(header['prod_ver'], 'utf-8'), header['length'])
+
     return header_data
 
 
 def build_version_header(version_h, version_l
                          , offset_adds, length, interface, comm_address, code_id, offset_vec, offset_app):
-    header_format = 'HHIIBBBII'
+    header_format = '>HHIIBBBII'
     version_header_data = struct.pack(
         header_format, version_h, version_l
         , offset_adds, length, interface, comm_address, code_id, offset_vec, offset_app)
@@ -202,19 +215,22 @@ def mot_to_binary(file_path, firmware, init_offset2, final_address):
 # gerador de binário
 
 def binary_gen(destination_path, header, version_header, binary_data):
-    # calcula o tamanho total do arquivo com o cabeçalho e o crc
-    length_total = len(binary_data) + len(version_header) + 36
-    print(length_total)
-
     header_data = build_header(header)
+
+    # calcula o tamanho total do arquivo com o cabeçalho e o crc
+    length_total = len(binary_data) + len(version_header) + len(header_data)
+    print(length_total)
 
     # concatena o conteúdo dos arquivos
     content = header_data + version_header + binary_data
 
     # calcula o crc
-    crc = calculate_crc16(content)
-    crc = hex(crc) + '0000'  # adiciona 2 bytes
-    crc = bytearray.fromhex(crc[2:])  # transforma em bytearray
+    crcH, crcL = calculate_crc16(content)
+
+
+
+    crc = crcL + crcH + '0000'  # adiciona 2 bytes
+    crc = bytearray.fromhex(crc)  # transforma em bytearray
 
     # escreve o conteúdo no arquivo binário de destino
     with open(destination_path, 'wb') as destination:
