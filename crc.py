@@ -84,6 +84,3 @@ def file_to_byte_array(file_path):
 def bytearray_to_hex_string(byte_array):
     hex_string = ''.join(format(byte, '02X') for byte in byte_array)
     return hex_string
-
-
-invert_crc(0x5CAB)
