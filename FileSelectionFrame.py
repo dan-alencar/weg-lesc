@@ -31,7 +31,8 @@ class FileSelectionFrame(ctk.CTkFrame):
         self.checkbox.pack(padx=10, pady=10, side=ctk.LEFT, anchor=ctk.N)
 
         # botão para abrir a seleção de arquivos
-        fileicon = ctk.CTkImage(Image.open("img\pathicon.png"), size=(25, 25))
+        img_file = repository.master.get_image_path('pathicon.png')
+        fileicon = ctk.CTkImage(Image.open(img_file), size=(25, 25))
         self.btn = ctk.CTkButton(self, state=ctk.DISABLED, text="", image=fileicon, height=35, width=50, font=('', 14, 'bold'), command=self.chooseFile)
         self.btn.pack(pady=10, padx=5, side=ctk.LEFT, anchor=ctk.N)
 
@@ -81,7 +82,8 @@ class FileSelectionFrame(ctk.CTkFrame):
                        side=ctk.LEFT, anchor=ctk.N)
 
         # botão para apagar o frame
-        img = ctk.CTkImage(Image.open('img\excluir.png'), size=(20, 20))
+        img_excluir = repository.master.get_image_path('excluir.png')
+        img = ctk.CTkImage(Image.open(img_excluir), size=(20, 20))
         self.bin = ctk.CTkButton(
             self, text='', image=img, width=35, height=35, command=lambda: self.delFrame(self.repository))
         self.bin.pack(pady=10, padx=10, side=ctk.RIGHT, anchor=ctk.E)

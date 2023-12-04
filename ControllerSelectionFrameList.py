@@ -3,6 +3,7 @@ class ControllerSelectionFrameList:
     def __init__(self, master):
         self.controllerframes = []
         self.optionList = []
+        self.master = master
 
     def addFrame(self, frame):
         self.controllerframes.append(frame)

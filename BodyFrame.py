@@ -23,7 +23,8 @@ class BodyFrame(ctk.CTkScrollableFrame):
         repository.addFrame(self.first_frame)
 
         # botão para adicionar novo frame
-        img = ctk.CTkImage(Image.open('img\mais.png'), size=(20, 20))
+        img_mais = repository.master.get_image_path('mais.png')
+        img = ctk.CTkImage(Image.open(img_mais), size=(20, 20))
         self.add_frame = ctk.CTkButton(self, text="", image=img, width=45, height=35, command=lambda: self.newFrame(repository, type))
         self.add_frame.pack(side=ctk.BOTTOM, pady=5)
 

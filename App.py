@@ -1,3 +1,5 @@
+import sys
+import os
 import customtkinter as ctk
 from binary import *
 from TabbedPanel import TabbedPanel
@@ -23,8 +25,9 @@ class App(ctk.CTk):
         self.resizable('true', 'true')
         self.title("Seleção de Arquivos")
 
-
-        self.iconbitmap("img\weg-logo-5.ico")
+        weg_ico = 'weg-logo-5.ico'
+        weg_logo = 'logo-weg.png'
+        self.iconbitmap(self.get_image_path(weg_ico))
         ctk.set_appearance_mode('light')
 
         # frame de menu
@@ -33,7 +36,7 @@ class App(ctk.CTk):
         self.menu_frame.pack(fill=ctk.BOTH)
 
         self.logo = ctk.CTkImage(
-            light_image=Image.open('img\logo-weg.png'), size=(1000, 90))
+            light_image=Image.open(self.get_image_path(weg_logo)), size=(1000, 90))
         self.logo_label = ctk.CTkLabel(self, image=self.logo, text='')
         self.logo_label.pack()
 
@@ -146,6 +149,14 @@ class App(ctk.CTk):
                 raise ValueError('Preencha todos os campos do cabeçalho')
             else:
                 return
+
+    def get_image_path(self, image_filename):
+        if hasattr(sys, '_MEIPASS'):
+            # Running as a PyInstaller executable
+            return os.path.join(sys._MEIPASS, 'img', image_filename)
+        else:
+            # Running as a script
+            return os.path.join('img', image_filename)
             
 
 

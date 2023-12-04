@@ -47,7 +47,8 @@ class ControllerSelectionFrame(ctk.CTkFrame):
                        side=ctk.LEFT, anchor=ctk.N)
         
         # botão para apagar o frame
-        img = ctk.CTkImage(Image.open('img\excluir.png'), size=(20, 20))
+        img_excluir = repository.master.get_image_path('excluir.png')
+        img = ctk.CTkImage(Image.open(img_excluir), size=(20, 20))
         self.bin = ctk.CTkButton(
             self, text='', image=img, width=35, height=35, command=lambda: self.delFrame(self.repository))
         self.bin.pack(pady=10, padx=10, side=ctk.RIGHT, anchor=ctk.E)
