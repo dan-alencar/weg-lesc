@@ -115,7 +115,8 @@ class App(ctk.CTk):
                 # tamanho dos dados + cabeçalho wps + cabeçalho versionamento + crc
                 "length": len(binary_data) + header_len + len(version) + 4
             }
-
+            print("This lenght: ", len(version))
+            print("This total lenght: ",  len(binary_data) + header_len + len(version) + 4)
             data = [('Arquivo .bin', '*.bin')]
             file = filedialog.asksaveasfilename(
                 initialdir="/", title="Salvar como", filetypes=data, defaultextension=data)
