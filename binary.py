@@ -1,6 +1,7 @@
 import os
 import struct
 from crc import calculate_crc16
+from random import randbytes
 
 
 # Lê um arquivo .bin a partir do seu path e retorna este arquivo.
@@ -27,6 +28,19 @@ def concat_files(destination_path, header, *paths):
         file.close()
         final_file.write(content)
     final_file.close()
+    return final_file
+
+
+def concat_files2(destination_path, *paths):
+    content = bytearray()
+    i = 1
+    for path in paths[0:]:
+        print('code',i)
+        i += 1
+        content += (mot_to_binary(path, 2, 0x3800, 0x7E00))
+    final_file = content
+    with open(destination_path, 'wb') as destination:
+        destination.write(final_file)
     return final_file
 
 
@@ -208,8 +222,10 @@ def mot_to_binary(file_path, firmware, init_offset2, final_address):
         binary_data = bytearray.fromhex(code2 + code1)
     # escrevendo o arquivo binário
     code1_size = len(bytearray.fromhex(code1))
+    print(code1_size)
     code2_size = len(bytearray.fromhex(code2))
-    return binary_data
+    print(code2_size)
+    return binary_data, code1_size, code2_size
 
 
 # gerador de binário
@@ -227,8 +243,6 @@ def binary_gen(destination_path, header, version_header, binary_data):
     # calcula o crc
     crcH, crcL = calculate_crc16(content)
 
-
-
     crc = crcL + crcH + '0000'  # adiciona 2 bytes
     crc = bytearray.fromhex(crc)  # transforma em bytearray
 
@@ -236,31 +250,8 @@ def binary_gen(destination_path, header, version_header, binary_data):
     with open(destination_path, 'wb') as destination:
         destination.write(content + crc)
 
+#
+# concat_files2(r'D:\concat.bin', r'D:\00_SlaveRTDW_ApplicationIHM.mot', r'D:\01_SlaveRTDW_ApplicationRET1.mot',
+#               r'D:\02_SlaveRTDW_ApplicationRET2.mot', r'D:\03_SlaveRTDW_ApplicationUCQ.mot', r'D:\04_SlaveRTDW_ApplicationRELE1.mot',
+#               r'D:\05_SlaveRTDW_ApplicationRELE2.mot', r'D:\06_SlaveRTDW_ApplicationSPV.mot', r'D:\07_SlaveRTDW_ApplicationEXP.mot')
 
-# testando
-
-version = {
-    "version_h": 0x0001,
-    "version_l": 0x0002,
-    "offset_adds": 0x00000045,
-    "interface": 2,
-    "comm_address": 0x46,
-    "code_id": 0x12
-}
-
-# destination_path = r"D:\MasterCoporate_Application.bin"
-# # versionamento = r'Arquivos WPS\binary\versionamento.bin'
-# file_path = r"D:\MasterCoporate_Application.mot"
-
-# init_offset2 = 0x3400
-# final_address = 0x7E00
-
-# h_versionamento = build_version_header(version['version_h'], version['version_l'],
-#                                        version['offset_adds'], 76, version['interface'], version['comm_address'], version['code_id'])
-# print(bytes(h_versionamento, encoding='utf-8'))
-
-# srec_records = binary_gen(
-#     destination_path, file_path, header, h_versionamento)
-
-# with open(destination_path, 'wb') as destination:
-#     destination.write(mot_to_binary(file_path, 1, init_offset2, final_address))

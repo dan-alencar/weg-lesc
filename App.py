@@ -79,7 +79,9 @@ class App(ctk.CTk):
                     if (firmware_file, firmware_frame.micro_var, init_add, final_add) not in mot_list:
                         # agora está passando uma tuple como parametro para a função do .mot
                         mot_list.append((firmware_file, firmware_frame.micro_var, init_add, final_add))
-                    file_length = len(mot_to_binary(firmware_file, firmware_frame.micro_var, init_add, final_add))
+                    # file_length = len(mot_to_binary(firmware_file, firmware_frame.micro_var, init_add, final_add))
+                    file, code1_size, code2_size = mot_to_binary(firmware_file, firmware_frame.micro_var, init_add, final_add)
+                    file_length = len(file)
                     version_h = int(firmware_frame.version_h.get(), 16)
                     version_l = int(firmware_frame.version_l.get(), 16)
                     offset = int(firmware_frame.offset.get(), 16)
@@ -87,17 +89,16 @@ class App(ctk.CTk):
                     interface = controller_frame.interface_var
                     comm_address = int(controller_frame.comm_address.get(), 16)
                     code_id = int(controller_frame.code_id.get(), 16)
-                    version.extend(build_version_header(version_h, version_l, offset, file_length, interface, comm_address, code_id, init_add, final_add))
+                    version.extend(build_version_header(version_h, version_l, offset, file_length, interface, comm_address, code_id, code1_size, code2_size))
 
             print("Version: ", version)
 
             for file_path in mot_list:
                 print(file_path)
                 # mudar nome da variável depois
-                holder = mot_to_binary(*file_path)
+                holder, _, _ = mot_to_binary(*file_path)
                 # total_l += len(holder)
                 binary_data.extend(holder)
-
             if self.tab_view.configframe.header_version.get() == '01':
                 header_len = 28
             elif self.tab_view.configframe.header_version.get() == '02':

@@ -11,8 +11,6 @@ def calculate_crc16(data):
                 crc >>= 1
 
 
-    # crc = invert_crc(crc)
-
     if crc & 0xFF:
         CRCL = format(crc & 0xFF, 'x')
     else:
@@ -25,36 +23,6 @@ def calculate_crc16(data):
 
     return CRCH, CRCL
 
-
-
-def invert_crc(crc):
-    # Original hexadecimal string
-    original_hex_string = "5C00"
-
-    # Convert hexadecimal string to integer
-    original_variable = int(original_hex_string, 16)
-
-    # Convert integer to bytes and invert the bytes
-    inverted_bytes = original_variable.to_bytes((original_variable.bit_length() + 7) // 8, byteorder='big')
-    inverted_variable = int.from_bytes(inverted_bytes[::-1], byteorder='big')
-
-    # Convert the inverted integer back to a hexadecimal string with the same length
-    inverted_hex_string = format(inverted_variable, f'0{len(original_hex_string)}X')
-
-    print("Original hexadecimal string:", original_hex_string)
-    print("Inverted hexadecimal string:", inverted_hex_string)
-
-    # mask1 = 0b1111111100000000
-    # mask2 = 0b0000000011111111
-    #
-    # part1 = crc & mask1
-    # part1 >>= 8
-    # part2 = crc & mask2
-    # part2 <<= 8
-    #
-    # crc = part1 ^ part2
-    #
-    # return crc
 
 def encode_data(data):
     crc = calculate_crc16(data)
@@ -83,4 +51,10 @@ def file_to_byte_array(file_path):
 
 def bytearray_to_hex_string(byte_array):
     hex_string = ''.join(format(byte, '02X') for byte in byte_array)
+<<<<<<< Updated upstream
     return hex_string
+=======
+    return hex_string
+
+
+>>>>>>> Stashed changes
