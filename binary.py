@@ -242,8 +242,16 @@ def binary_gen(destination_path, header, version_header, binary_data):
 
     # calcula o crc
     crcH, crcL = calculate_crc16(content)
-
+    print("This is CRC HIGH: ", crcH)
+    print("This is CRC LOW: ", crcL)
+    if len(crcH)<2:
+        crcH = '0' + crcH
+        print("This is NEW CRC HIGH: ", crcH)
+    if len(crcL)<2:
+        crcL = '0' + crcL
+        print("This is NEW CRC HIGH: ", crcL)
     crc = crcL + crcH + '0000'  # adiciona 2 bytes
+    print("This is CRC: ", crc)
     crc = bytearray.fromhex(crc)  # transforma em bytearray
 
     # escreve o conteúdo no arquivo binário de destino

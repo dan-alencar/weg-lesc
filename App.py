@@ -61,7 +61,8 @@ class App(ctk.CTk):
         binary_data = bytearray()
         header_len = 0
         mot_list = []
-        total_l = 0
+        # total_l = 0
+        # i=0
         try:
             self.fieldCheck(self.tab_view.configframe, 'header')
 
@@ -88,6 +89,10 @@ class App(ctk.CTk):
                     version_h = int(firmware_frame.version_h.get(), 16)
                     version_l = int(firmware_frame.version_l.get(), 16)
                     offset = int(firmware_frame.offset.get(), 16)
+                    # if x == 1:
+                    #     offset = code2_size
+                    # else:
+                    #     offset = offset+file_length
                     # lembrar de relacionar os tipos de aplicação do .mot (RX e RL)
                     interface = controller_frame.interface_var
                     comm_address = int(controller_frame.comm_address.get(), 16)
