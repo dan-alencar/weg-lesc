@@ -53,14 +53,6 @@ class FileSelectionFrame(ctk.CTkFrame):
 
         self.version_l = ctk.CTkEntry(self, placeholder_text="Ex: FFFF", height=35, width=90)
         self.version_l.pack(fill=ctk.X, expand=True, pady=10, side=ctk.LEFT, anchor=ctk.N)
-
-        # entrada para o offset address
-        self.label_offset = ctk.CTkLabel(self, text="Offset:", font=("", 12, "bold"), height=35, anchor=ctk.E)
-        self.label_offset.pack(fill=ctk.X, expand=True, side=ctk.LEFT, padx=5, pady=10, anchor=ctk.N)
-
-        self.offset = ctk.CTkEntry(self, placeholder_text="Ex: 00000000", height=35, width=85)
-        self.offset.pack(fill=ctk.X, expand=True, pady=10,
-                         side=ctk.LEFT, anchor=ctk.N)
         
         #entrada para o endereço inicial
         self.label_initadd = ctk.CTkLabel(self, text="Init. Add:", font=("", 12, "bold"), height=35, anchor=ctk.E)
@@ -93,7 +85,6 @@ class FileSelectionFrame(ctk.CTkFrame):
         self.version_h.configure(state=ctk.DISABLED)
         self.version_l.configure(state=ctk.DISABLED)
         self.micro_fam.configure(state=ctk.DISABLED)
-        self.offset.configure(state=ctk.DISABLED)
         self.initadd.configure(state=ctk.DISABLED)
         self.finaladd.configure(state=ctk.DISABLED)
 
@@ -108,14 +99,12 @@ class FileSelectionFrame(ctk.CTkFrame):
             self.btn.configure(state=ctk.NORMAL)
             self.version_h.configure(state=ctk.NORMAL)
             self.version_l.configure(state=ctk.NORMAL)
-            self.offset.configure(state=ctk.NORMAL)
             self.micro_fam.configure(state=ctk.NORMAL)
             self.repository.fwValidation(self)
         else:
             self.btn.configure(state=ctk.DISABLED)
             self.version_h.configure(state=ctk.DISABLED)
             self.version_l.configure(state=ctk.DISABLED)
-            self.offset.configure(state=ctk.DISABLED)
             self.micro_fam.configure(state=ctk.DISABLED)
             self.repository.fwRemove(self)
 

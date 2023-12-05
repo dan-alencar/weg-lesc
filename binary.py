@@ -222,9 +222,7 @@ def mot_to_binary(file_path, firmware, init_offset2, final_address):
         binary_data = bytearray.fromhex(code2 + code1)
     # escrevendo o arquivo binário
     code1_size = len(bytearray.fromhex(code1))
-    print(code1_size)
     code2_size = len(bytearray.fromhex(code2))
-    print(code2_size)
     return binary_data, code1_size, code2_size
 
 

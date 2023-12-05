@@ -61,8 +61,9 @@ class App(ctk.CTk):
         binary_data = bytearray()
         header_len = 0
         mot_list = []
-        # total_l = 0
-        # i=0
+        offset = 0
+        i = 0
+        aux = 0
         try:
             self.fieldCheck(self.tab_view.configframe, 'header')
 
@@ -70,6 +71,7 @@ class App(ctk.CTk):
                 option_selected = controller_frame.optionmenu.get()
                 # if option_selected[:2] == 'FW' and controller_frame.checkbox.get() == 1:
                 if controller_frame.checkbox.get() == 1:
+                    i = i + 1
                     self.fieldCheck(controller_frame,'controller')
                     firmware_frame = self.codeframe_list.searchFrameFile(
                         option_selected)
@@ -88,11 +90,15 @@ class App(ctk.CTk):
                     file_length = len(file)
                     version_h = int(firmware_frame.version_h.get(), 16)
                     version_l = int(firmware_frame.version_l.get(), 16)
-                    offset = int(firmware_frame.offset.get(), 16)
-                    # if x == 1:
-                    #     offset = code2_size
-                    # else:
-                    #     offset = offset+file_length
+                    if i == 1:
+                        offset = 0
+                        aux = code1_size
+                    elif i == 2:
+                        offset = aux
+                        aux = code1_size + code2_size
+                    elif i > 2:
+                        offset = offset + aux
+                        aux = code1_size + code2_size
                     # lembrar de relacionar os tipos de aplicação do .mot (RX e RL)
                     interface = controller_frame.interface_var
                     comm_address = int(controller_frame.comm_address.get(), 16)
@@ -134,7 +140,7 @@ class App(ctk.CTk):
 
     def fieldCheck(self, frame, type):
         if type == 'firmware':
-            if '' in {frame.version_h.get(), frame.version_l.get(), frame.offset.get(), frame.file.get()} or frame.micro_fam.get() == "Selecione uma aplicação":
+            if '' in {frame.version_h.get(), frame.version_l.get(), frame.file.get()} or frame.micro_fam.get() == "Selecione uma aplicação":
                 raise ValueError('Configure todos os campos dos firmwares selecionados')
             #cuidado com esse parenteses
             if frame.micro_fam.get() == "RL" and ('' in {frame.initadd.get(), frame.finaladd.get()}):
