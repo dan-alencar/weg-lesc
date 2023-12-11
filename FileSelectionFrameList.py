@@ -1,5 +1,5 @@
 class FileSelectionFrameList:
-    def __init__(self,master):
+    def __init__(self, master):
         self.codeframes = []
         self.valid_firmware = []
         self.valid_firmware_index = [] #testando a declaração da variável
@@ -18,11 +18,11 @@ class FileSelectionFrameList:
         # print(self.valid_firmware)
         self.master.controllerframe_list.updateList(self.valid_firmware_index)
         
-    def fwRemove(self,frame):
+    def fwRemove(self, frame):
         if frame in self.valid_firmware:
             self.valid_firmware.remove(frame)
         index = self.searchbyIndex(self.valid_firmware_index, frame)
-        if index!=-1:
+        if index != -1:
             self.valid_firmware_index.pop(index)
         self.master.controllerframe_list.updateList(self.valid_firmware_index)
 
