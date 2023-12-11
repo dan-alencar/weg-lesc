@@ -72,7 +72,7 @@ class App(ctk.CTk):
                 # if option_selected[:2] == 'FW' and controller_frame.checkbox.get() == 1:
                 if controller_frame.checkbox.get() == 1:
                     i = i + 1
-                    self.fieldCheck(controller_frame,'controller')
+                    self.fieldCheck(controller_frame, 'controller')
                     firmware_frame = self.codeframe_list.searchFrameFile(
                         option_selected)
                     self.fieldCheck(firmware_frame,'firmware')
