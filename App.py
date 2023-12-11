@@ -1,4 +1,5 @@
 import sys
+import os
 import customtkinter as ctk
 from binary import *
 from TabbedPanel import TabbedPanel
@@ -40,7 +41,7 @@ class App(ctk.CTk):
         self.logo_label.pack()
 
         # Menu de abas
-        self.fileframe_list = FileSelectionFrameList(
+        self.codeframe_list = FileSelectionFrameList(
             self)  # cria lista de frames de seleção
         self.controllerframe_list = ControllerSelectionFrameList(
             self)  # cria lista de frames de seleção
@@ -73,13 +74,12 @@ class App(ctk.CTk):
                 if controller_frame.checkbox.get() == 1:
                     i = i + 1
                     self.fieldCheck(controller_frame, 'controller')
-                    firmware_frame = self.fileframe_list.searchFrameFile(option_selected)
+                    firmware_frame = self.codeframe_list.searchFrameFile(option_selected)
                     firmware_file = firmware_frame.file.get()
                     self.fieldCheck(firmware_frame, 'firmware')
                     if firmware_frame in firmware_list:
                         code1_size = firmware_frame.code1
                         code2_size = firmware_frame.code2
-                        file_length = firmware_frame.binary_lenght
                         offset = firmware_frame.offset
                     else:
                         if firmware_frame.micro_var == 1:
@@ -88,7 +88,7 @@ class App(ctk.CTk):
                             init_add = int(firmware_frame.initadd.get(), 16)
                             final_add = int(firmware_frame.finaladd.get(), 16)
                         file, code1_size, code2_size = mot_to_binary(firmware_file, firmware_frame.micro_var, init_add, final_add)
-                        firmware_frame.binary_length = file_length = len(file)
+                        firmware_frame.binary_length = len(file)
                         firmware_frame.code1 = code1_size
                         firmware_frame.code2 = code2_size
                         if i == 1:
@@ -107,10 +107,11 @@ class App(ctk.CTk):
                         mot_list.append((firmware_file, firmware_frame.micro_var, init_add, final_add))
                     version_h = int(firmware_frame.version_h.get(), 16)
                     version_l = int(firmware_frame.version_l.get(), 16)
+                    optional = int(firmware_frame.optional_box.get(), 16)
                     interface = controller_frame.interface_var
                     comm_address = int(controller_frame.comm_address.get(), 16)
                     code_id = int(controller_frame.code_id.get(), 16)
-                    version.extend(build_version_header(version_h, version_l, offset, file_length, interface, comm_address, code_id, code1_size, code2_size))
+                    version.extend(build_version_header(version_h, version_l, offset, firmware_frame.binary_length, interface, comm_address, code_id, code1_size, code2_size, optional))
 
             print("Version: ", version)
 
@@ -144,7 +145,6 @@ class App(ctk.CTk):
         except Exception:
             messagebox.showerror("Erro", "Erro na geração do binário.")
 
-
     def fieldCheck(self, frame, type):
         if type == 'firmware':
             if '' in {frame.version_h.get(), frame.version_l.get(), frame.file.get()} or frame.micro_fam.get() == "Selecione uma aplicação":
@@ -175,7 +175,6 @@ class App(ctk.CTk):
             # Running as a script
             return os.path.join('img', image_filename)
             
-
 
 app = App()
 app.mainloop()
