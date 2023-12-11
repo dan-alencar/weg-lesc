@@ -120,7 +120,7 @@ class MenuFrame(ctk.CTkFrame):
 
         # chama a função que cria o arquivo XML
 
-        file = self.toXML(master.codeframe_list, master.controllerframe_list, master.tab_view.configframe, file)
+        file = self.toXML(master.fileframe_list, master.controllerframe_list, master.tab_view.configframe, file)
 
     def toXML(self, codeframe_list, controllerframe_list, configurations, file):
         '''

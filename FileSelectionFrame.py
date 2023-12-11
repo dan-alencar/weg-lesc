@@ -20,6 +20,9 @@ class FileSelectionFrame(ctk.CTkFrame):
         self.name = "FW " + str(self.index + 1)
         self.filename = ''
         self.binary_length = 0
+        self.offset = 0
+        self.code1 = 0
+        self.code2 = 0
         
         #label para identificar o código na tela de seleção
         self.label = ctk.CTkLabel(self, text = self.name, font=("",14, "bold"))
