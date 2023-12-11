@@ -61,6 +61,7 @@ class App(ctk.CTk):
         binary_data = bytearray()
         header_len = 0
         mot_list = []
+        firmware_list = []
         offset = 0
         i = 0
         aux = 0
@@ -72,38 +73,45 @@ class App(ctk.CTk):
                 # if option_selected[:2] == 'FW' and controller_frame.checkbox.get() == 1:
                 if controller_frame.checkbox.get() == 1:
                     i = i + 1
-                    self.fieldCheck(controller_frame,'controller')
-                    firmware_frame = self.codeframe_list.searchFrameFile(
-                        option_selected)
-                    self.fieldCheck(firmware_frame,'firmware')
+                    self.fieldCheck(controller_frame, 'controller')
+                    firmware_frame = self.codeframe_list.searchFrameFile(option_selected)
                     firmware_file = firmware_frame.file.get()
-                    if firmware_frame.micro_var == 2:
-                        init_add = int(firmware_frame.initadd.get(), 16)
-                        final_add = int(firmware_frame.finaladd.get(), 16)
-                    if firmware_frame.micro_var == 1:
-                        init_add = final_add = 0
+                    self.fieldCheck(firmware_frame, 'firmware')
+                    if firmware_frame in firmware_list:
+                        code1_size = firmware_frame.code1
+                        code2_size = firmware_frame.code2
+                        offset = firmware_frame.offset
+                    else:
+                        if firmware_frame.micro_var == 1:
+                            init_add = final_add = 0
+                        elif firmware_frame.micro_var == 2:
+                            init_add = int(firmware_frame.initadd.get(), 16)
+                            final_add = int(firmware_frame.finaladd.get(), 16)
+                        file, code1_size, code2_size = mot_to_binary(firmware_file, firmware_frame.micro_var, init_add, final_add)
+                        firmware_frame.binary_length = len(file)
+                        firmware_frame.code1 = code1_size
+                        firmware_frame.code2 = code2_size
+                        if i == 1:
+                            offset = 0
+                            aux = code1_size
+                        elif i == 2:
+                            offset = aux
+                            aux = code1_size + code2_size
+                        elif i > 2:
+                            offset = offset + aux
+                            aux = code1_size + code2_size
+                        firmware_frame.offset = offset
+                        firmware_list.append(firmware_frame)
+                    # adiciona a tupla à lista de .mot
                     if (firmware_file, firmware_frame.micro_var, init_add, final_add) not in mot_list:
-                        # agora está passando uma tuple como parametro para a função do .mot
                         mot_list.append((firmware_file, firmware_frame.micro_var, init_add, final_add))
-                    # file_length = len(mot_to_binary(firmware_file, firmware_frame.micro_var, init_add, final_add))
-                    file, code1_size, code2_size = mot_to_binary(firmware_file, firmware_frame.micro_var, init_add, final_add)
-                    file_length = len(file)
                     version_h = int(firmware_frame.version_h.get(), 16)
                     version_l = int(firmware_frame.version_l.get(), 16)
-                    if i == 1:
-                        offset = 0
-                        aux = code1_size
-                    elif i == 2:
-                        offset = aux
-                        aux = code1_size + code2_size
-                    elif i > 2:
-                        offset = offset + aux
-                        aux = code1_size + code2_size
-                    # lembrar de relacionar os tipos de aplicação do .mot (RX e RL)
+                    optional = int(firmware_frame.optional_box.get(), 16)
                     interface = controller_frame.interface_var
                     comm_address = int(controller_frame.comm_address.get(), 16)
                     code_id = int(controller_frame.code_id.get(), 16)
-                    version.extend(build_version_header(version_h, version_l, offset, file_length, interface, comm_address, code_id, code1_size, code2_size))
+                    version.extend(build_version_header(version_h, version_l, offset, firmware_frame.binary_length, interface, comm_address, code_id, code1_size, code2_size, optional))
 
             print("Version: ", version)
 
@@ -137,7 +145,6 @@ class App(ctk.CTk):
         except Exception:
             messagebox.showerror("Erro", "Erro na geração do binário.")
 
-
     def fieldCheck(self, frame, type):
         if type == 'firmware':
             if '' in {frame.version_h.get(), frame.version_l.get(), frame.file.get()} or frame.micro_fam.get() == "Selecione uma aplicação":
@@ -168,7 +175,6 @@ class App(ctk.CTk):
             # Running as a script
             return os.path.join('img', image_filename)
             
-
 
 app = App()
 app.mainloop()

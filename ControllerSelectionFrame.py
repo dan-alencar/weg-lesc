@@ -45,6 +45,13 @@ class ControllerSelectionFrame(ctk.CTkFrame):
         self.interface = ctk.CTkOptionMenu(self,state=ctk.DISABLED, dynamic_resizing=False, height=35, width=200, values=["I2C", "CAN", "Serial"], command=self.interface_callback, variable=self.interface_var)
         self.interface.pack(expand=True, padx=10, pady=10,
                        side=ctk.LEFT, anchor=ctk.N)
+
+        # caixa para controlador "opcional"
+        self.label_optional = ctk.CTkLabel(self, text="Opcional: ", font=("", 12, "bold"), height=35, anchor=ctk.E)
+        self.label_optional.pack(fill=ctk.X, expand=True, side=ctk.LEFT, padx=5, pady=10, anchor=ctk.N)
+        self.optional_box = ctk.CTkCheckBox(
+            self, text='', height=35, width=25, command=self.toggleCheckbox)
+        self.optional_box.pack(fill=ctk.X, expand=True, padx=5, pady=10, side=ctk.LEFT, anchor=ctk.N)
         
         # botão para apagar o frame
         img_excluir = repository.master.get_image_path('excluir.png')
@@ -54,16 +61,8 @@ class ControllerSelectionFrame(ctk.CTkFrame):
         self.bin.pack(pady=10, padx=10, side=ctk.RIGHT, anchor=ctk.E)
 
         self.comm_address.configure(state=ctk.DISABLED)
-        # self.offset.configure(state=ctk.DISABLED)
         self.code_id.configure(state=ctk.DISABLED)
-
-        # entrada para o offset address
-        # self.label_offadd = ctk.CTkLabel(self, text="Offset:", font=("", 12, "bold"), height=35, anchor=ctk.E)
-        # self.label_offadd.pack(fill=ctk.X, expand=True, side=ctk.LEFT, padx=5, pady=10, anchor=ctk.N)
-        #
-        # self.offset = ctk.CTkEntry(self, placeholder_text="Ex: 00000000", height=35, width=85)
-        # self.offset.pack(fill=ctk.X, expand=True, pady=10,
-        #                side=ctk.LEFT, anchor=ctk.N)
+        self.optional_box.configure(state=ctk.DISABLED)
 
     def toggleCheckbox(self):
         '''
@@ -76,15 +75,15 @@ class ControllerSelectionFrame(ctk.CTkFrame):
             self.interface.configure(state=ctk.NORMAL)
             self.comm_address.configure(state=ctk.NORMAL)
             self.optionmenu.configure(state=ctk.NORMAL)
-            self.repository.updateFrames()
             self.code_id.configure(state=ctk.NORMAL)
-            # self.offset.configure(state=ctk.NORMAL)
+            self.optional_box.configure(state=ctk.NORMAL)
+            self.repository.updateFrames()
         else:
             self.optionmenu.configure(state=ctk.DISABLED)
             self.interface.configure(state=ctk.DISABLED)
             self.comm_address.configure(state=ctk.DISABLED)
             self.code_id.configure(state=ctk.DISABLED)
-            # self.offset.configure(state=ctk.DISABLED)
+            self.optional_box.configure(state=ctk.DISABLED)
 
 
     def delFrame(self, repository):

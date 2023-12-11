@@ -46,7 +46,7 @@ class MenuFrame(ctk.CTkFrame):
 
         for frames in root:
             for frame in frames:
-                if (frame.tag=='codeframe'):
+                if frame.tag=='codeframe':
                     new_frame = FileSelectionFrame(self.master.tab_view.codeframe, self.master.codeframe_list, self.master.tab_view.codeframe.index)
                     self.master.tab_view.codeframe.index += 1
                     self.master.codeframe_list.addFrame(new_frame)  # adiciona no repositório
@@ -71,7 +71,7 @@ class MenuFrame(ctk.CTkFrame):
                         new_frame.micro_fam.set('Selecione uma aplicação')
                         new_frame.micro_var = -1
                     new_frame.file.configure(state=ctk.DISABLED)
-                if (frame.tag=='controllerframe'):
+                if frame.tag=='controllerframe':
                     new_frame = ControllerSelectionFrame(self.master.tab_view.controllerframe, self.master.controllerframe_list)
                     self.master.controllerframe_list.addFrame(new_frame)
                     new_frame.pack(side=ctk.TOP, fill=ctk.BOTH, expand=ctk.TRUE)
@@ -85,12 +85,16 @@ class MenuFrame(ctk.CTkFrame):
                         new_frame.interface_var = -1
                     new_frame.comm_address.insert('1', frame.get('comm_address'))
                     new_frame.code_id.insert('1', frame.get('code_id'))
-                    fw_option = frame.get('option')
+                    if frame.get('optional') == '1':
+                        new_frame.optional_box.select()
+                    else:
+                        new_frame.optional_box.deselect()
+                    fw_option = frame.get('optionSelected')
                     if fw_option[:2] == 'FW':
                         new_frame.optionmenu.set(fw_option)
                     else:
                         new_frame.optionmenu.set('Selecione uma opção')
-                if (frame.tag=='configurations'):  
+                if frame.tag == 'configurations':
                     self.master.tab_view.configframe.header_version.insert('1', frame.get('header_ver'))
                     self.master.tab_view.configframe.header_valid.insert('1', frame.get('header_val'))
                     self.master.tab_view.configframe.prod_id.insert('1', frame.get('prod_id'))
@@ -120,7 +124,7 @@ class MenuFrame(ctk.CTkFrame):
 
         # chama a função que cria o arquivo XML
 
-        file = self.toXML(master.codeframe_list, master.controllerframe_list, master.tab_view.configframe, file)
+        self.toXML(master.codeframe_list, master.controllerframe_list, master.tab_view.configframe, file)
 
     def toXML(self, codeframe_list, controllerframe_list, configurations, file):
         '''
@@ -133,12 +137,12 @@ class MenuFrame(ctk.CTkFrame):
         configs = ET.SubElement(xml_doc, 'configs')
         for frame in codeframe_list.valid_firmware:
             if frame.checkbox.get() == 1:
-                if (isinstance(frame, FileSelectionFrame)):
+                if isinstance(frame, FileSelectionFrame):
                     ET.SubElement(codeframes, 'codeframe', filepath=frame.file.get(), version_h=frame.version_h.get(), version_l=frame.version_l.get(), micro=frame.micro_fam.get(), initadd=frame.initadd.get(), finaladd=frame.finaladd.get())
         
         for frame in controllerframe_list.controllerframes:
             if frame.checkbox.get() == 1:
-                if (isinstance(frame, ControllerSelectionFrame)):
+                if isinstance(frame, ControllerSelectionFrame):
                     optionSelected = frame.optionmenu.get()
                     if optionSelected[:2] == 'FW':
                         optionIndex = codeframe_list.searchbyName(codeframe_list.valid_firmware_index, optionSelected)
@@ -146,7 +150,7 @@ class MenuFrame(ctk.CTkFrame):
                             optionSelected = 'FW ' + str(optionIndex+1)
                         else:
                             optionSelected = "Selecione uma opção"
-                    ET.SubElement(controllerframes, 'controllerframe', interface=frame.interface.get(), comm_address=frame.comm_address.get(), code_id=frame.code_id.get(),  option=optionSelected)
+                    ET.SubElement(controllerframes, 'controllerframe', interface=frame.interface.get(), comm_address=frame.comm_address.get(), code_id=frame.code_id.get(), optionSelected=optionSelected, optional=str(frame.optional_box.get()))
         ET.SubElement(configs, 'configurations', header_ver=configurations.header_version.get(), header_val=configurations.header_valid.get(), prod_id=configurations.prod_id.get(), prod_ver=configurations.prod_ver.get())
 
         tree = ET.ElementTree(xml_doc)
