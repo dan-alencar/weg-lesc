@@ -64,7 +64,7 @@ class App(ctk.CTk):
         else:
             # Running as a script
             return os.path.join('img', image_filename)
-        
-        
+
+          
 app = App()
 app.mainloop()
