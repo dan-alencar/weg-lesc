@@ -107,7 +107,7 @@ class App(ctk.CTk):
                         mot_list.append((firmware_file, firmware_frame.micro_var, init_add, final_add))
                     version_h = int(firmware_frame.version_h.get(), 16)
                     version_l = int(firmware_frame.version_l.get(), 16)
-                    optional = int(firmware_frame.optional_box.get(), 16)
+                    optional = controller_frame.optional_box.get()
                     interface = controller_frame.interface_var
                     comm_address = int(controller_frame.comm_address.get(), 16)
                     code_id = int(controller_frame.code_id.get(), 16)
@@ -144,6 +144,10 @@ class App(ctk.CTk):
             messagebox.showerror("Erro", str(e))
         except Exception:
             messagebox.showerror("Erro", "Erro na geração do binário.")
+        log_type = [('Arquivo .txt', '*.txt')]
+        log_file = filedialog.asksaveasfilename(
+            initialdir="/", title="Salvar como", filetypes=log_type, defaultextension=log_type)
+        self.log_builder(log_file, header, version)
 
     def fieldCheck(self, frame, type):
         if type == 'firmware':
@@ -174,7 +178,68 @@ class App(ctk.CTk):
         else:
             # Running as a script
             return os.path.join('img', image_filename)
-            
+
+    def log_builder(self, destination_path, header, version):
+        with open(destination_path, "w") as destination:
+            destination.write("Firmwares carregados:\n")
+            for firmware in self.codeframe_list.valid_firmware:
+                destination.write(firmware.name)
+                destination.write('\n')
+                destination.write("Path do arquivo: ")
+                destination.write(firmware.file.get())
+                destination.write('\n')
+                destination.write("Tamanho do arquivo: ")
+                destination.write(str(firmware.binary_length))
+                destination.write('\n')
+                destination.write("Offset do arquivo: ")
+                destination.write(str(firmware.offset))
+                destination.write('\n')
+                destination.write("Version High: ")
+                destination.write(firmware.version_h.get())
+                destination.write('\n')
+                destination.write("Version Low: ")
+                destination.write(firmware.version_l.get())
+                destination.write('\n')
+                destination.write("Init. Add.: ")
+                destination.write(firmware.initadd.get())
+                destination.write('\n')
+                destination.write("Final Add.: ")
+                destination.write(firmware.finaladd.get())
+                destination.write('\n')
+                destination.write("Família de controlador compatível: ")
+                destination.write(firmware.micro_fam.get())
+                destination.write('\n')
+                destination.write('\n')
+            destination.write("Controladores selecionados:\n")
+            for controller in self.controllerframe_list.controllerframes:
+                if controller.checkbox.get() == 1:
+                    destination.write("Firmware selecionado: ")
+                    destination.write(controller.optionmenu.get())
+                    destination.write('\n')
+                    destination.write("Endereço de comunicação: ")
+                    destination.write(controller.comm_address.get())
+                    destination.write('\n')
+                    destination.write("Code ID: ")
+                    destination.write(controller.code_id.get())
+                    destination.write('\n')
+                    destination.write("Interface: ")
+                    destination.write(controller.interface.get())
+                    destination.write('\n')
+                    destination.write("Controlador opcional: ")
+                    destination.write(str(controller.optional_box.get()))
+                    destination.write('\n')
+                    destination.write('\n')
+            destination.write("Cabeçalho WPS:\n")
+            for key in header:
+                destination.write(key)
+                destination.write(': ')
+                destination.write(str(header[key]))
+                destination.write('\n')
+            destination.write('\n')
+            destination.write("Cabeçalho de versionamento:\n")
+            destination.write('\n')
+            destination.write(str(version))
+
 
 app = App()
 app.mainloop()
