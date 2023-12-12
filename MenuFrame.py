@@ -5,12 +5,15 @@ from tkinter import filedialog
 from FileSelectionFrame import FileSelectionFrame
 from ControllerSelectionFrame import ControllerSelectionFrame
 
+
+# Classe: MenuFrame
+# Descrição: Cria uma menubar com opção de salvar e carregar arquivos.
 class MenuFrame(ctk.CTkFrame):
+    # Método: __init__
+    # Parâmetros de Entrada: master (janela principal), **kwargs (argumentos adicionais)
+    # Operação: Inicializa os botões do menu e os organiza na tela.
     def __init__(self, master, **kwargs):
         super().__init__(master, **kwargs)
-        '''
-        cria uma menubar com opção de salvar e carregar arquivos
-        '''
 
         # botões do menu
         self.open_button = ctk.CTkButton(
@@ -24,11 +27,10 @@ class MenuFrame(ctk.CTkFrame):
         self.save_button.pack(side=ctk.LEFT)
         self.help_button.pack(side=ctk.LEFT)
 
+    # Método: onOpen
+    # Parâmetros de Entrada: Nenhum
+    # Operação: Procura um arquivo .lesc e carrega os frames do arquivo.
     def onOpen(self):
-        '''
-        Procurar um arquivo .lesc
-        '''
-
         # abre o seletor de arquivos para carregar o arquivo .lesc
         data = [('Arquivos .lesc', '*.lesc')]
         file = filedialog.askopenfilename(initialdir="/", title="Abrir arquivo",
@@ -39,11 +41,9 @@ class MenuFrame(ctk.CTkFrame):
         root = tree.getroot()
 
         # apaga os frames do aplicativo e do repositório
-
         self.clear()
 
         # carrega os frames do arquivo
-
         for frames in root:
             for frame in frames:
                 if frame.tag=='codeframe':
@@ -111,10 +111,10 @@ class MenuFrame(ctk.CTkFrame):
             self.master.controllerframe_list.addFrame(new_controllerframe)
             new_controllerframe.pack(side=ctk.TOP, fill=ctk.BOTH, expand=ctk.TRUE)
 
+    # Método: onSave
+    # Parâmetros de Entrada: master (janela principal)
+    # Operação: Salva um arquivo .lesc.
     def onSave(self, master):
-        '''
-        Salva um arquivo .lesc
-        '''
 
         # abre o gerenciador de arquivos para salvar arquivo .lesc
 
@@ -126,11 +126,12 @@ class MenuFrame(ctk.CTkFrame):
 
         self.toXML(master.codeframe_list, master.controllerframe_list, master.tab_view.configframe, file)
 
+    # Método: toXML
+    # Parâmetros de Entrada: codeframe_list (lista de frames de código),
+    # controllerframe_list (lista de frames de controle),
+    # configurations (configurações), file (nome do arquivo)
+    # Operação: Cria um arquivo XML com os dados dos frames.
     def toXML(self, codeframe_list, controllerframe_list, configurations, file):
-        '''
-        Cria um arquivo xml
-        '''
-
         xml_doc = ET.Element('App')
         codeframes = ET.SubElement(xml_doc, 'codeframes')
         controllerframes = ET.SubElement(xml_doc, 'controllerframes')
@@ -155,7 +156,10 @@ class MenuFrame(ctk.CTkFrame):
 
         tree = ET.ElementTree(xml_doc)
         tree.write(file)
-    
+
+    # Método: clear
+    # Parâmetros de Entrada: Nenhum
+    # Operação: Limpa todos os frames do aplicativo.
     def clear(self):
         '''
         Limpa todos os frames do aplicativo
@@ -166,7 +170,9 @@ class MenuFrame(ctk.CTkFrame):
         self.master.controllerframe_list.clearFrames()
         self.master.tab_view.configframe.clearFields()
         self.master.tab_view.codeframe.index = 0
-        
 
+    # Método: about
+    # Parâmetros de Entrada: Nenhum
+    # Operação: Exibe uma mensagem de ajuda.
     def about(self):
         messagebox.showinfo("Help", "Custom Menu Example")

@@ -11,20 +11,25 @@ from tkinter import filedialog
 from tkinter import messagebox
 
 
+# Classe: App
+# Descrição: Representa a janela principal da aplicação.
 class App(ctk.CTk):
     """
     Janela principal da aplicação
     """
 
+    # Método: __init__
+    # Parâmetros de Entrada: nenhum
+    # Operação: Inicializa a janela com configurações específicas, como tamanho, ícone, e frames.
     def __init__(self):
         super().__init__()
 
         # configuração inicial da janela
-
         self.geometry("1400x800")
         self.resizable('true', 'true')
         self.title("Seleção de Arquivos")
 
+        # Logotipo
         weg_ico = 'weg-logo-5.ico'
         weg_logo = 'logo-weg.png'
         self.iconbitmap(self.get_image_path(weg_ico))
@@ -53,6 +58,9 @@ class App(ctk.CTk):
             self, text="Gerar Binário", command=self.gerarbinario)
         self.generate_binary.pack(pady=10, padx=10)
 
+    # Método: gerarbinario
+    # Parâmetros de Entrada: nenhum
+    # Operação: Gera o arquivo binário combinando informações de firmwares, cabeçalhos e outros dados.
     def gerarbinario(self):
         '''
         Função chamada pelo botão gerar binário
@@ -149,6 +157,9 @@ class App(ctk.CTk):
             initialdir="/", title="Salvar como", filetypes=log_type, defaultextension=log_type)
         self.log_builder(log_file, header, version)
 
+    # Método: fieldCheck
+    # Parâmetros de Entrada: frame (frame a ser verificado), type (tipo de frame: 'firmware', 'controller', 'header')
+    # Operação: Verifica se todos os campos obrigatórios estão preenchidos no frame.
     def fieldCheck(self, frame, type):
         if type == 'firmware':
             if '' in {frame.version_h.get(), frame.version_l.get(), frame.file.get()} or frame.micro_fam.get() == "Selecione uma aplicação":
@@ -171,6 +182,10 @@ class App(ctk.CTk):
             else:
                 return
 
+    # Método: get_image_path
+    # Parâmetros de Entrada: image_filename (nome do arquivo de imagem)
+    # Saída: Caminho completo do arquivo de imagem
+    # Operação: Retorna o caminho do arquivo de imagem, considerando a execução como script ou executável.
     def get_image_path(self, image_filename):
         if hasattr(sys, '_MEIPASS'):
             # Running as a PyInstaller executable
@@ -179,6 +194,10 @@ class App(ctk.CTk):
             # Running as a script
             return os.path.join('img', image_filename)
 
+    # Método: log_builder
+    # Parâmetros de Entrada: destination_path (caminho para o arquivo de log),
+    # header (informações do cabeçalho), version (informações da versão)
+    # Operação: Gera um arquivo de log com informações sobre os firmwares, controladores e cabeçalhos utilizados.
     def log_builder(self, destination_path, header, version):
         with open(destination_path, "w") as destination:
             destination.write("Firmwares carregados:\n")
@@ -240,6 +259,6 @@ class App(ctk.CTk):
             destination.write('\n')
             destination.write(str(version))
 
-
+# Instanciação da aplicação e início do loop principal.
 app = App()
 app.mainloop()

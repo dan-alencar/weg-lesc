@@ -1,13 +1,15 @@
 import customtkinter as ctk
-from tkinter import filedialog
 from PIL import Image
 from dictionary import interface_enum
 
-class ControllerSelectionFrame(ctk.CTkFrame):
-    '''
-    Cria novo frame com widgets para seleção de arquivos 
-    '''
 
+# Classe: ControllerSelectionFrame
+# Descrição: Cria um novo frame com widgets para seleção de arquivos.
+class ControllerSelectionFrame(ctk.CTkFrame):
+    # Método: __init__
+    # Parâmetros de Entrada: master (janela principal),
+    # repository (repositório de frames), **kwargs (parâmetros adicionais)
+    # Operação: Inicializa o frame e configura widgets para seleção de arquivos.
     def __init__(self, master, repository, **kwargs):
         super().__init__(master, **kwargs)
 
@@ -64,12 +66,10 @@ class ControllerSelectionFrame(ctk.CTkFrame):
         self.code_id.configure(state=ctk.DISABLED)
         self.optional_box.configure(state=ctk.DISABLED)
 
+    # Método: toggleCheckbox
+    # Parâmetros de Entrada: Nenhum
+    # Operação: Controla a ativação dos widgets de acordo com a marcação na checkbox.
     def toggleCheckbox(self):
-        '''
-        Controla a ativação dos widgets de acordo com a marcação na 
-        checkbox
-        '''
-
         # ativa os widgets quando a checkbox é marcada e desativa quando desmarcada
         if self.checkbox.get()==1:
             self.interface.configure(state=ctk.NORMAL)
@@ -85,15 +85,14 @@ class ControllerSelectionFrame(ctk.CTkFrame):
             self.code_id.configure(state=ctk.DISABLED)
             self.optional_box.configure(state=ctk.DISABLED)
 
-
+    # Método: delFrame
+    # Parâmetros de Entrada: repository (repositório de frames)
+    # Operação: Retira o respectivo frame seletor da janela.
     def delFrame(self, repository):
-        '''
-        Retira o respectivo frame seletor da janela 
-        '''
         self.pack_forget()
         repository.removeFrame(self)
     
-    #debugging da opção selecionada    
+    # debugging da opção selecionada
     def interface_callback(self, choice):
         self.interface_var = interface_enum[choice]
         print("Interface: ", self.interface_var)
