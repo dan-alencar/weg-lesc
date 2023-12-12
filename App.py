@@ -1,5 +1,4 @@
 import sys
-import os
 import customtkinter as ctk
 from binary import *
 from TabbedPanel import TabbedPanel
@@ -8,8 +7,6 @@ from FileSelectionFrameList import FileSelectionFrameList
 from ControllerSelectionFrameList import ControllerSelectionFrameList
 from MenuFrame import MenuFrame
 from PIL import Image
-from tkinter import filedialog
-from tkinter import messagebox
 
 
 class App(ctk.CTk):
@@ -23,7 +20,7 @@ class App(ctk.CTk):
         # configuração inicial da janela
 
         self.geometry("1400x800")
-        self.resizable('true', 'true')
+        self.resizable(True, True)
         self.title("Seleção de Arquivos")
 
         self.builder = Builder(self)
@@ -55,7 +52,6 @@ class App(ctk.CTk):
         self.generate_binary = ctk.CTkButton(
             self, text="Gerar Binário", command=self.builder.gerarbinario)
         self.generate_binary.pack(pady=10, padx=10)
-
 
     def get_image_path(self, image_filename):
         if hasattr(sys, '_MEIPASS'):
