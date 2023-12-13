@@ -103,9 +103,7 @@ class Builder:
             messagebox.showerror("Erro", str(e))
         except Exception:
             messagebox.showerror("Erro", "Erro na geração do binário.")
-        log_type = [('Arquivo .txt', '*.txt')]
-        log_file = filedialog.asksaveasfilename(
-            initialdir="/", title="Salvar como", filetypes=log_type, defaultextension=log_type)
+        log_file = file[:-4] + ".txt"
         self.log_builder(log_file, header, version)
 
     # Método: fieldCheck
