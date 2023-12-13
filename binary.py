@@ -366,35 +366,30 @@ def mot_to_binary2(file_path, firmware):
                 else:
                     # endereço inicial do dado
                     init_address = record['address']
-                    previous_end_address = init_address
                     # endereço final do dado
                     end_address = record['address'] + record['data_length'] - 5
 
                     if lines == 0:
-                        previous_end_address = record['address']  # garante que a primeira linha será parte do code 1
-
-                    # verifica se a linha pertence à segunda parte, se houve um pulo >= 128 bytes
-                    if init_address - previous_end_address >= 128 and code == 1:
-                        code = 2  # indica que houve uma mudança para code 2
                         previous_end_address = record['address']
 
-                    # verifica se houve um segundo pulo >= 128 bytes, indicando fim das informações
-                    elif init_address - previous_end_address >= 128 and code == 2:
-                        break  # para de percorrer o arquivo
-
                     # verifica se a linha pertence à primeira parte
-                    if code == 1:
-                        # preenche bytes vazios quando o endereço do início
-                        # da linha é maior que o endereço do fim da linha anterior
+                    if record['address'] < int(0xFFFFFEE4):
+
+                        # preenche bytes vazios quando o endereço do início da linha é maior que o endereço do fim da linha anterior
                         if previous_end_address < init_address:
                             code1 += (init_address - previous_end_address) * 'FF'
 
-                        # junta o dado à primeira ‘string’
+                        # junta o dado à primeira string
                         code1 += record["data"]
 
                     # verifica se a linha pertence à segunda parte
-                    elif code == 2:
-                        # junta o dado à segunda ‘string’
+                    elif record['address'] >= int(0xFFFFFEE4):
+
+                        # se a linha for a primeira da segunda parte, altera o valor do endereço final da linha anterior
+                        if record['address'] == int(0xFFFFFEE4):
+                            previous_end_address = 0xFFFFFEE4
+
+                        # junta o dado à segunda string
                         code2 += record["data"]
 
                     # atualiza o endereço final anterior
