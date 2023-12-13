@@ -92,11 +92,11 @@ def build_header(header):
 # Saída: Dados do cabeçalho da versão empacotados
 # Operação: Empacota os parâmetros fornecidos para formar o cabeçalho do versionamento.
 def build_version_header(version_h, version_l, offset_adds, length, interface,
-                         comm_address, code_id, offset_vec, offset_app, optional):
-    header_format = '>HHIIBBBIIB'
+                         comm_address, code_id, optional, offset_vec, offset_app):
+    header_format = '>HHIIBBBBII'
     version_header_data = struct.pack(
         header_format, version_h, version_l
-        , offset_adds, length, interface, comm_address, code_id, offset_vec, offset_app, optional)
+        , offset_adds, length, interface, comm_address, code_id, optional, offset_vec, offset_app)
     return version_header_data
 
 

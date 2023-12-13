@@ -9,11 +9,12 @@ from MenuFrame import MenuFrame
 from PIL import Image
 
 
+# Classe: App
+# Descrição: Representa a janela principal da aplicação.
 class App(ctk.CTk):
-    """
-    Janela principal da aplicação
-    """
-
+    # Método: __init__
+    # Parâmetros de Entrada: nenhum
+    # Operação: Inicializa a janela com configurações específicas, como tamanho, ícone, e frames.
     def __init__(self):
         super().__init__()
 
@@ -53,6 +54,10 @@ class App(ctk.CTk):
             self, text="Gerar Binário", command=self.builder.gerarbinario)
         self.generate_binary.pack(pady=10, padx=10)
 
+    # Método: get_image_path
+    # Parâmetros de Entrada: image_filename (nome do arquivo de imagem)
+    # Saída: Caminho completo do arquivo de imagem
+    # Operação: Retorna o caminho do arquivo de imagem, considerando a execução como script ou executável.
     def get_image_path(self, image_filename):
         if hasattr(sys, '_MEIPASS'):
             # Running as a PyInstaller executable
@@ -61,6 +66,7 @@ class App(ctk.CTk):
             # Running as a script
             return os.path.join('img', image_filename)
 
-          
+
+# Instanciação da aplicação e início do loop principal.
 app = App()
 app.mainloop()
