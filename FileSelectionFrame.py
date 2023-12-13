@@ -58,18 +58,18 @@ class FileSelectionFrame(ctk.CTkFrame):
         self.version_l.pack(fill=ctk.X, expand=True, pady=10, side=ctk.LEFT, anchor=ctk.N)
         
         #entrada para o endereço inicial
-        self.label_initadd = ctk.CTkLabel(self, text="Init. Add:", font=("", 12, "bold"), height=35, anchor=ctk.E)
-        self.label_initadd.pack(fill=ctk.X, expand=True, side=ctk.LEFT, padx=5, pady=10, anchor=ctk.N)
-
-        self.initadd = ctk.CTkEntry(self, placeholder_text="Ex: 00000000", height=35, width=90)
-        self.initadd.pack(fill=ctk.X, expand=True, pady=10, side=ctk.LEFT, anchor=ctk.N)
-        
-        #entrada para o endereço final
-        self.label_finaladd = ctk.CTkLabel(self, text="Final Add:", font=("", 12, "bold"), height=35, anchor=ctk.E)
-        self.label_finaladd.pack(fill=ctk.X, expand=True, side=ctk.LEFT, padx=5, pady=10, anchor=ctk.N)
-
-        self.finaladd = ctk.CTkEntry(self, placeholder_text="Ex: FFFFFFFF", height=35, width=90)
-        self.finaladd.pack(fill=ctk.X, expand=True, pady=10, side=ctk.LEFT, anchor=ctk.N)
+        # self.label_initadd = ctk.CTkLabel(self, text="Init. Add:", font=("", 12, "bold"), height=35, anchor=ctk.E)
+        # self.label_initadd.pack(fill=ctk.X, expand=True, side=ctk.LEFT, padx=5, pady=10, anchor=ctk.N)
+        #
+        # self.initadd = ctk.CTkEntry(self, placeholder_text="Ex: 00000000", height=35, width=90)
+        # self.initadd.pack(fill=ctk.X, expand=True, pady=10, side=ctk.LEFT, anchor=ctk.N)
+        #
+        # #entrada para o endereço final
+        # self.label_finaladd = ctk.CTkLabel(self, text="Final Add:", font=("", 12, "bold"), height=35, anchor=ctk.E)
+        # self.label_finaladd.pack(fill=ctk.X, expand=True, side=ctk.LEFT, padx=5, pady=10, anchor=ctk.N)
+        #
+        # self.finaladd = ctk.CTkEntry(self, placeholder_text="Ex: FFFFFFFF", height=35, width=90)
+        # self.finaladd.pack(fill=ctk.X, expand=True, pady=10, side=ctk.LEFT, anchor=ctk.N)
         
         self.micro_var = ctk.StringVar(value="RX/RL")
         self.micro_fam = ctk.CTkOptionMenu(self, state=ctk.DISABLED, dynamic_resizing=False, height=35, width=90, values=["RX", "RL"], command=self.micro_callback, variable=self.micro_var)
@@ -88,8 +88,8 @@ class FileSelectionFrame(ctk.CTkFrame):
         self.version_h.configure(state=ctk.DISABLED)
         self.version_l.configure(state=ctk.DISABLED)
         self.micro_fam.configure(state=ctk.DISABLED)
-        self.initadd.configure(state=ctk.DISABLED)
-        self.finaladd.configure(state=ctk.DISABLED)
+        # self.initadd.configure(state=ctk.DISABLED)
+        # self.finaladd.configure(state=ctk.DISABLED)
 
     # Método: toggleCheckbox
     # Parâmetros de Entrada: Nenhum
@@ -148,14 +148,14 @@ class FileSelectionFrame(ctk.CTkFrame):
     # Parâmetros de Entrada: choice (opção escolhida)
     # Operação: Atualiza os campos de acordo com a escolha do usuário.
     def micro_callback(self, choice):
-        if choice == "RX":
-            self.initadd.delete(0, tk.END)
-            self.finaladd.delete(0, tk.END)
-            self.initadd.configure(state=ctk.DISABLED)
-            self.finaladd.configure(state=ctk.DISABLED)
-        elif choice == "RL":
-            self.initadd.configure(state=ctk.NORMAL)
-            self.finaladd.configure(state=ctk.NORMAL)
+        # if choice == "RX":
+        #     self.initadd.delete(0, tk.END)
+        #     self.finaladd.delete(0, tk.END)
+        #     self.initadd.configure(state=ctk.DISABLED)
+        #     self.finaladd.configure(state=ctk.DISABLED)
+        # elif choice == "RL":
+        #     self.initadd.configure(state=ctk.NORMAL)
+        #     self.finaladd.configure(state=ctk.NORMAL)
             
         self.micro_var = micro_enum[choice]
         print("Microcontrolador: ", choice)

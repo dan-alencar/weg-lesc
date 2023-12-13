@@ -39,12 +39,12 @@ class Builder:
                         code2_size = firmware_frame.code2
                         offset = firmware_frame.offset
                     else:
-                        if firmware_frame.micro_var == 1:
-                            init_add = final_add = 0
-                        elif firmware_frame.micro_var == 2:
-                            init_add = int(firmware_frame.initadd.get(), 16)
-                            final_add = int(firmware_frame.finaladd.get(), 16)
-                        file, code1_size, code2_size = mot_to_binary(firmware_file, firmware_frame.micro_var, init_add, final_add)
+                        # if firmware_frame.micro_var == 1:
+                        #     init_add = final_add = 0
+                        # elif firmware_frame.micro_var == 2:
+                        #     init_add = int(firmware_frame.initadd.get(), 16)
+                        #     final_add = int(firmware_frame.finaladd.get(), 16)
+                        file, code1_size, code2_size = mot_to_binary(firmware_file, firmware_frame.micro_var)
                         firmware_frame.binary_length = len(file)
                         firmware_frame.code1 = code1_size
                         firmware_frame.code2 = code2_size
@@ -60,8 +60,8 @@ class Builder:
                         firmware_frame.offset = offset
                         firmware_list.append(firmware_frame)
                     # adiciona a tupla à lista de .mot
-                    if (firmware_file, firmware_frame.micro_var, init_add, final_add) not in mot_list:
-                        mot_list.append((firmware_file, firmware_frame.micro_var, init_add, final_add))
+                    if (firmware_file, firmware_frame.micro_var) not in mot_list:
+                        mot_list.append((firmware_file, firmware_frame.micro_var))
                     version_h = int(firmware_frame.version_h.get(), 16)
                     version_l = int(firmware_frame.version_l.get(), 16)
                     optional = controller_frame.optional_box.get()
@@ -117,8 +117,6 @@ class Builder:
                       frame.file.get()} or frame.micro_fam.get() == "Selecione uma aplicação":
                 raise ValueError('Configure todos os campos dos firmwares selecionados')
             # cuidado com esse parenteses
-            if frame.micro_fam.get() == "RL" and ('' in {frame.initadd.get(), frame.finaladd.get()}):
-                raise ValueError('Configure todos os campos dos firmwares selecionados')
             else:
                 return
 
@@ -159,12 +157,6 @@ class Builder:
                 destination.write('\n')
                 destination.write("Version Low: ")
                 destination.write(firmware.version_l.get())
-                destination.write('\n')
-                destination.write("Init. Add.: ")
-                destination.write(firmware.initadd.get())
-                destination.write('\n')
-                destination.write("Final Add.: ")
-                destination.write(firmware.finaladd.get())
                 destination.write('\n')
                 destination.write("Code 1 Size: ")
                 destination.write(str(firmware.code1))

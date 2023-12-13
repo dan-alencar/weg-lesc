@@ -54,11 +54,11 @@ class MenuFrame(ctk.CTkFrame):
                     new_frame.checkbox.toggle()
                     new_frame.file.configure(state=ctk.NORMAL)
                     micro_option = frame.get('micro')
-                    if micro_option == 'RL':
-                        new_frame.initadd.configure(state=ctk.NORMAL)
-                        new_frame.finaladd.configure(state=ctk.NORMAL)
-                        new_frame.initadd.insert('1', frame.get('initadd'))
-                        new_frame.finaladd.insert('1', frame.get('finaladd'))
+                    # if micro_option == 'RL':
+                    #     new_frame.initadd.configure(state=ctk.NORMAL)
+                    #     new_frame.finaladd.configure(state=ctk.NORMAL)
+                    #     new_frame.initadd.insert('1', frame.get('initadd'))
+                    #     new_frame.finaladd.insert('1', frame.get('finaladd'))
                     # new_frame.length.insert('1',  frame.get('length'))
                     new_frame.filename = frame.get('filepath')
                     new_frame.file.insert('1', frame.get('filepath'))
@@ -139,7 +139,7 @@ class MenuFrame(ctk.CTkFrame):
         for frame in codeframe_list.valid_firmware:
             if frame.checkbox.get() == 1:
                 if isinstance(frame, FileSelectionFrame):
-                    ET.SubElement(codeframes, 'codeframe', filepath=frame.file.get(), version_h=frame.version_h.get(), version_l=frame.version_l.get(), micro=frame.micro_fam.get(), initadd=frame.initadd.get(), finaladd=frame.finaladd.get())
+                    ET.SubElement(codeframes, 'codeframe', filepath=frame.file.get(), version_h=frame.version_h.get(), version_l=frame.version_l.get(), micro=frame.micro_fam.get())
         
         for frame in controllerframe_list.controllerframes:
             if frame.checkbox.get() == 1:
