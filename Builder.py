@@ -2,13 +2,18 @@ from tkinter import filedialog, messagebox
 from binary import *
 
 
+# Classe: Builder
+# Descrição: Responsável por gerar o arquivo binário com base nas configurações fornecidas.
 class Builder:
+    # Construtor da classe Builder
+    # Parâmetros de Entrada: master (objeto que representa o aplicativo principal)
     def __init__(self, master):
         self.master = master
+
+    # Método: gerarbinario
+    # Parâmetros de Entrada: Nenhum
+    # Operação: Gera o arquivo binário com base nas configurações fornecidas no aplicativo.
     def gerarbinario(self):
-        '''
-        Função chamada pelo botão gerar binário
-        '''
         version = bytearray()
         binary_data = bytearray()
         header_len = 0
@@ -65,7 +70,7 @@ class Builder:
                     code_id = int(controller_frame.code_id.get(), 16)
                     version.extend(
                         build_version_header(version_h, version_l, offset, firmware_frame.binary_length, interface,
-                                             comm_address, code_id, code1_size, code2_size, optional))
+                                             comm_address, code_id, optional, code1_size, code2_size))
 
             print("Version: ", version)
 
@@ -101,6 +106,11 @@ class Builder:
         log_file = file[:-4] + ".txt"
         self.log_builder(log_file, header, version)
 
+    # Método: fieldCheck
+    # Parâmetros de Entrada: frame (objeto representando o frame a ser verificado),
+    # type (tipo de verificação - 'firmware', 'controller' ou 'header')
+    # Operação: Verifica se todos os campos obrigatórios foram preenchidos
+    # nos frames de firmware, controlador ou cabeçalho.
     def fieldCheck(self, frame, type):
         if type == 'firmware':
             if '' in {frame.version_h.get(), frame.version_l.get(),
@@ -125,6 +135,10 @@ class Builder:
             else:
                 return
 
+    # Método: log_builder
+    # Parâmetros de Entrada: destination_path (caminho do arquivo de log), header
+    # Operação: Verifica se todos os campos obrigatórios foram preenchidos
+    # nos frames de firmware, controlador ou cabeçalho.
     def log_builder(self, destination_path, header, version):
         with open(destination_path, "w") as destination:
             destination.write("Firmwares carregados:\n")

@@ -2,10 +2,9 @@ import customtkinter as ctk
 from BodyFrame import BodyFrame
 from ConfigurationFrame import ConfigurationFrame
 
+# Classe: TabbedPanel
+# Descrição: Menu para visualização de múltiplas janelas.
 class TabbedPanel(ctk.CTkTabview):
-    '''
-    Menu para visualização de múltiplas janelas
-    '''
     def __init__(self, master, **kwargs):
         
         super().__init__(master, **kwargs)

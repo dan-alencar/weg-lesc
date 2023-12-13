@@ -2,15 +2,15 @@ import customtkinter as ctk
 from tkinter import filedialog
 import tkinter as tk
 from PIL import Image
-from FileSelectionFrameList import FileSelectionFrameList
-from binary import mot_to_binary
 from dictionary import micro_enum
 
-class FileSelectionFrame(ctk.CTkFrame):
-    '''
-    Cria novo frame com widgets para seleção de arquivos 
-    '''
 
+# Classe: FileSelectionFrame
+# Descrição: Cria um novo frame com widgets para seleção de arquivos.
+class FileSelectionFrame(ctk.CTkFrame):
+    # Método: __init__
+    # Parâmetros de Entrada: master (janela principal), repository (repositório de frames), index (índice do frame)
+    # Operação: Inicializa os atributos do frame.
     def __init__(self, master, repository, index, **kwargs):
         super().__init__(master, **kwargs)
         
@@ -91,12 +91,10 @@ class FileSelectionFrame(ctk.CTkFrame):
         self.initadd.configure(state=ctk.DISABLED)
         self.finaladd.configure(state=ctk.DISABLED)
 
+    # Método: toggleCheckbox
+    # Parâmetros de Entrada: Nenhum
+    # Operação: Controla a ativação dos widgets de acordo com a marcação na checkbox.
     def toggleCheckbox(self):
-        '''
-        Controla a ativação dos widgets de acordo com a marcação na 
-        checkbox
-        '''
-
         # ativa os widgets quando a checkbox é marcada e desativa quando desmarcada
         if (self.checkbox.get()==1):
             self.btn.configure(state=ctk.NORMAL)
@@ -111,6 +109,9 @@ class FileSelectionFrame(ctk.CTkFrame):
             self.micro_fam.configure(state=ctk.DISABLED)
             self.repository.fwRemove(self)
 
+    # Método: chooseFile
+    # Parâmetros de Entrada: Nenhum
+    # Operação: Permite a seleção de arquivos .txt e .hex.
     def chooseFile(self):
         '''
         Permite a seleção de arquivos .txt e .hex 
@@ -126,21 +127,26 @@ class FileSelectionFrame(ctk.CTkFrame):
         self.file.delete(0, tk.END)
         self.file.insert(0, self.filename)
         self.file.configure(state=ctk.DISABLED)
-        
 
+    # Método: delFrame
+    # Parâmetros de Entrada: repository (repositório de frames)
+    # Operação: Retira o respectivo frame seletor da janela.
     def delFrame(self, repository):
-        '''
-        Retira o respectivo frame seletor da janela 
-        '''
         self.pack_forget()
         repository.removeFrame(self)
-    
+
+    # Método: validate_input
+    # Parâmetros de Entrada: input (entrada a ser validada)
+    # Operação: Retorna True se a entrada tiver comprimento menor ou igual a 8, False caso contrário.
     def validate_input(self, input):
         if len(input) <= 8:
             return True
         else:
             return False
-        
+
+    # Método: micro_callback
+    # Parâmetros de Entrada: choice (opção escolhida)
+    # Operação: Atualiza os campos de acordo com a escolha do usuário.
     def micro_callback(self, choice):
         if choice == "RX":
             self.initadd.delete(0, tk.END)
