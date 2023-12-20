@@ -4,12 +4,14 @@ from FileSelectionFrame import FileSelectionFrame
 from ControllerSelectionFrame import ControllerSelectionFrame
 
 
+# Classe: BodyFrame
+# Descrição: Frame inicial que contém o primeiro seletor de arquivos e pode adicionar novos frames seletores.
 class BodyFrame(ctk.CTkScrollableFrame):
-    '''
-    Frame inicial que contém o primeiro seletor de arquivos
-    e pode adicionar novos frames seletores
-    '''
 
+    # Método: __init__
+    # Parâmetros de Entrada: master (janela principal), repository (repositório de frames),
+    # type (tipo de frame: 'code' ou 'controller'), **kwargs (parâmetros adicionais)
+    # Operação: Inicializa o frame, cria o primeiro seletor de arquivos e adiciona um botão para adicionar novos frames.
     def __init__(self, master, repository, type, **kwargs):
         super().__init__(master, **kwargs)
         
@@ -28,10 +30,10 @@ class BodyFrame(ctk.CTkScrollableFrame):
         self.add_frame = ctk.CTkButton(self, text="", image=img, width=45, height=35, command=lambda: self.newFrame(repository, type))
         self.add_frame.pack(side=ctk.BOTTOM, pady=5)
 
+    # Método: newFrame
+    # Parâmetros de Entrada: repository (repositório de frames), type (tipo de frame: 'code' ou 'controller')
+    # Operação: Adiciona um novo frame seletor de arquivos no frame inicial.
     def newFrame(self,repository, type):
-        '''
-        Adiciona um novo frame seletor de arquivos no frame inicial
-        '''
         if type == "code":
             new_frame = FileSelectionFrame(self, repository, self.index)
             new_frame.pack(fill=ctk.BOTH, expand=ctk.TRUE)

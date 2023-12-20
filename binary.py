@@ -1,10 +1,12 @@
 import os
 import struct
 from crc import calculate_crc16
-from random import randbytes
 
 
-# Lê um arquivo .bin a partir do seu path e retorna este arquivo.
+# Função: read_binary_file
+# Parâmetros de Entrada: path (caminho do arquivo binário)
+# Saída: Conteúdo do arquivo binário lido
+# Operação: Abre o arquivo binário no caminho especificado, lê seu conteúdo e retorna.
 def read_binary_file(path):
     file = open(path, 'rb')
     content1 = file.read()
@@ -13,12 +15,20 @@ def read_binary_file(path):
     return content1
 
 
-# Retorna o tamanho do arquivo em bytes a partir do seu path.
+# Função: file_size
+# Parâmetros de Entrada: path (caminho do arquivo)
+# Saída: Tamanho do arquivo em bytes
+# Operação: Obtém e retorna o tamanho do arquivo no caminho especificado.
 def file_size(path):
     return os.path.getsize(path)
 
 
-# Concatena arquivos .bin ou .mot em um arquivo .bin
+# Função: concat_files
+# Parâmetros de Entrada: destination_path (caminho do arquivo de destino), header (cabeçalho),
+# paths (caminhos dos arquivos a serem concatenados)
+# Saída: Arquivo binário resultante da concatenação
+# Operação: Abre os arquivos especificados, concatena o conteúdo junto com o cabeçalho
+# e salva o resultado no arquivo de destino.
 def concat_files(destination_path, header, *paths):
     final_file = open(destination_path, 'wb')
     final_file.write(header)
@@ -31,20 +41,30 @@ def concat_files(destination_path, header, *paths):
     return final_file
 
 
+# Função: concat_files2
+# Parâmetros de Entrada: destination_path (caminho do arquivo de destino),
+# paths (caminhos dos arquivos a serem concatenados)
+# Saída: Arquivo binário resultante da concatenação
+# Operação: Converte o conteúdo dos arquivos especificados para bytearray e concatena.
+# Salva o resultado no arquivo de destino.
 def concat_files2(destination_path, *paths):
-    content = bytearray()
+    final_file = bytearray()
     i = 1
     for path in paths[0:]:
-        print('code',i)
+        print()
+        print(path)
         i += 1
-        content += (mot_to_binary(path, 2, 0x3800, 0x7E00))
-    final_file = content
+        content, _, _ = mot_to_binary(path[0], path[1], 0x3800, 0x7E00)
+        final_file += content
     with open(destination_path, 'wb') as destination:
         destination.write(final_file)
     return final_file
 
 
-# Monta o cabeçalho do arquivo.
+# Função: build_header
+# Parâmetros de Entrada: header (dicionário com informações do cabeçalho)
+# Saída: Dados do cabeçalho empacotados
+# Operação: Constrói o cabeçalho conforme a versão especificada no dicionário e o empacota.
 def build_header(header):
     header_ver = int(header['header_ver'])
 
@@ -66,16 +86,24 @@ def build_header(header):
     return header_data
 
 
-def build_version_header(version_h, version_l
-                         , offset_adds, length, interface, comm_address, code_id, offset_vec, offset_app):
-    header_format = '>HHIIBBBII'
+# Função: build_version_header
+# Parâmetros de Entrada: version_h, version_l, offset_adds, length, interface,
+# comm_address, code_id, offset_vec, offset_app, optional
+# Saída: Dados do cabeçalho da versão empacotados
+# Operação: Empacota os parâmetros fornecidos para formar o cabeçalho do versionamento.
+def build_version_header(version_h, version_l, offset_adds, length, interface,
+                         comm_address, code_id, optional, offset_vec, offset_app):
+    header_format = '>HHIIBBBBII'
     version_header_data = struct.pack(
         header_format, version_h, version_l
-        , offset_adds, length, interface, comm_address, code_id, offset_vec, offset_app)
+        , offset_adds, length, interface, comm_address, code_id, optional, offset_vec, offset_app)
     return version_header_data
 
 
-# percorre uma linha de um aquivo .mot e separa as informações em sua estrutura
+# Função: parse_srec_line
+# Parâmetros de Entrada: line (linha do arquivo .mot), firmware (tipo de firmware)
+# Saída: Dicionário contendo informações da linha
+# Operação: Analisa a linha do arquivo .mot e extrai informações com base no tipo de firmware.
 def parse_srec_line(line, firmware):
     if firmware == 2:
         record_type = line[0:2]
@@ -108,7 +136,10 @@ def parse_srec_line(line, firmware):
         }
 
 
-# completa a string de dados quando o tamanho não é multiplo de 64
+# Função: mul64
+# Parâmetros de Entrada: data (string de dados)
+# Saída: String de dados com tamanho múltiplo de 64
+# Operação: Completa a string de dados com 'FF' para tornar seu tamanho múltiplo de 64.
 def mul64(data):
     length = len(data) / 2
     if length % 64 == 0:
@@ -117,14 +148,18 @@ def mul64(data):
         return data + int(64 - (length % 64)) * 'FF'
 
 
-# transforma um arquivo .mot em binário
-def mot_to_binary(file_path, firmware, init_offset2, final_address):
+# Função: mot_to_binary
+# Parâmetros de Entrada: file_path, firmware, init_offset2, final_address
+# Saída: Dados binários resultantes da conversão do arquivo .mot
+# Operação: Converte o conteúdo de um arquivo .mot para dados binários, divididos em duas partes
+# com base nos parâmetros fornecidos.
+def mot_to_binary(file_path, firmware):
     code1 = ''  # string que contém a primera parte do código
     code2 = ''  # string que contém a segunda parte do código
-    end_address = 0  # guarda o último endereço preenchido
     previous_end_address = 0  # guarda o último endereço preenchido na iteração anterior
     lines = 0  # guarda a quantidade de linhas para determinar os endereços de inicio
     binary_data = ''
+    code = 1
 
     if firmware == 2:  # rl
         with open(file_path, 'rb') as mot:
@@ -142,32 +177,34 @@ def mot_to_binary(file_path, firmware, init_offset2, final_address):
                     # endereço final do dado
                     end_address = record['address'] + record['data_length'] - 3
 
-                    # verifica se a linha pertence à primeira parte
-                    if record['address'] < int(0xFFF):
+                    # verifica se a linha pertence à segunda parte, se houve um pulo >= 128 bytes
+                    if init_address - previous_end_address >= 128 and code == 1:
+                        code = 2  # indica que houve uma mudança para code 2
+                        previous_end_address = record['address']
 
-                        # preenche bytes vazios quando o endereço do início da linha é maior que o endereço do fim da linha anterior
+                    # verifica se houve um segundo pulo >= 128 bytes, indicando fim das informações
+                    elif init_address - previous_end_address >= 128 and code == 2:
+                        break  # para de percorrer o arquivo
+
+                    # se a linha faz parte da primeira parte do código:
+                    if code == 1:
+                        # preenche bytes vazios quando o endereço do início da linha é maior
+                        # que o endereço do fim da linha anterior
                         if previous_end_address < init_address:
                             code1 += (init_address - previous_end_address) * 'FF'
 
                         # junta o dado à primeira string
                         code1 += record["data"]
 
-                    # verifica se a linha pertence à segunda parte
-                    elif int(init_offset2) <= record['address'] < final_address:
-
-                        # se a linha for a primeira da segunda parte, altera o valor do endereço final da linha anterior
-                        if record['address'] == int(init_offset2):
-                            previous_end_address = init_offset2
-
-                        # preenche bytes vazios quando o endereço do início da linha é maior que o endereço do fim da linha anterior
+                    # se a linha fizer parte da segunda parte do código
+                    if code == 2:
+                        # preenche bytes vazios quando o endereço do início da linha
+                        # é maior que o endereço do fim da linha anterior
                         if previous_end_address < init_address:
                             code2 += (init_address - previous_end_address) * 'FF'
 
                         # junta o dado à segunda string
                         code2 += record["data"]
-
-                    elif record['address'] >= int(final_address):
-                        break
 
                     # atualiza o endereço final anterior
                     previous_end_address = end_address
@@ -222,12 +259,16 @@ def mot_to_binary(file_path, firmware, init_offset2, final_address):
         binary_data = bytearray.fromhex(code2 + code1)
     # escrevendo o arquivo binário
     code1_size = len(bytearray.fromhex(code1))
+    print('code 1: ', code1_size)
     code2_size = len(bytearray.fromhex(code2))
+    print('code 2: ', code2_size)
     return binary_data, code1_size, code2_size
 
 
-# gerador de binário
-
+# Função: binary_gen
+# Parâmetros de Entrada: destination_path, header, version_header, binary_data
+# Saída: Arquivo binário resultante da geração
+# Operação: Gera um arquivo binário combinando cabeçalho, cabeçalho de versão e dados binários.
 def binary_gen(destination_path, header, version_header, binary_data):
     header_data = build_header(header)
 
@@ -251,8 +292,9 @@ def binary_gen(destination_path, header, version_header, binary_data):
     with open(destination_path, 'wb') as destination:
         destination.write(content + crc)
 
-#
-# concat_files2(r'D:\concat.bin', r'D:\00_SlaveRTDW_ApplicationIHM.mot', r'D:\01_SlaveRTDW_ApplicationRET1.mot',
-#               r'D:\02_SlaveRTDW_ApplicationRET2.mot', r'D:\03_SlaveRTDW_ApplicationUCQ.mot', r'D:\04_SlaveRTDW_ApplicationRELE1.mot',
-#               r'D:\05_SlaveRTDW_ApplicationRELE2.mot', r'D:\06_SlaveRTDW_ApplicationSPV.mot', r'D:\07_SlaveRTDW_ApplicationEXP.mot')
 
+
+# concat_files2(r'F:\CORPORATE_MOT\concatenado.bin', (r"F:\CORPORATE_MOT\231208B_Corporate_8_2M.mot", 1),(r"F:\CORPORATE_MOT\231208B_Hardlock_8.mot", 2), (r"F:\CORPORATE_MOT\231208B_IHM_8.mot", 2))
+#
+# file_path = r"C:\Users\clara\OneDrive\Documentos\GitHub\weg-lesc\Arquivos WPS\Binary_RX\rx_application.mot"
+# binary_data, code1_size, code2_size = mot_to_binary2(file_path, 1)
