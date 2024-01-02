@@ -166,14 +166,16 @@ def mot_to_binary(file_path, firmware):
 def calculate_checksum(data):
     # Soma os bytes
     checksum_sum = 0
-    for byte in data:
-        checksum_sum += byte
+    for i in range(2, len(data), 2):
+        byte = data[i:i+2]
+        checksum_sum += int(byte, 16)
+
 
     # Descarta o byte mais significativo e retém o byte menos significativo
     checksum_lsb = checksum_sum & 0xFF
 
     # Calcula o complemento de um (ones' complement)
-    checksum_complement = (~checksum_lsb) & 0xFF
+    checksum_complement = 0xFF - checksum_lsb
 
     return checksum_complement
 
@@ -199,10 +201,11 @@ def ascii_to_mot(input_string, init_address):
         record_data += "{:02X}".format(decimal_value)
         line_length += 1
 
-        if line_length == 16:  # Número máximo de bytes em uma linha S3
+        if line_length > 15:  # Número máximo de bytes em uma linha S3
             # Adiciona a linha no formato S-record S3 à string de saída
-            checksum = calculate_checksum((line_length+5)+address+record_data)
-            record = "S3{:02X}{:04X}{}{:02X}\n".format(line_length + 5, address, record_data, -(line_length + 5 + address) & 0xFF)
+            record = "S3{:02X}{:08X}{}".format(line_length + 5, address, record_data)
+            checksum = calculate_checksum(record)
+            record += "{:02X}\n".format(checksum)
             output_string += record
 
             # Reinicia as variáveis
@@ -218,10 +221,17 @@ def ascii_to_mot(input_string, init_address):
     return output_string
 
 
+def mot_gen(destination_path, mot_data):
+    with open(destination_path, 'w') as destination:
+        destination.write(mot_data)
+
+
 filepath = r'Arquivos WPS/rl_application.mot'
+destination_path = r'Arquivos WPS/testandoomot.mot'
 code1, code2 = mot_to_binary(filepath, 2)
 print(code1)
-result_mot_string = ascii_to_mot(code1)
+result_mot_string = ascii_to_mot(code1, 0)
+mot_gen(destination_path, result_mot_string)
 print(result_mot_string)
 
 
