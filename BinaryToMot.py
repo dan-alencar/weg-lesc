@@ -215,7 +215,9 @@ def ascii_to_mot(input_string, init_address):
 
     # Adiciona a última linha, se houver dados restantes
     if line_length > 0:
-        record = "S3{:02X}{:04X}{}{:02X}\n".format(line_length + 5, address, record_data, -(line_length + 5 + address) & 0xFF)
+        record = "S3{:02X}{:04X}{}\n".format(line_length + 5, address, record_data)
+        checksum = calculate_checksum(record)
+        record += "{:02X}\n".format(checksum)
         output_string += record
 
     return output_string
