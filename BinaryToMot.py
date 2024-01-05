@@ -3,36 +3,34 @@
 # Saída: Dicionário contendo informações da linha
 # Operação: Analisa a linha do arquivo .mot e extrai informações com base no tipo de firmware.
 def parse_srec_line(line, firmware):
-    if firmware == 2:
-        record_type = line[0:2]
+    record_type = line[0:2]
+    data_length = 0
+    address = 0
+    data = ''
+    checksum = ''
+    if record_type == b'S1':
         data_length = int(line[2:4], 16)
         address = int(line[4:8], 16)
         data = line[8:-2].decode('utf-8')
         checksum = line[-2:]
-
-        return {
-            "record_type": record_type,
-            "data_length": data_length,
-            "address": address,
-            "data": data,
-            "checksum": checksum
-        }
-
-    if firmware == 1:
-        record_type = line[0:2]
+    elif record_type == b'S2':
+        data_length = int(line[2:4], 16)
+        address = int(line[4:10], 16)
+        data = line[10:-2].decode('utf-8')
+        checksum = line[-2:]
+    elif record_type == b'S3':
         data_length = int(line[2:4], 16)
         address = int(line[4:12], 16)
         data = line[12:-2].decode('utf-8')
         checksum = line[-2:]
 
-        return {
-            "record_type": record_type,
-            "data_length": data_length,
-            "address": address,
-            "data": data,
-            "checksum": checksum
-        }
-
+    return {
+        "record_type": record_type,
+        "data_length": data_length,
+        "address": address,
+        "data": data,
+        "checksum": checksum
+    }
 
 # Função: mul64
 # Parâmetros de Entrada: data (string de dados)
@@ -66,14 +64,19 @@ def mot_to_binary(file_path, firmware):
                 record = parse_srec_line(line, firmware)
 
                 # testa se a linha armazena dados
-                if record['record_type'] != b'S1':
+                if record['record_type'] == b'S0':
                     pass
 
                 else:
                     # endereço inicial do dado
                     init_address = record['address']
                     # endereço final do dado
-                    end_address = record['address'] + record['data_length'] - 3
+                    if record['address'] <= 0xFFFF:  # 2 bytes = S1
+                        end_address = record['address'] + record['data_length'] - 3
+                    elif record['address'] <= 0xFFFFFF:  # 3 bytes = S2
+                        end_address = record['address'] + record['data_length'] - 4
+                    elif record['address'] <= 0xFFFFFF:  # 4 bytes = S3
+                        end_address = record['address'] + record['data_length'] - 5
 
                     # verifica se a linha pertence à segunda parte, se houve um pulo >= 128 bytes
                     if init_address - previous_end_address >= 128 and code == 1:
@@ -223,16 +226,65 @@ def ascii_to_mot(input_string, init_address):
     return output_string
 
 
+def ascii_to_mot2(input_string, init_address):
+    # Verifica se a string tem um número par de caracteres
+    if len(input_string) % 2 != 0:
+        raise ValueError("A string deve ter um número par de caracteres.")
+
+    # Inicializa a string de saída
+    output_string = ""
+
+    # Divide a string em pares de caracteres
+    hex_pairs = [input_string[i:i+2] for i in range(0, len(input_string), 2)]
+
+    # Escreve os dados no formato S-record
+    address = init_address
+    line_length = 0
+    record_data = ""
+
+    for hex_pair in hex_pairs:
+        decimal_value = int(hex_pair, 16)
+        record_data += "{:02X}".format(decimal_value)
+        line_length += 1
+
+        if line_length > 15:  # Número máximo de bytes em uma linha S3
+            record = ""
+            # Adiciona a linha no formato S-record S3 à string de saída
+            if address <= 0xFFFF:  # 2 bytes = S1
+                record = "S1{:02X}{:04X}{}".format(line_length + 3, address, record_data)
+            elif address <= 0xFFFFFF:  # 3 bytes = S2
+                record = "S2{:02X}{:06X}{}".format(line_length + 4, address, record_data)
+            elif address <= 0xFFFFFFFF:  # 4 bytes = S3
+                record = "S3{:02X}{:08X}{}".format(line_length + 5, address, record_data)
+            checksum = calculate_checksum(record)
+            record += "{:02X}\n".format(checksum)
+            output_string += record
+
+            # Reinicia as variáveis
+            address += line_length
+            line_length = 0
+            record_data = ""
+
+    # Adiciona a última linha, se houver dados restantes
+    if line_length > 0:
+        record = "S3{:02X}{:04X}{}\n".format(line_length + 5, address, record_data)
+        checksum = calculate_checksum(record)
+        record += "{:02X}\n".format(checksum)
+        output_string += record
+
+    return output_string
+
+
 def mot_gen(destination_path, mot_data):
     with open(destination_path, 'w') as destination:
         destination.write(mot_data)
 
 
+# filepath = r'Arquivos WPS/rl_application.mot'
 filepath = r'Arquivos WPS/rl_application.mot'
 destination_path = r'Arquivos WPS/testandoomot.mot'
 code1, code2 = mot_to_binary(filepath, 2)
-print(code1)
-result_mot_string = ascii_to_mot(code1, 0)
+result_mot_string = ascii_to_mot2(code1, 0x00)
 mot_gen(destination_path, result_mot_string)
 print(result_mot_string)
 
