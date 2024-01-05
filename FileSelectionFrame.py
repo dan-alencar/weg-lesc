@@ -57,22 +57,8 @@ class FileSelectionFrame(ctk.CTkFrame):
         self.version_l = ctk.CTkEntry(self, placeholder_text="Ex: FFFF", height=35, width=90)
         self.version_l.pack(fill=ctk.X, expand=True, pady=10, side=ctk.LEFT, anchor=ctk.N)
         
-        #entrada para o endereço inicial
-        # self.label_initadd = ctk.CTkLabel(self, text="Init. Add:", font=("", 12, "bold"), height=35, anchor=ctk.E)
-        # self.label_initadd.pack(fill=ctk.X, expand=True, side=ctk.LEFT, padx=5, pady=10, anchor=ctk.N)
-        #
-        # self.initadd = ctk.CTkEntry(self, placeholder_text="Ex: 00000000", height=35, width=90)
-        # self.initadd.pack(fill=ctk.X, expand=True, pady=10, side=ctk.LEFT, anchor=ctk.N)
-        #
-        # #entrada para o endereço final
-        # self.label_finaladd = ctk.CTkLabel(self, text="Final Add:", font=("", 12, "bold"), height=35, anchor=ctk.E)
-        # self.label_finaladd.pack(fill=ctk.X, expand=True, side=ctk.LEFT, padx=5, pady=10, anchor=ctk.N)
-        #
-        # self.finaladd = ctk.CTkEntry(self, placeholder_text="Ex: FFFFFFFF", height=35, width=90)
-        # self.finaladd.pack(fill=ctk.X, expand=True, pady=10, side=ctk.LEFT, anchor=ctk.N)
-        
         self.micro_var = ctk.StringVar(value="RX/RL")
-        self.micro_fam = ctk.CTkOptionMenu(self, state=ctk.DISABLED, dynamic_resizing=False, height=35, width=90, values=["RX", "RL"], command=self.micro_callback, variable=self.micro_var)
+        self.micro_fam = ctk.CTkOptionMenu(self, state=ctk.DISABLED, dynamic_resizing=False, height=35, width=125, values=["RX", "RL"], command=self.micro_callback, variable=self.micro_var)
         self.micro_fam.pack(expand=True, padx=10, pady=10,
                        side=ctk.LEFT, anchor=ctk.N)
 

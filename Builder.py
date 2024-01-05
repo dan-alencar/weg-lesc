@@ -23,7 +23,7 @@ class Builder:
         i = 0
         aux = 0
         try:
-            self.fieldCheck(self.master.tab_view.configframe, 'header')
+            # self.fieldCheck(self.master.tab_view.configframe, 'header')
 
             for controller_frame in self.master.controllerframe_list.controllerframes:
                 option_selected = controller_frame.optionmenu.get()
@@ -80,31 +80,31 @@ class Builder:
                 holder, _, _ = mot_to_binary(*file_path)
                 # total_l += len(holder)
                 binary_data.extend(holder)
-            if self.master.tab_view.configframe.header_version.get() == '01':
-                header_len = 28
-            elif self.master.tab_view.configframe.header_version.get() == '02':
-                header_len = 32
-
-            header = {
-                "header_ver": int(self.master.tab_view.configframe.header_version.get(), 16),
-                "header_valid": int(self.master.tab_view.configframe.header_valid.get(), 16),
-                "prod_id": self.master.tab_view.configframe.prod_id.get(),
-                "prod_ver": self.master.tab_view.configframe.prod_ver.get(),
-                # tamanho dos dados + cabeçalho wps + cabeçalho versionamento + crc
-                "length": len(binary_data) + header_len + len(version) + 4
+            static = {
+                "exch_mode": int(self.master.tab_view.configframe.exch_mode_entry.get(), 16),
+                "fw_rev": int(self.master.tab_view.configframe.fw_rev_entry.get(), 16),
+                "vecstart": int(self.master.tab_view.configframe.vecstart_entry.get(), 16),
+                "vecend": int(self.master.tab_view.configframe.vecend_entry.get(), 16),
+                "addstart": int(self.master.tab_view.configframe.addstart_entry.get(), 16),
+                "addend": int(self.master.tab_view.configframe.addend_entry.get(), 16),
+                "addcrc": int(self.master.tab_view.configframe.addcrc_entry.get(), 16),
+                "numslaves": int(self.master.tab_view.configframe.numslaves_entry.get(), 16),
+                "exch_mode_slaves": int(self.master.tab_view.configframe.exch_mode_slaves_entry.get(), 16),
+                "first_update": "AAAAAAAA",
+                "prod_ver": self.master.tab_view.configframe.prodver_entry.get(),
             }
             data = [('Arquivo .bin', '*.bin')]
             file = filedialog.asksaveasfilename(
                 initialdir="/", title="Salvar como", filetypes=data, defaultextension=data)
 
-            binary_gen(file, header, version, binary_data)
+            binary_gen(file, static, version, binary_data)
             messagebox.showinfo(title="Concluído", message="O arquivo foi gerado com sucesso!")
         except ValueError as e:
             messagebox.showerror("Erro", str(e))
         except Exception:
             messagebox.showerror("Erro", "Erro na geração do binário.")
         log_file = file[:-4] + ".txt"
-        self.log_builder(log_file, header, version)
+        self.log_builder(log_file, static, version)
 
     # Método: fieldCheck
     # Parâmetros de Entrada: frame (objeto representando o frame a ser verificado),
@@ -128,7 +128,7 @@ class Builder:
                 return
 
         elif type == 'header':
-            if '' in {frame.header_version.get(), frame.header_valid.get(), frame.prod_id.get(), frame.prod_ver.get()}:
+            if '' in {self.master.tab_view.configframe.exch_mode_entry.get(), self.master.tab_view.configframe.fw_rev_entry.get(), self.master.tab_view.configframe.vecstart_entry.get(), self.master.tab_view.configframe.vecend_entry.get(), self.master.tab_view.configframe.addstart_entry.get(), self.master.tab_view.configframe.addend_entry.get(), self.master.tab_view.configframe.addcrc_entry.get(), self.master.tab_view.configframe.numslaves_entry.get(), self.master.tab_view.configframe.exch_mode_slaves_entry.get()}:
                 raise ValueError('Preencha todos os campos do cabeçalho')
             else:
                 return

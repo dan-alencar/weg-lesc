@@ -95,10 +95,16 @@ class MenuFrame(ctk.CTkFrame):
                     else:
                         new_frame.optionmenu.set('Selecione uma opção')
                 if frame.tag == 'configurations':
-                    self.master.tab_view.configframe.header_version.insert('1', frame.get('header_ver'))
-                    self.master.tab_view.configframe.header_valid.insert('1', frame.get('header_val'))
-                    self.master.tab_view.configframe.prod_id.insert('1', frame.get('prod_id'))
-                    self.master.tab_view.configframe.prod_ver.insert('1', frame.get('prod_ver'))
+                    self.master.tab_view.configframe.exch_mode_entry.insert('1', frame.get('exch_mode'))
+                    self.master.tab_view.configframe.fw_rev_entry.insert('1', frame.get('fw_rev'))
+                    self.master.tab_view.configframe.vecstart_entry.insert('1', frame.get('vecstart'))
+                    self.master.tab_view.configframe.vecend_entry.insert('1', frame.get('vecend'))
+                    self.master.tab_view.configframe.addstart_entry.insert('1', frame.get('addstart'))
+                    self.master.tab_view.configframe.addend_entry.insert('1', frame.get('addend'))
+                    self.master.tab_view.configframe.addcrc_entry.insert('1', frame.get('addcrc'))
+                    self.master.tab_view.configframe.numslaves_entry.insert('1', frame.get('numslaves'))
+                    self.master.tab_view.configframe.exch_mode_slaves_entry.insert('1', frame.get('exch_mode_slaves'))
+                    self.master.tab_view.configframe.prodver_entry.insert('1', frame.get('prod_ver'))
         
         if len(self.master.codeframe_list.codeframes) == 0:
             new_codeframe = FileSelectionFrame(self.master.tab_view.codeframe, self.master.codeframe_list, self.master.tab_view.codeframe.index)
@@ -152,7 +158,7 @@ class MenuFrame(ctk.CTkFrame):
                         else:
                             optionSelected = "Selecione uma opção"
                     ET.SubElement(controllerframes, 'controllerframe', interface=frame.interface.get(), comm_address=frame.comm_address.get(), code_id=frame.code_id.get(), optionSelected=optionSelected, optional=str(frame.optional_box.get()))
-        ET.SubElement(configs, 'configurations', header_ver=configurations.header_version.get(), header_val=configurations.header_valid.get(), prod_id=configurations.prod_id.get(), prod_ver=configurations.prod_ver.get())
+        ET.SubElement(configs, 'configurations', exch_mode=configurations.exch_mode_entry.get(), fw_rev=configurations.fw_rev_entry.get(), vecstart=configurations.vecstart_entry.get(), vecend=configurations.vecend_entry.get(), addstart=configurations.addstart_entry.get(), addend=configurations.addend_entry.get(), addcrc=configurations.addcrc_entry.get(), numslaves=configurations.numslaves_entry.get(), exch_mode_slaves=configurations.exch_mode_slaves_entry.get(), prod_ver=configurations.prodver_entry.get())
 
         tree = ET.ElementTree(xml_doc)
         tree.write(file)

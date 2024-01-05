@@ -10,5 +10,7 @@ interface_enum = {
 # Descrição: Mapeia nomes de microcontroladores para valores numéricos.
 micro_enum = {
     "RX": 1,
-    "RL": 2
+    "RL": 2,
+    "Bootloader RX": 3,
+    "Bootloader RL": 4
 }
