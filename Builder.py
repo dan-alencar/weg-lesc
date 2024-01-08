@@ -97,7 +97,10 @@ class Builder:
             file = filedialog.asksaveasfilename(
                 initialdir="/", title="Salvar como", filetypes=data, defaultextension=data)
 
+            #alterações nessa função para a aplicação de Bin2Mot
             binary_gen(file, static, version, binary_data)
+
+
             messagebox.showinfo(title="Concluído", message="O arquivo foi gerado com sucesso!")
         except ValueError as e:
             messagebox.showerror("Erro", str(e))
