@@ -18,8 +18,6 @@ class BodyFrame(ctk.CTkScrollableFrame):
         # cria o primeiro seletor de arquivos
         if type == "code":
             self.first_frame = FileSelectionFrame(self, repository, 0)
-            self.first_frame.micro_fam.configure(variable=ctk.StringVar(value="Bootloader") ,values=["Bootloader RX", "Bootloader RL"])
-            self.first_frame.bin.configure(state="disabled", fg_color="transparent", image=None)
             self.index = 1
         if type == "controller":
             self.first_frame = ControllerSelectionFrame(self, repository)

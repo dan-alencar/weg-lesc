@@ -81,15 +81,15 @@ class Builder:
                 # total_l += len(holder)
                 binary_data.extend(holder)
             static = {
-                "exch_mode": int(self.master.tab_view.configframe.exch_mode_entry.get(), 16),
-                "fw_rev": int(self.master.tab_view.configframe.fw_rev_entry.get(), 16),
-                "vecstart": int(self.master.tab_view.configframe.vecstart_entry.get(), 16),
-                "vecend": int(self.master.tab_view.configframe.vecend_entry.get(), 16),
-                "addstart": int(self.master.tab_view.configframe.addstart_entry.get(), 16),
-                "addend": int(self.master.tab_view.configframe.addend_entry.get(), 16),
-                "addcrc": int(self.master.tab_view.configframe.addcrc_entry.get(), 16),
-                "numslaves": int(self.master.tab_view.configframe.numslaves_entry.get(), 16),
-                "exch_mode_slaves": int(self.master.tab_view.configframe.exch_mode_slaves_entry.get(), 16),
+                "exch_mode": self.master.tab_view.configframe.exch_mode_entry.get(),
+                "fw_rev": self.master.tab_view.configframe.fw_rev_entry.get(),
+                "vecstart": self.master.tab_view.configframe.vecstart_entry.get(),
+                "vecend": self.master.tab_view.configframe.vecend_entry.get(),
+                "addstart": self.master.tab_view.configframe.addstart_entry.get(),
+                "addend": self.master.tab_view.configframe.addend_entry.get(),
+                "addcrc": self.master.tab_view.configframe.addcrc_entry.get(),
+                "numslaves": self.master.tab_view.configframe.numslaves_entry.get(),
+                "exch_mode_slaves": self.master.tab_view.configframe.exch_mode_slaves_entry.get(),
                 "first_update": "AAAAAAAA",
                 "prod_ver": self.master.tab_view.configframe.prodver_entry.get(),
             }

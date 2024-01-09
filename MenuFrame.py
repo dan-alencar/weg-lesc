@@ -64,12 +64,20 @@ class MenuFrame(ctk.CTkFrame):
                     new_frame.file.insert('1', frame.get('filepath'))
                     new_frame.version_h.insert('1',  frame.get('version_h'))
                     new_frame.version_l.insert('1', frame.get('version_l'))
-                    if micro_option != 'Selecione uma aplicação':
-                        new_frame.micro_fam.set(micro_option)
-                        new_frame.micro_callback(micro_option)
+                    if new_frame.index == 0:
+                        if micro_option != 'Bootloader':
+                            new_frame.micro_fam.set(micro_option)
+                            new_frame.micro_callback(micro_option)
+                        else:
+                            new_frame.micro_fam.set('Bootloader')
+                            new_frame.micro_var = -1
                     else:
-                        new_frame.micro_fam.set('Selecione uma aplicação')
-                        new_frame.micro_var = -1
+                        if micro_option != 'RX/RL':
+                            new_frame.micro_fam.set(micro_option)
+                            new_frame.micro_callback(micro_option)
+                        else:
+                            new_frame.micro_fam.set('RX/RL')
+                            new_frame.micro_var = -1
                     new_frame.file.configure(state=ctk.DISABLED)
                 if frame.tag=='controllerframe':
                     new_frame = ControllerSelectionFrame(self.master.tab_view.controllerframe, self.master.controllerframe_list)

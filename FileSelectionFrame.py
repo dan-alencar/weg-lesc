@@ -40,8 +40,8 @@ class FileSelectionFrame(ctk.CTkFrame):
         self.btn.pack(pady=10, padx=5, side=ctk.LEFT, anchor=ctk.N)
 
         # campo de texto que exibe o path do arquivo selecionado
-        self.file = ctk.CTkEntry(self, placeholder_text="Local do arquivo", height=35, width=100)
-        self.file.pack(expand=True, fill=ctk.X, pady=10, anchor=ctk.N, side=ctk.LEFT)
+        self.file = ctk.CTkEntry(self, placeholder_text="Local do arquivo", height=35, width=300)
+        self.file.pack(expand=False, fill=ctk.X, pady=10, anchor=ctk.N, side=ctk.LEFT)
 
         # entrada para o version_high
         self.label_VersionH = ctk.CTkLabel(self, text="V. High:", font=("", 12, "bold"), height=35, anchor=ctk.E)
@@ -68,14 +68,21 @@ class FileSelectionFrame(ctk.CTkFrame):
         self.bin = ctk.CTkButton(
             self, text='', image=img, width=35, height=35, command=lambda: self.delFrame(self.repository))
         self.bin.pack(pady=10, padx=10, side=ctk.RIGHT, anchor=ctk.E)
+
+        if self.index == 0:
+            self.micro_fam.configure(variable=ctk.StringVar(value="Bootloader"), dynamic_resizing=True, values=["Bootloader RX", "Bootloader RL"])
+            self.micro_fam.pack(anchor=ctk.W, padx=155, pady=10)
+            self.bin.pack_forget()
+            self.label_VersionH.pack_forget()
+            self.label_VersionL.pack_forget()
+            self.version_h.pack_forget()
+            self.version_l.pack_forget()
         
         #Desativação dos campos que foram alterados(placeholders)
         self.file.configure(state=ctk.DISABLED)
         self.version_h.configure(state=ctk.DISABLED)
         self.version_l.configure(state=ctk.DISABLED)
         self.micro_fam.configure(state=ctk.DISABLED)
-        # self.initadd.configure(state=ctk.DISABLED)
-        # self.finaladd.configure(state=ctk.DISABLED)
 
     # Método: toggleCheckbox
     # Parâmetros de Entrada: Nenhum
