@@ -90,6 +90,7 @@ class Builder:
                 "addcrc": self.master.tab_view.configframe.addcrc_entry.get(),
                 "numslaves": self.master.tab_view.configframe.numslaves_entry.get(),
                 "exch_mode_slaves": self.master.tab_view.configframe.exch_mode_slaves_entry.get(),
+                "zeroblock": self.master.tab_view.configframe.zeroblock_entry.get(),
                 "first_update": "AAAAAAAA",
                 "prod_ver": self.master.tab_view.configframe.prodver_entry.get(),
             }

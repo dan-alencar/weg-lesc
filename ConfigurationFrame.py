@@ -73,10 +73,16 @@ class ConfigurationFrame(ctk.CTkFrame):
         self.exch_mode_slaves_entry.grid(column=1, row=9, sticky=tk.N, padx=5, pady=5)
 
         self.prodver_label = ctk.CTkLabel(self, height=30, width=100, text="Versão:", font=("", 12, "bold"))
-        self.prodver_label.grid(column=2, row=8, sticky=tk.N, padx=5, pady=5)
+        self.prodver_label.grid(column=2, row=8, sticky=tk.S, padx=5, pady=5)
 
         self.prodver_entry = ctk.CTkEntry(self, placeholder_text="Ex: V2.01", width=160)
         self.prodver_entry.grid(column=2, row=9, sticky=tk.N, padx=5, pady=5)
+
+        self.zeroblock_label = ctk.CTkLabel(self, height=30, width=100, text="Início do bloco zero:", font=("", 12, "bold"))
+        self.zeroblock_label.grid(column=1, row=10, sticky=tk.S, padx=5, pady=5)
+
+        self.zeroblock_entry = ctk.CTkEntry(self, placeholder_text="Ex: 02", width=160)
+        self.zeroblock_entry.grid(column=1, row=11, sticky=tk.N, padx=5, pady=5)
 
     # Método: clearFields
     # Parâmetros de Entrada: Nenhum
