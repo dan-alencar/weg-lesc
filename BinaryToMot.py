@@ -177,17 +177,6 @@ def mot_to_binary(file_path, firmware):
 # Saída: Dados do cabeçalho empacotados
 # Operação: Constrói o cabeçalho conforme a versão especificada no dicionário e o empacota.
 def build_static(static):
-    # header_ver = int(static['header_ver'])
-    #
-    # match header_ver:
-    #     case 1:
-    #         header_format = 'BB12s10sI'
-    #         header['prod_id'] = header['prod_id'].ljust(12)
-    #     case 2:
-    #         header_format = 'BB16s10sI'
-    #         header['prod_id'] = header['prod_id'].ljust(16)
-    #     case _:
-    #         raise ValueError(f"Versão do cabeçalho não suportada.")
     static_format = 'IIIIIIIIII12s'
     static_data = struct.pack(
         static_format, static["exch_mode"], static["fw_rev"], static["vecstart"],
@@ -282,7 +271,7 @@ def ascii_to_mot2(input_string, init_address):
 
         if line_length > 15:  # Número máximo de bytes em uma linha S3
             record = ""
-            # Adiciona a linha no formato S-record S3 à string de saída
+            # Adiciona a linha no formato S-record adequado à string de saída
             if address <= 0xFFFF:  # 2 bytes = S1
                 record = "S1{:02X}{:04X}{}".format(line_length + 3, address, record_data)
             elif address <= 0xFFFFFF:  # 3 bytes = S2
@@ -300,7 +289,14 @@ def ascii_to_mot2(input_string, init_address):
 
     # Adiciona a última linha, se houver dados restantes
     if line_length > 0:
-        record = "S3{:02X}{:04X}{}\n".format(line_length + 5, address, record_data)
+        record = ""
+        # Adiciona a ultima linha no formato S-record adequado à string de saída
+        if address <= 0xFFFF:  # 2 bytes = S1
+            record = "S1{:02X}{:04X}{}".format(line_length + 3, address, record_data)
+        elif address <= 0xFFFFFF:  # 3 bytes = S2
+            record = "S2{:02X}{:06X}{}".format(line_length + 4, address, record_data)
+        elif address <= 0xFFFFFFFF:  # 4 bytes = S3
+            record = "S3{:02X}{:08X}{}".format(line_length + 5, address, record_data)
         checksum = calculate_checksum(record)
         record += "{:02X}\n".format(checksum)
         output_string += record
@@ -308,9 +304,10 @@ def ascii_to_mot2(input_string, init_address):
     return output_string
 
 
-def mot_gen(destination_path, mot_data):
+def mot_gen(destination_path, bootloader, app, bootloader_vec):
+    all_data = bootloader + app + bootloader_vec
     with open(destination_path, 'w') as destination:
-        destination.write(mot_data)
+        destination.write(all_data)
 
 
 filepath = r'Arquivos WPS/rl_application.mot'
@@ -318,7 +315,7 @@ destination_path = r'Arquivos WPS/testandoomot.mot'
 code1, code2 = mot_to_binary(filepath, 2)
 result_mot_string = ascii_to_mot2(code1, 0x00)
 mot_gen(destination_path, result_mot_string)
-# print(result_mot_string)
+print(result_mot_string)
 
 static = {
     "exch_mode": 0x1,
@@ -335,7 +332,10 @@ static = {
 }
 
 static_data = build_static(static)
+string = ascii_to_mot2(static_data, 0x00)
 print(static_data)
+print(string)
+
 
 
 
