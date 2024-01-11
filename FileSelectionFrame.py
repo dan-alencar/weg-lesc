@@ -69,6 +69,8 @@ class FileSelectionFrame(ctk.CTkFrame):
             self, text='', image=img, width=35, height=35, command=lambda: self.delFrame(self.repository))
         self.bin.pack(pady=10, padx=10, side=ctk.RIGHT, anchor=ctk.E)
 
+
+        #tirar esse frame do bootloader daqui e colocá-lo na tab de configurações
         if self.index == 0:
             self.micro_fam.configure(variable=ctk.StringVar(value="Bootloader"), dynamic_resizing=True, values=["Bootloader RX", "Bootloader RL"])
             self.micro_fam.pack(anchor=ctk.W, padx=155, pady=10)
