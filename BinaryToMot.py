@@ -49,7 +49,6 @@ def mul64(data):
         return data + int(64 - (length % 64)) * 'FF'
 
 
-
 # Função: mot_to_binary
 # Parâmetros de Entrada: file_path, firmware, init_offset2, final_address
 # Saída: Dados binários resultantes da conversão do arquivo .mot
@@ -176,7 +175,7 @@ def mot_to_binary(file_path, firmware):
 # Parâmetros de Entrada: header (dicionário com informações do cabeçalho)
 # Saída: Dados do cabeçalho empacotados
 # Operação: Constrói o cabeçalho conforme a versão especificada no dicionário e o empacota.
-def build_static(static):
+def build_static_rx(static):
     static_format = 'IIIIIIIIII12s'
     static_data = struct.pack(
         static_format, static["exch_mode"], static["fw_rev"], static["vecstart"],
@@ -188,13 +187,22 @@ def build_static(static):
     return static_data
 
 
+def build_static_rl(static):
+    static_format = 'IIIIIII'
+    static_data = struct.pack(
+        static_format, static["exch_mode"], static["fw_rev"], static["vecstart"],
+        static["vecend"], static["addstart"], static["addend"], static["addcrc"])
+    static_data = binascii.hexlify(static_data).decode('utf-8')
+
+    return static_data
+
+
 def calculate_checksum(data):
     # Soma os bytes
     checksum_sum = 0
     for i in range(2, len(data), 2):
         byte = data[i:i+2]
         checksum_sum += int(byte, 16)
-
 
     # Descarta o byte mais significativo e retém o byte menos significativo
     checksum_lsb = checksum_sum & 0xFF
@@ -312,19 +320,19 @@ def mot_gen(destination_path, bootloader, app, bootloader_vec):
 
 filepath = r'Arquivos WPS/rl_application.mot'
 destination_path = r'Arquivos WPS/testandoomot.mot'
-code1, code2 = mot_to_binary(filepath, 2)
-result_mot_string = ascii_to_mot2(code1, 0x00)
-mot_gen(destination_path, result_mot_string)
-print(result_mot_string)
+# code1, code2 = mot_to_binary(filepath, 2)
+# result_mot_string = ascii_to_mot2(code1, 0x00)
+# mot_gen(destination_path, result_mot_string)
+# print(result_mot_string)
 
 static = {
-    "exch_mode": 0x1,
-    "fw_rev": 0x2,
-    "vecstart": 0x3,
-    "vecend": 0x4,
-    "addstart": 0x5,
-    "addend": 0x6,
-    "addcrc": 0x7,
+    "exch_mode": 0xFFFFFFFF,
+    "fw_rev": 0x00010001,
+    "vecstart": 0x1000,
+    "vecend": 0x1FFF,
+    "addstart": 0x3800,
+    "addend": 0x7E00,
+    "addcrc": 0x04FB,
     "numslaves": 0x8,
     "exch_mode_slaves": 0x9,
     "first_update": 0xAAAAAAAA,
