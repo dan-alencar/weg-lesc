@@ -1,12 +1,13 @@
 import struct
 import binascii
+from binary import mul64
 
 
 # Função: parse_srec_line
 # Parâmetros de Entrada: line (linha do arquivo .mot), firmware (tipo de firmware)
 # Saída: Dicionário contendo informações da linha
 # Operação: Analisa a linha do arquivo .mot e extrai informações com base no tipo de firmware.
-def parse_srec_line(line, firmware):
+def parse_srec_line(line):
     record_type = line[0:2]
     data_length = 0
     address = 0
@@ -35,18 +36,6 @@ def parse_srec_line(line, firmware):
         "data": data,
         "checksum": checksum
     }
-
-
-# Função: mul64
-# Parâmetros de Entrada: data (string de dados)
-# Saída: String de dados com tamanho múltiplo de 64
-# Operação: Completa a string de dados com 'FF' para tornar seu tamanho múltiplo de 64.
-def mul64(data):
-    length = len(data) / 2
-    if length % 64 == 0:
-        return data
-    else:
-        return data + int(64 - (length % 64)) * 'FF'
 
 
 # Função: mot_to_binary
@@ -142,7 +131,7 @@ def mot_to_binary_rl(file_path):
     with open(file_path, 'rb') as mot:
         for line in mot:
             line = line.strip()
-            record = parse_srec_line(line, 2)
+            record = parse_srec_line(line)
 
             # testa se a linha armazena dados
             if record['record_type'] == b'S0':
@@ -284,7 +273,7 @@ def ascii_to_mot(input_string, init_address):
 
         if line_length > 15:  # Número máximo de bytes em uma linha S3
             record = ""
-            # Adiciona a linha no formato S-record adequado à string de saída
+            # Adiciona a linha no formato S-record adequado à ‘string’ de saída
             if address <= 0xFFFF:  # 2 bytes = S1
                 record = "S1{:02X}{:04X}{}".format(line_length + 3, address, record_data)
             elif address <= 0xFFFFFF:  # 3 bytes = S2
@@ -303,7 +292,7 @@ def ascii_to_mot(input_string, init_address):
     # Adiciona a última linha, se houver dados restantes
     if line_length > 0:
         record = ""
-        # Adiciona a ultima linha no formato S-record adequado à string de saída
+        # Adiciona a última linha no formato S-record adequado à ‘string’ de saída
         if address <= 0xFFFF:  # 2 bytes = S1
             record = "S1{:02X}{:04X}{}".format(line_length + 3, address, record_data)
         elif address <= 0xFFFFFF:  # 3 bytes = S2
@@ -317,8 +306,12 @@ def ascii_to_mot(input_string, init_address):
     return output_string
 
 
-def mot_gen(destination_path, bootloader, app, bootloader_vec):
-    all_data = bootloader + app + bootloader_vec
+def mot_gen(destination_path, mot_list):
+    all_data = ''
+
+    for mot in mot_list:
+        all_data += mot
+
     with open(destination_path, 'w') as destination:
         destination.write(all_data)
 
@@ -329,8 +322,6 @@ app, vector_table = mot_to_binary_rl(filepath)
 # result_mot_string = ascii_to_mot(code2, 0x73E2)
 # print(result_mot_string)
 print(app)
-
-
 
 static = {
     "exch_mode": 0xFFFFFFFF,
