@@ -1,5 +1,6 @@
 from tkinter import filedialog, messagebox
 from binary import *
+from BinaryToMot import mot_to_binary_rl, mot_to_binary_rx, ascii_to_mot
 
 
 # Classe: Builder
@@ -18,6 +19,7 @@ class Builder:
         binary_data = bytearray()
         mot_list = []
         firmware_list = []
+        app_list = []
         offset = 0
         i = 0
         aux = 0
@@ -26,10 +28,10 @@ class Builder:
                 option_selected = controller_frame.optionmenu.get()
                 if controller_frame.checkbox.get() == 1:
                     i = i + 1
-                    self.fieldCheck(controller_frame, 'controller')
+                    # self.fieldCheck(controller_frame, 'controller')
                     firmware_frame = self.master.codeframe_list.searchFrameFile(option_selected)
                     firmware_file = firmware_frame.file.get()
-                    self.fieldCheck(firmware_frame, 'firmware')
+                    # self.fieldCheck(firmware_frame, 'firmware')
                     if firmware_frame in firmware_list:
                         code1_size = firmware_frame.code1
                         code2_size = firmware_frame.code2
@@ -67,34 +69,52 @@ class Builder:
 
             for file_path in mot_list:
                 print(file_path)
-                # mudar nome da variável depois
-                holder, _, _ = mot_to_binary(*file_path)
-                # total_l += len(holder)
-                binary_data.extend(holder)
+                file, family = file_path
+                if family == 1:
+                    app, vector_table = mot_to_binary_rx(file)
+                    rx_address = app['address']
+                    vt_data = vector_table['data']
+                    vt_address = vector_table['address']
+                    app_list.append(app['data'])
+                elif family == 2:
+                    app, vector_table = mot_to_binary_rl(file)
+                    app_list.append(vector_table['data'])
+                    app_list.append(app['data'])
+            mot_vector = ascii_to_mot(vt_data, vt_address)
+            #Alterar para a aplicação do bootloader RL
+            bootloader_app, bootloader_vector = mot_to_binary_rx(self.master.tab_view.configframe.file_entry.get())
+            bootloader_app_data = ascii_to_mot(bootloader_app['data'], bootloader_app['address'])
+            bootloader_vt_data = ascii_to_mot(bootloader_vector['data'], bootloader_vector['address'])
 
-            static = {
-                "exch_mode": self.master.tab_view.configframe.exch_mode_entry.get(),
-                "fw_rev": self.master.tab_view.configframe.fw_rev_entry.get(),
-                "vecstart": self.master.tab_view.configframe.vecstart_entry.get(),
-                "vecend": self.master.tab_view.configframe.vecend_entry.get(),
-                "addstart": self.master.tab_view.configframe.addstart_entry.get(),
-                "addend": self.master.tab_view.configframe.addend_entry.get(),
-                "addcrc": self.master.tab_view.configframe.addcrc_entry.get(),
-                "numslaves": self.master.tab_view.configframe.numslaves_entry.get(),
-                "exch_mode_slaves": self.master.tab_view.configframe.exch_mode_slaves_entry.get(),
-                "zeroblock": self.master.tab_view.configframe.zeroblock_entry.get(),
-                "first_update": "AAAAAAAA",
-                "prod_ver": self.master.tab_view.configframe.prodver_entry.get(),
-            }
 
-            data = [('Arquivo .bin', '*.bin')]
-            file = filedialog.asksaveasfilename(
-                initialdir="/", title="Salvar como", filetypes=data, defaultextension=data)
+            # for mot in app_list:
+            #     print(mot)
+            # for mot in vectortable_list:
+            #     print(mot)
 
-            #alterações nessa função para a aplicação de Bin2Mot
-            binary_gen(file, static, version, binary_data)
-
-            messagebox.showinfo(title="Concluído", message="O arquivo foi gerado com sucesso!")
+            # static = {
+            #     "exch_mode": self.master.tab_view.configframe.exch_mode_entry.get(),
+            #     "fw_rev": self.master.tab_view.configframe.fw_rev_entry.get(),
+            #     "vecstart": self.master.tab_view.configframe.vecstart_entry.get(),
+            #     "vecend": self.master.tab_view.configframe.vecend_entry.get(),
+            #     "addstart": self.master.tab_view.configframe.addstart_entry.get(),
+            #     "addend": self.master.tab_view.configframe.addend_entry.get(),
+            #     "addcrc": self.master.tab_view.configframe.addcrc_entry.get(),
+            #     "numslaves": self.master.tab_view.configframe.numslaves_entry.get(),
+            #     "exch_mode_slaves": self.master.tab_view.configframe.exch_mode_slaves_entry.get(),
+            #     "zeroblock": self.master.tab_view.configframe.zeroblock_entry.get(),
+            #     "first_update": "AAAAAAAA",
+            #     "prod_ver": self.master.tab_view.configframe.prodver_entry.get(),
+            # }
+            #
+            # data = [('Arquivo .bin', '*.bin')]
+            # file = filedialog.asksaveasfilename(
+            #     initialdir="/", title="Salvar como", filetypes=data, defaultextension=data)
+            #
+            # #alterações nessa função para a aplicação de Bin2Mot
+            # binary_gen(file, static, version, binary_data)
+            #
+            # messagebox.showinfo(title="Concluído", message="O arquivo foi gerado com sucesso!")
         except ValueError as e:
             messagebox.showerror("Erro", str(e))
         except Exception:
