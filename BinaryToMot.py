@@ -54,121 +54,169 @@ def mul64(data):
 # Saída: Dados binários resultantes da conversão do arquivo .mot
 # Operação: Converte o conteúdo de um arquivo .mot para dados binários, divididos em duas partes
 # com base nos parâmetros fornecidos.
-def mot_to_binary(file_path, firmware):
+def mot_to_binary_rx(file_path):
     code1 = ''  # string que contém a primera parte do código
     code2 = ''  # string que contém a segunda parte do código
     previous_end_address = 0  # guarda o último endereço preenchido na iteração anterior
     lines = 0  # guarda a quantidade de linhas para determinar os endereços de inicio
-    binary_data = ''
-    code = 1
+    code1_address = 0  # endereço inicial do code1
+    code2_address = 0  # endereço inicial do code2
 
-    if firmware == 2:  # rl
-        with open(file_path, 'rb') as mot:
-            for line in mot:
-                line = line.strip()
-                record = parse_srec_line(line, firmware)
+    with open(file_path, 'rb') as mot:
+        for line in mot:
+            line = line.strip()
+            record = parse_srec_line(line, 1)
 
-                # testa se a linha armazena dados
-                if record['record_type'] == b'S0':
-                    pass
+            # testa se a linha armazena dados
+            if record['record_type'] != b'S3':
+                pass
 
-                else:
-                    # endereço inicial do dado
-                    init_address = record['address']
-                    # endereço final do dado
-                    if record['address'] <= 0xFFFF:  # 2 bytes = S1
-                        end_address = record['address'] + record['data_length'] - 3
-                    elif record['address'] <= 0xFFFFFF:  # 3 bytes = S2
-                        end_address = record['address'] + record['data_length'] - 4
-                    elif record['address'] <= 0xFFFFFF:  # 4 bytes = S3
-                        end_address = record['address'] + record['data_length'] - 5
+            else:
+                # endereço inicial do dado
+                init_address = record['address']
+                # endereço final do dado
+                end_address = record['address'] + record['data_length'] - 5
 
-                    # verifica se a linha pertence à segunda parte, se houve um pulo >= 128 bytes
-                    if init_address - previous_end_address >= 128 and code == 1:
-                        code = 2  # indica que houve uma mudança para code 2
-                        previous_end_address = record['address']
+                if lines == 0:
+                    # guarda o endereço da primeira linha do code1
+                    previous_end_address = record['address']
+                    code1_address = record['address']
 
-                    # verifica se houve um segundo pulo >= 128 bytes, indicando fim das informações
-                    elif init_address - previous_end_address >= 128 and code == 2:
-                        break  # para de percorrer o arquivo
+                # verifica se a linha pertence à primeira parte
+                if record['address'] < int(0xFFFFFEE4):
 
-                    # se a linha faz parte da primeira parte do código:
-                    if code == 1:
-                        # preenche bytes vazios quando o endereço do início da linha é maior
-                        # que o endereço do fim da linha anterior
-                        if previous_end_address < init_address:
-                            code1 += (init_address - previous_end_address) * 'FF'
+                    # preenche bytes vazios quando o endereço do início da linha é maior que o endereço do fim da linha anterior
+                    if previous_end_address < init_address:
+                        code1 += (init_address - previous_end_address) * 'FF'
 
-                        # junta o dado à primeira string
-                        code1 += record["data"]
+                    # junta o dado à primeira string
+                    code1 += record["data"]
 
-                    # se a linha fizer parte da segunda parte do código
-                    if code == 2:
-                        # preenche bytes vazios quando o endereço do início da linha
-                        # é maior que o endereço do fim da linha anterior
-                        if previous_end_address < init_address:
-                            code2 += (init_address - previous_end_address) * 'FF'
+                # verifica se a linha pertence à segunda parte
+                elif record['address'] >= int(0xFFFFFEE4):
+                    # guarda o endereço da primeira linha do code2
+                    if code2 == '':
+                        code2_address = record['address']
 
-                        # junta o dado à segunda string
-                        code2 += record["data"]
+                    # se a linha for a primeira da segunda parte, altera o valor do endereço final da linha anterior
+                    if record['address'] == int(0xFFFFFEE4):
+                        previous_end_address = 0xFFFFFEE4
 
-                    # atualiza o endereço final anterior
-                    previous_end_address = end_address
+                    # junta o dado à segunda string
+                    code2 += record["data"]
 
-        # completando os códigos para que o tamanho seja múltiplo de 64
-        code1 = mul64(code1)
-        code2 = mul64(code2)
-        binary_data = bytearray.fromhex(code1 + code2)
+                # atualiza o endereço final anterior
+                previous_end_address = end_address
+                lines += 1  # incrementa o número de linhas
 
-    if firmware == 1:  # rx
-        with open(file_path, 'rb') as mot:
-            for line in mot:
-                line = line.strip()
-                record = parse_srec_line(line, firmware)
-
-                # testa se a linha armazena dados
-                if record['record_type'] != b'S3':
-                    pass
-
-                else:
-                    # endereço inicial do dado
-                    init_address = record['address']
-                    # endereço final do dado
-                    end_address = record['address'] + record['data_length'] - 5
-
-                    if lines == 0:
-                        previous_end_address = record['address']
-
-                    # verifica se a linha pertence à primeira parte
-                    if record['address'] < int(0xFFFFFEE4):
-
-                        # preenche bytes vazios quando o endereço do início da linha é maior que o endereço do fim da linha anterior
-                        if previous_end_address < init_address:
-                            code1 += (init_address - previous_end_address) * 'FF'
-
-                        # junta o dado à primeira string
-                        code1 += record["data"]
-
-                    # verifica se a linha pertence à segunda parte
-                    elif record['address'] >= int(0xFFFFFEE4):
-
-                        # se a linha for a primeira da segunda parte, altera o valor do endereço final da linha anterior
-                        if record['address'] == int(0xFFFFFEE4):
-                            previous_end_address = 0xFFFFFEE4
-
-                        # junta o dado à segunda string
-                        code2 += record["data"]
-
-                    # atualiza o endereço final anterior
-                    previous_end_address = end_address
-                    lines += 1  # incrementa o número de linhas
-        binary_data = bytearray.fromhex(code2 + code1)
     # escrevendo o arquivo binário
     code1_size = len(bytearray.fromhex(code1))
     print('code 1: ', code1_size)
     code2_size = len(bytearray.fromhex(code2))
     print('code 2: ', code2_size)
-    return code1, code2
+
+    app = {
+        'data': code1,
+        'address': code1_address,
+        'size': code1_size
+    }
+
+    vector_table = {
+        'data': code2,
+        'address': code2_address,
+        'size': code2_size
+    }
+
+    return app, vector_table
+
+
+def mot_to_binary_rl(file_path):
+    code1 = ''  # string que contém a primera parte do código
+    code2 = ''  # string que contém a segunda parte do código
+    previous_end_address = 0  # guarda o último endereço preenchido na iteração anterior
+    code = 1
+    lines = 0  # guarda a quantidade de linhas para determinar os endereços de inicio
+    code1_address = 0  # endereço inicial do code1
+    code2_address = 0  # endereço inicial do code2
+
+    with open(file_path, 'rb') as mot:
+        for line in mot:
+            line = line.strip()
+            record = parse_srec_line(line, 2)
+
+            # testa se a linha armazena dados
+            if record['record_type'] == b'S0':
+                pass
+
+            else:
+                # endereço inicial do dado
+                init_address = record['address']
+                # endereço final do dado
+                if record['address'] <= 0xFFFF:  # 2 bytes = S1
+                    end_address = record['address'] + record['data_length'] - 3
+                elif record['address'] <= 0xFFFFFF:  # 3 bytes = S2
+                    end_address = record['address'] + record['data_length'] - 4
+                elif record['address'] <= 0xFFFFFF:  # 4 bytes = S3
+                    end_address = record['address'] + record['data_length'] - 5
+
+                if lines == 0:
+                    code1_address = record['address']
+
+                # verifica se a linha pertence à segunda parte, se houve um pulo >= 128 bytes
+                if init_address - previous_end_address >= 128 and code == 1:
+                    code = 2  # indica que houve uma mudança para code 2
+                    previous_end_address = record['address']
+                    code2_address = record['address']
+
+                # verifica se houve um segundo pulo >= 128 bytes, indicando fim das informações
+                elif init_address - previous_end_address >= 128 and code == 2:
+                    break  # para de percorrer o arquivo
+
+                # se a linha faz parte da primeira parte do código:
+                if code == 1:
+                    # preenche bytes vazios quando o endereço do início da linha é maior
+                    # que o endereço do fim da linha anterior
+                    if previous_end_address < init_address:
+                        code1 += (init_address - previous_end_address) * 'FF'
+
+                    # junta o dado à primeira string
+                    code1 += record["data"]
+
+                # se a linha fizer parte da segunda parte do código
+                if code == 2:
+                    # preenche bytes vazios quando o endereço do início da linha
+                    # é maior que o endereço do fim da linha anterior
+                    if previous_end_address < init_address:
+                        code2 += (init_address - previous_end_address) * 'FF'
+
+                    # junta o dado à segunda string
+                    code2 += record["data"]
+
+                # atualiza o endereço final anterior
+                previous_end_address = end_address
+
+    # completando os códigos para que o tamanho seja múltiplo de 64
+    code1 = mul64(code1)
+    code2 = mul64(code2)
+
+    code1_size = len(bytearray.fromhex(code1))
+    print('code 1: ', code1_size)
+    code2_size = len(bytearray.fromhex(code2))
+    print('code 2: ', code2_size)
+
+    app = {
+        'data': code2,
+        'address': code2_address,
+        'size': code2_size
+    }
+
+    vector_table = {
+        'data': code1,
+        'address': code1_address,
+        'size': code1_size
+    }
+
+    return app, vector_table
 
 
 # Função: build_header
@@ -235,49 +283,6 @@ def ascii_to_mot(input_string, init_address):
         line_length += 1
 
         if line_length > 15:  # Número máximo de bytes em uma linha S3
-            # Adiciona a linha no formato S-record S3 à string de saída
-            record = "S3{:02X}{:08X}{}".format(line_length + 5, address, record_data)
-            checksum = calculate_checksum(record)
-            record += "{:02X}\n".format(checksum)
-            output_string += record
-
-            # Reinicia as variáveis
-            address += line_length
-            line_length = 0
-            record_data = ""
-
-    # Adiciona a última linha, se houver dados restantes
-    if line_length > 0:
-        record = "S3{:02X}{:04X}{}\n".format(line_length + 5, address, record_data)
-        checksum = calculate_checksum(record)
-        record += "{:02X}\n".format(checksum)
-        output_string += record
-
-    return output_string
-
-
-def ascii_to_mot2(input_string, init_address):
-    # Verifica se a string tem um número par de caracteres
-    if len(input_string) % 2 != 0:
-        raise ValueError("A string deve ter um número par de caracteres.")
-
-    # Inicializa a string de saída
-    output_string = ""
-
-    # Divide a string em pares de caracteres
-    hex_pairs = [input_string[i:i+2] for i in range(0, len(input_string), 2)]
-
-    # Escreve os dados no formato S-record
-    address = init_address
-    line_length = 0
-    record_data = ""
-
-    for hex_pair in hex_pairs:
-        decimal_value = int(hex_pair, 16)
-        record_data += "{:02X}".format(decimal_value)
-        line_length += 1
-
-        if line_length > 15:  # Número máximo de bytes em uma linha S3
             record = ""
             # Adiciona a linha no formato S-record adequado à string de saída
             if address <= 0xFFFF:  # 2 bytes = S1
@@ -319,11 +324,13 @@ def mot_gen(destination_path, bootloader, app, bootloader_vec):
 
 
 filepath = r'Arquivos WPS/rl_application.mot'
-destination_path = r'Arquivos WPS/testandoomot.mot'
-# code1, code2 = mot_to_binary(filepath, 2)
-# result_mot_string = ascii_to_mot2(code1, 0x00)
-# mot_gen(destination_path, result_mot_string)
+destination_path = r"Arquivos WPS/testandoomot.mot"
+app, vector_table = mot_to_binary_rl(filepath)
+# result_mot_string = ascii_to_mot(code2, 0x73E2)
 # print(result_mot_string)
+print(app)
+
+
 
 static = {
     "exch_mode": 0xFFFFFFFF,
@@ -339,10 +346,10 @@ static = {
     "prod_ver": "10101",
 }
 
-static_data = build_static(static)
-string = ascii_to_mot2(static_data, 0x00)
-print(static_data)
-print(string)
+# static_data = build_static(static)
+# string = ascii_to_mot2(static_data, 0x00)
+# print(static_data)
+# print(string)
 
 
 
