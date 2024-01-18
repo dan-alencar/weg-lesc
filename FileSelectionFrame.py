@@ -71,14 +71,14 @@ class FileSelectionFrame(ctk.CTkFrame):
 
 
         #tirar esse frame do bootloader daqui e colocá-lo na tab de configurações
-        if self.index == 0:
-            self.micro_fam.configure(variable=ctk.StringVar(value="Bootloader"), dynamic_resizing=True, values=["Bootloader RX", "Bootloader RL"])
-            self.micro_fam.pack(anchor=ctk.W, padx=155, pady=10)
-            self.bin.pack_forget()
-            self.label_VersionH.pack_forget()
-            self.label_VersionL.pack_forget()
-            self.version_h.pack_forget()
-            self.version_l.pack_forget()
+        # if self.index == 0:
+        #     self.micro_fam.configure(variable=ctk.StringVar(value="Bootloader"), dynamic_resizing=True, values=["Bootloader RX", "Bootloader RL"])
+        #     self.micro_fam.pack(anchor=ctk.W, padx=155, pady=10)
+        #     self.bin.pack_forget()
+        #     self.label_VersionH.pack_forget()
+        #     self.label_VersionL.pack_forget()
+        #     self.version_h.pack_forget()
+        #     self.version_l.pack_forget()
         
         #Desativação dos campos que foram alterados(placeholders)
         self.file.configure(state=ctk.DISABLED)

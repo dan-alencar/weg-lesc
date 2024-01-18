@@ -13,21 +13,17 @@ class Builder:
     # Método: gerarbinario
     # Parâmetros de Entrada: Nenhum
     # Operação: Gera o arquivo binário com base nas configurações fornecidas no aplicativo.
-    def gerarbinario(self):
+    def geradorMot(self):
         version = bytearray()
         binary_data = bytearray()
-        header_len = 0
         mot_list = []
         firmware_list = []
         offset = 0
         i = 0
         aux = 0
         try:
-            # self.fieldCheck(self.master.tab_view.configframe, 'header')
-
             for controller_frame in self.master.controllerframe_list.controllerframes:
                 option_selected = controller_frame.optionmenu.get()
-                # if option_selected[:2] == 'FW' and controller_frame.checkbox.get() == 1:
                 if controller_frame.checkbox.get() == 1:
                     i = i + 1
                     self.fieldCheck(controller_frame, 'controller')
@@ -39,11 +35,6 @@ class Builder:
                         code2_size = firmware_frame.code2
                         offset = firmware_frame.offset
                     else:
-                        # if firmware_frame.micro_var == 1:
-                        #     init_add = final_add = 0
-                        # elif firmware_frame.micro_var == 2:
-                        #     init_add = int(firmware_frame.initadd.get(), 16)
-                        #     final_add = int(firmware_frame.finaladd.get(), 16)
                         file, code1_size, code2_size = mot_to_binary(firmware_file, firmware_frame.micro_var)
                         firmware_frame.binary_length = len(file)
                         firmware_frame.code1 = code1_size
@@ -80,6 +71,7 @@ class Builder:
                 holder, _, _ = mot_to_binary(*file_path)
                 # total_l += len(holder)
                 binary_data.extend(holder)
+
             static = {
                 "exch_mode": self.master.tab_view.configframe.exch_mode_entry.get(),
                 "fw_rev": self.master.tab_view.configframe.fw_rev_entry.get(),
@@ -94,6 +86,7 @@ class Builder:
                 "first_update": "AAAAAAAA",
                 "prod_ver": self.master.tab_view.configframe.prodver_entry.get(),
             }
+
             data = [('Arquivo .bin', '*.bin')]
             file = filedialog.asksaveasfilename(
                 initialdir="/", title="Salvar como", filetypes=data, defaultextension=data)
@@ -101,14 +94,13 @@ class Builder:
             #alterações nessa função para a aplicação de Bin2Mot
             binary_gen(file, static, version, binary_data)
 
-
             messagebox.showinfo(title="Concluído", message="O arquivo foi gerado com sucesso!")
         except ValueError as e:
             messagebox.showerror("Erro", str(e))
         except Exception:
             messagebox.showerror("Erro", "Erro na geração do binário.")
-        log_file = file[:-4] + ".txt"
-        self.log_builder(log_file, static, version)
+        # log_file = file[:-4] + ".txt"
+        # self.log_builder(log_file, static, version)
 
     # Método: fieldCheck
     # Parâmetros de Entrada: frame (objeto representando o frame a ser verificado),

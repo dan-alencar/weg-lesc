@@ -51,7 +51,7 @@ class App(ctk.CTk):
 
         # Gerador do arquivo binário
         self.generate_binary = ctk.CTkButton(
-            self, text="Gerar Binário", command=self.builder.gerarbinario)
+            self, text="Gerar Binário", command=self.builder.geradorMot)
         self.generate_binary.pack(pady=10, padx=10)
 
     # Método: get_image_path

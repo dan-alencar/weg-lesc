@@ -114,6 +114,9 @@ class MenuFrame(ctk.CTkFrame):
                     self.master.tab_view.configframe.exch_mode_slaves_entry.insert('1', frame.get('exch_mode_slaves'))
                     self.master.tab_view.configframe.zeroblock_entry.insert('1', frame.get('zeroblock'))
                     self.master.tab_view.configframe.prodver_entry.insert('1', frame.get('prod_ver'))
+                    self.master.tab_view.configframe.file_entry.configure(state=ctk.NORMAL)
+                    self.master.tab_view.configframe.file_entry.insert('1', frame.get('file'))
+                    self.master.tab_view.configframe.file_entry.configure(state=ctk.DISABLED)
         
         if len(self.master.codeframe_list.codeframes) == 0:
             new_codeframe = FileSelectionFrame(self.master.tab_view.codeframe, self.master.codeframe_list, self.master.tab_view.codeframe.index)
@@ -167,7 +170,7 @@ class MenuFrame(ctk.CTkFrame):
                         else:
                             optionSelected = "Selecione uma opção"
                     ET.SubElement(controllerframes, 'controllerframe', interface=frame.interface.get(), comm_address=frame.comm_address.get(), code_id=frame.code_id.get(), optionSelected=optionSelected, optional=str(frame.optional_box.get()))
-        ET.SubElement(configs, 'configurations', exch_mode=configurations.exch_mode_entry.get(), fw_rev=configurations.fw_rev_entry.get(), vecstart=configurations.vecstart_entry.get(), vecend=configurations.vecend_entry.get(), addstart=configurations.addstart_entry.get(), addend=configurations.addend_entry.get(), addcrc=configurations.addcrc_entry.get(), numslaves=configurations.numslaves_entry.get(), exch_mode_slaves=configurations.exch_mode_slaves_entry.get(), zeroblock=configurations.zeroblock_entry.get(), prod_ver=configurations.prodver_entry.get())
+        ET.SubElement(configs, 'configurations', exch_mode=configurations.exch_mode_entry.get(), fw_rev=configurations.fw_rev_entry.get(), vecstart=configurations.vecstart_entry.get(), vecend=configurations.vecend_entry.get(), addstart=configurations.addstart_entry.get(), addend=configurations.addend_entry.get(), addcrc=configurations.addcrc_entry.get(), numslaves=configurations.numslaves_entry.get(), exch_mode_slaves=configurations.exch_mode_slaves_entry.get(), zeroblock=configurations.zeroblock_entry.get(), prod_ver=configurations.prodver_entry.get(), file=configurations.file_entry.get())
 
         tree = ET.ElementTree(xml_doc)
         tree.write(file)
