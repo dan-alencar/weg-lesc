@@ -54,7 +54,7 @@ def mot_to_binary_rx(file_path):
     with open(file_path, 'rb') as mot:
         for line in mot:
             line = line.strip()
-            record = parse_srec_line(line, 1)
+            record = parse_srec_line(line)
 
             # testa se a linha armazena dados
             if record['record_type'] != b'S3':

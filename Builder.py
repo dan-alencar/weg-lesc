@@ -1,6 +1,6 @@
 from tkinter import filedialog, messagebox
 from binary import *
-from BinaryToMot import mot_to_binary_rl, mot_to_binary_rx, ascii_to_mot, build_static_rx
+from BinaryToMot import mot_to_binary_rl, mot_to_binary_rx, ascii_to_mot, build_static_rx, mot_gen
 
 
 # Classe: Builder
@@ -17,7 +17,7 @@ class Builder:
     def geradorMot(self):
         version = bytearray()
         binary_data = ''
-        mot_list = []
+        file_list = []
         firmware_list = []
         app_list = []
         offset = 0
@@ -53,8 +53,8 @@ class Builder:
                         firmware_frame.offset = offset
                         firmware_list.append(firmware_frame)
                     # adiciona a tupla à lista de .mot
-                    if (firmware_file, firmware_frame.micro_var) not in mot_list:
-                        mot_list.append((firmware_file, firmware_frame.micro_var))
+                    if (firmware_file, firmware_frame.micro_var) not in file_list:
+                        file_list.append((firmware_file, firmware_frame.micro_var))
                     version_h = int(firmware_frame.version_h.get(), 16)
                     version_l = int(firmware_frame.version_l.get(), 16)
                     optional = controller_frame.optional_box.get()
@@ -67,7 +67,7 @@ class Builder:
 
             print("Version: ", version)
 
-            for file_path in mot_list:
+            for file_path in file_list:
                 print(file_path)
                 file, family = file_path
                 if family == 1:
@@ -102,16 +102,18 @@ class Builder:
                 "first_update": 0xAAAAAAAA,
                 "prod_ver": self.master.tab_view.configframe.prodver_entry.get()+'0',
             }
+
             static_data = build_static_rx(static, version)
             mot_static = ascii_to_mot(static_data, 0xFFFFE000)
 
-            # data = [('Arquivo .bin', '*.bin')]
-            # file = filedialog.asksaveasfilename(
-            #     initialdir="/", title="Salvar como", filetypes=data, defaultextension=data)
+            mot_list = [mot_bootloader_app, mot_app, mot_static, mot_vector, mot_bootloader_vt]
 
-            # #alterações nessa função para a aplicação de Bin2Mot
-            # binary_gen(file, static, version, binary_data)
-            #
+            data = [('Arquivo .mot', '*.mot')]
+            file = filedialog.asksaveasfilename(
+                initialdir="/", title="Salvar como", filetypes=data, defaultextension=data)
+
+            mot_gen(file, mot_list)
+
             # messagebox.showinfo(title="Concluído", message="O arquivo foi gerado com sucesso!")
         except ValueError as e:
             messagebox.showerror("Erro", str(e))
