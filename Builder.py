@@ -1,6 +1,6 @@
 from tkinter import filedialog, messagebox
 from binary import *
-from BinaryToMot import mot_to_binary_rl, mot_to_binary_rx, ascii_to_mot
+from BinaryToMot import mot_to_binary_rl, mot_to_binary_rx, ascii_to_mot, build_static_rx
 
 
 # Classe: Builder
@@ -16,7 +16,7 @@ class Builder:
     # Operação: Gera o arquivo binário com base nas configurações fornecidas no aplicativo.
     def geradorMot(self):
         version = bytearray()
-        binary_data = bytearray()
+        binary_data = ''
         mot_list = []
         firmware_list = []
         app_list = []
@@ -80,37 +80,35 @@ class Builder:
                     app, vector_table = mot_to_binary_rl(file)
                     app_list.append(vector_table['data'])
                     app_list.append(app['data'])
+            for binary in app_list:
+                binary_data += binary
+            mot_app = ascii_to_mot(binary_data, rx_address)
             mot_vector = ascii_to_mot(vt_data, vt_address)
-            #Alterar para a aplicação do bootloader RL
+            # Alterar para a aplicação do bootloader RL
             bootloader_app, bootloader_vector = mot_to_binary_rx(self.master.tab_view.configframe.file_entry.get())
-            bootloader_app_data = ascii_to_mot(bootloader_app['data'], bootloader_app['address'])
-            bootloader_vt_data = ascii_to_mot(bootloader_vector['data'], bootloader_vector['address'])
+            mot_bootloader_app = ascii_to_mot(bootloader_app['data'], bootloader_app['address'])
+            mot_bootloader_vt = ascii_to_mot(bootloader_vector['data'], bootloader_vector['address'])
 
+            static = {
+                "exch_mode": 0x00000000,
+                "fw_rev": 0x00000000,
+                "vecstart": 0xFFFFFF70,
+                "vecend": 0xFFFFFEF4,
+                "addstart": 0xFFE10000,
+                "addend": 0xFFE80000,
+                "addcrc": 0xFFFFFF7C,
+                "numslaves": 0xFFFFFFFF,
+                "exch_mode_slaves": 0x00000000,
+                "first_update": 0xAAAAAAAA,
+                "prod_ver": self.master.tab_view.configframe.prodver_entry.get()+'0',
+            }
+            static_data = build_static_rx(static, version)
+            mot_static = ascii_to_mot(static_data, 0xFFFFE000)
 
-            # for mot in app_list:
-            #     print(mot)
-            # for mot in vectortable_list:
-            #     print(mot)
-
-            # static = {
-            #     "exch_mode": self.master.tab_view.configframe.exch_mode_entry.get(),
-            #     "fw_rev": self.master.tab_view.configframe.fw_rev_entry.get(),
-            #     "vecstart": self.master.tab_view.configframe.vecstart_entry.get(),
-            #     "vecend": self.master.tab_view.configframe.vecend_entry.get(),
-            #     "addstart": self.master.tab_view.configframe.addstart_entry.get(),
-            #     "addend": self.master.tab_view.configframe.addend_entry.get(),
-            #     "addcrc": self.master.tab_view.configframe.addcrc_entry.get(),
-            #     "numslaves": self.master.tab_view.configframe.numslaves_entry.get(),
-            #     "exch_mode_slaves": self.master.tab_view.configframe.exch_mode_slaves_entry.get(),
-            #     "zeroblock": self.master.tab_view.configframe.zeroblock_entry.get(),
-            #     "first_update": "AAAAAAAA",
-            #     "prod_ver": self.master.tab_view.configframe.prodver_entry.get(),
-            # }
-            #
             # data = [('Arquivo .bin', '*.bin')]
             # file = filedialog.asksaveasfilename(
             #     initialdir="/", title="Salvar como", filetypes=data, defaultextension=data)
-            #
+
             # #alterações nessa função para a aplicação de Bin2Mot
             # binary_gen(file, static, version, binary_data)
             #
