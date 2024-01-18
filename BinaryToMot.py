@@ -212,7 +212,8 @@ def mot_to_binary_rl(file_path):
 # Parâmetros de Entrada: header (dicionário com informações do cabeçalho)
 # Saída: Dados do cabeçalho empacotados
 # Operação: Constrói o cabeçalho conforme a versão especificada no dicionário e o empacota.
-def build_static_rx(static):
+def build_static_rx(static, version):
+
     static_format = 'IIIIIIIIII12s'
     static_data = struct.pack(
         static_format, static["exch_mode"], static["fw_rev"], static["vecstart"],
@@ -220,8 +221,9 @@ def build_static_rx(static):
         static["numslaves"], static["exch_mode_slaves"], static["first_update"],
         bytes(static["prod_ver"], 'utf-8'))
     static_data = binascii.hexlify(static_data).decode('utf-8')
+    version = binascii.hexlify(version).decode('utf-8')
 
-    return static_data
+    return static_data + version
 
 
 def build_static_rl(static):
