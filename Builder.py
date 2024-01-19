@@ -1,6 +1,7 @@
 from tkinter import filedialog, messagebox
 from binary import *
-from crc import crc16_encode
+from binascii import hexlify
+from crc import crc16_encode, hex_string_to_bytearray
 from BinaryToMot import mot_to_binary_rl, mot_to_binary_rx, ascii_to_mot, build_static_rx, mot_gen, fill_data
 
 
@@ -81,15 +82,14 @@ class Builder:
                     app, vector_table = mot_to_binary_rl(file)
                     app_list.append(vector_table['data'])
                     app_list.append(app['data'])
-                    last_address = app['end_address']
-                print(crc16_encode(vector_table['data']))
             for binary in app_list:
                 binary_data += binary
-                # crc_complete = crc16_encode(binary_data)
-                # print(crc_complete)
-            # data_complete = fill_data(binary_data, rx_address, last_address)
-            # crc_complete = crc16_encode(binary_data)
-            # print(crc_complete)
+            data_complete = fill_data(binary_data, rx_address)
+            print("Data complete: ", data_complete)
+            data = hex_string_to_bytearray(data_complete)
+            print("data: ", data)
+            crc_complete = crc16_encode(data)
+            print(crc_complete)
             mot_app = ascii_to_mot(binary_data, rx_address)
             mot_vector = ascii_to_mot(vt_data, vt_address)
             # Alterar para a aplicação do bootloader RL
@@ -113,8 +113,8 @@ class Builder:
 
             static_data = build_static_rx(static, version)
             mot_static = ascii_to_mot(static_data, 0xFFFFE000)
-
-            mot_list = [mot_bootloader_app, mot_app, mot_static, mot_vector, mot_bootloader_vt]
+            mot_crc = ascii_to_mot(hexlify(int.to_bytes(crc_complete, length=(crc_complete.bit_length() + 7) // 8, byteorder='big')).decode('utf-8'), static['addcrc'])
+            mot_list = [mot_bootloader_app, mot_app, mot_static, mot_vector, mot_crc, mot_bootloader_vt]
 
             data = [('Arquivo .mot', '*.mot')]
             file = filedialog.asksaveasfilename(
@@ -122,11 +122,11 @@ class Builder:
 
             mot_gen(file, mot_list)
 
-            # messagebox.showinfo(title="Concluído", message="O arquivo foi gerado com sucesso!")
+            messagebox.showinfo(title="Concluído", message="O arquivo foi gerado com sucesso!")
         except ValueError as e:
             messagebox.showerror("Erro", str(e))
         except Exception:
-            messagebox.showerror("Erro", "Erro na geração do binário.")
+            messagebox.showerror("Erro", "Erro na geração do arquivo.")
         # log_file = file[:-4] + ".txt"
         # self.log_builder(log_file, static, version)
 

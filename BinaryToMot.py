@@ -38,9 +38,10 @@ def parse_srec_line(line):
     }
 
 
-def fill_data(data, init_util, end_util):
-    util_data_len = end_util - init_util
-    final_data = data + (0xFFFFE00 - util_data_len) * 'FF'
+def fill_data(data, init_util):
+    lenght = int(len(data) / 2)
+    util_data_len = lenght + init_util
+    final_data = data + (0xFFFFE000 - util_data_len) * 'FF'
     return final_data
 
 
@@ -202,8 +203,7 @@ def mot_to_binary_rl(file_path):
     app = {
         'data': code2,
         'address': code2_address,
-        'size': code2_size,
-        'end_address': previous_end_address
+        'size': code2_size
     }
 
     vector_table = {
@@ -325,24 +325,24 @@ def mot_gen(destination_path, mot_list):
         destination.write(all_data)
 
 
-filepath = r'Arquivos WPS/rl_application.mot'
-destination_path = r"Arquivos WPS/testandoomot.mot"
-app, vector_table = mot_to_binary_rl(filepath)
-print(app['end_address'])
-
-static = {
-    "exch_mode": 0xFFFFFFFF,
-    "fw_rev": 0x00010001,
-    "vecstart": 0x1000,
-    "vecend": 0x1FFF,
-    "addstart": 0x3800,
-    "addend": 0x7E00,
-    "addcrc": 0x04FB,
-    "numslaves": 0x8,
-    "exch_mode_slaves": 0x9,
-    "first_update": 0xAAAAAAAA,
-    "prod_ver": "10101",
-}
+# filepath = r'Arquivos WPS/rl_application.mot'
+# destination_path = r"Arquivos WPS/testandoomot.mot"
+# app, vector_table = mot_to_binary_rl(filepath)
+# print(app['end_address'])
+#
+# static = {
+#     "exch_mode": 0xFFFFFFFF,
+#     "fw_rev": 0x00010001,
+#     "vecstart": 0x1000,
+#     "vecend": 0x1FFF,
+#     "addstart": 0x3800,
+#     "addend": 0x7E00,
+#     "addcrc": 0x04FB,
+#     "numslaves": 0x8,
+#     "exch_mode_slaves": 0x9,
+#     "first_update": 0xAAAAAAAA,
+#     "prod_ver": "10101",
+# }
 
 # static_data = build_static(static)
 # string = ascii_to_mot2(static_data, 0x00)

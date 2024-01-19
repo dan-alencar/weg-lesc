@@ -1,17 +1,42 @@
-def crc16_encode(data):
-    data = hex_string_to_bytearray(data)
-    crc = 0x0000
+def generate_crc16_table():
     poly = 0x8408
+    table = [0] * 256
+
+    for i in range(256):
+        crc = i
+        for _ in range(8):
+            if crc & 1:
+                crc = (crc >> 1) ^ poly
+            else:
+                crc >>= 1
+        table[i] = crc & 0xFFFF
+
+    return table
+
+
+def crc16_encode(data):
+    crc = 0x0000
+    crc_table = generate_crc16_table()
 
     for byte in data:
-        crc ^= (byte << 8)
-        for _ in range(8):
-            if crc & 0x8000:
-                crc = (crc << 1) ^ poly
-            else:
-                crc <<= 1
+        crc = (crc >> 8) ^ crc_table[(crc ^ byte) & 0xFF]
 
     return crc & 0xFFFF
+
+
+# def crc16_encode(data):
+#     crc = 0x0000
+#     poly = 0x8408
+#
+#     for byte in data:
+#         crc ^= (byte << 8)
+#         for _ in range(8):
+#             if crc & 0x8000:
+#                 crc = (crc << 1) ^ poly
+#             else:
+#                 crc <<= 1
+#
+#     return crc & 0xFFFF
 
 
 def hex_string_to_bytearray(hex_string):
