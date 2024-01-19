@@ -274,7 +274,7 @@ def binary_gen(destination_path, header, version_header, binary_data):
 
     # calcula o tamanho total do arquivo com o cabeçalho e o crc
     length_total = len(binary_data) + len(version_header) + len(header_data)
-    print(length_total)
+    print("Tamanho total: ", length_total)
 
     # concatena o conteúdo dos arquivos
     content = header_data + version_header + binary_data
