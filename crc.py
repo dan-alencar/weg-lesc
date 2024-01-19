@@ -1,3 +1,33 @@
+def crc16_encode(data):
+    data = hex_string_to_bytearray(data)
+    crc = 0x0000
+    poly = 0x8408
+
+    for byte in data:
+        crc ^= (byte << 8)
+        for _ in range(8):
+            if crc & 0x8000:
+                crc = (crc << 1) ^ poly
+            else:
+                crc <<= 1
+
+    return crc & 0xFFFF
+
+
+def hex_string_to_bytearray(hex_string):
+    # Remove any leading "0x" or "0X" if present
+    hex_string = hex_string.replace("0x", "").replace("0X", "")
+
+    # Ensure the length of the hex string is even
+    if len(hex_string) % 2 != 0:
+        hex_string = "0" + hex_string
+
+    # Convert the hex string to a bytearray
+    byte_array = bytearray.fromhex(hex_string)
+
+    return byte_array
+
+
 # Função: calculate_crc16
 # Parâmetros de Entrada: data (dados a serem usados no cálculo do CRC)
 # Saída: Tupla contendo o CRC calculado (crc_h, crc_l)
@@ -80,3 +110,8 @@ def bytearray_to_hex_string(byte_array):
     hex_string = ''.join(format(byte, '02X') for byte in byte_array)
     return hex_string
 
+# aux = "FD730204010000FD730A04040000FBE2F4FEFFFFFD68EDFBE29822E1FFFD68ECFBEA0001FD68E30535EA0305E9A60103FBEE000001FD68E0055C630200020A050201010057454700436F72706F726174650056342E3030000501060108012501780179017B0126018C01A101A301"
+# a = hex_string_to_bytearray(aux)
+# print(a)
+# b = crc16_encode(a)
+# print(b)

@@ -1,5 +1,6 @@
 from tkinter import filedialog, messagebox
 from binary import *
+from crc import crc16_encode
 from BinaryToMot import mot_to_binary_rl, mot_to_binary_rx, ascii_to_mot, build_static_rx, mot_gen
 
 
@@ -80,8 +81,12 @@ class Builder:
                     app, vector_table = mot_to_binary_rl(file)
                     app_list.append(vector_table['data'])
                     app_list.append(app['data'])
+                    # last_address = app['end_address']
             for binary in app_list:
                 binary_data += binary
+            # data_complete = complete_data(binary_data, rx_address, last_address)
+            # print(binary_data)
+            # crc_complete = crc16_encode(binary_data)
             mot_app = ascii_to_mot(binary_data, rx_address)
             mot_vector = ascii_to_mot(vt_data, vt_address)
             # Alterar para a aplicação do bootloader RL
