@@ -38,6 +38,12 @@ def parse_srec_line(line):
     }
 
 
+def fill_data(data, init_util, end_util):
+    util_data_len = end_util - init_util
+    final_data = data + (0xFFFFE00 - util_data_len) * 'FF'
+    return final_data
+
+
 # Função: mot_to_binary
 # Parâmetros de Entrada: file_path, firmware, init_offset2, final_address
 # Saída: Dados binários resultantes da conversão do arquivo .mot
@@ -196,7 +202,8 @@ def mot_to_binary_rl(file_path):
     app = {
         'data': code2,
         'address': code2_address,
-        'size': code2_size
+        'size': code2_size,
+        'end_address': previous_end_address
     }
 
     vector_table = {
@@ -321,9 +328,7 @@ def mot_gen(destination_path, mot_list):
 filepath = r'Arquivos WPS/rl_application.mot'
 destination_path = r"Arquivos WPS/testandoomot.mot"
 app, vector_table = mot_to_binary_rl(filepath)
-# result_mot_string = ascii_to_mot(code2, 0x73E2)
-# print(result_mot_string)
-print(app)
+print(app['end_address'])
 
 static = {
     "exch_mode": 0xFFFFFFFF,
