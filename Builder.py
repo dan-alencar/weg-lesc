@@ -89,7 +89,11 @@ class Builder:
             data = hex_string_to_bytearray(data_complete)
             print("data: ", data)
             crc_complete = crc16_encode(data)
-            print(crc_complete)
+            crc_str = (hexlify(int.to_bytes(crc_complete, length=(crc_complete.bit_length() + 7) // 8, byteorder='big')).decode('utf-8'))
+            crc_h = crc_str[:2]
+            crc_l = crc_str[2:4]
+            crc_complete = crc_l + crc_h + '0000'
+            print("CRC do arquivo: ", crc_complete)
             mot_app = ascii_to_mot(binary_data, rx_address)
             mot_vector = ascii_to_mot(vt_data, vt_address)
             # Alterar para a aplicação do bootloader RL
@@ -99,21 +103,23 @@ class Builder:
 
             static = {
                 "exch_mode": 0x00000000,
-                "fw_rev": 0x00000000,
+                "fw_rev": 0xFFFFFFFF,
                 "vecstart": 0xFFFFFF70,
                 "vecend": 0xFFFFFEF4,
-                "addstart": 0xFFE10000,
-                "addend": 0xFFE80000,
+                "addstart": app['address'],
+                #atualmente está errado, mas pode ser padronizado
+                "addend": 0xFFFFE000,
                 "addcrc": 0xFFFFFF7C,
                 "numslaves": 0xFFFFFFFF,
                 "exch_mode_slaves": 0x00000000,
                 "first_update": 0xAAAAAAAA,
-                "prod_ver": self.master.tab_view.configframe.prodver_entry.get()+'0',
+                "prod_ver": self.master.tab_view.configframe.prodver_entry.get(),
             }
 
             static_data = build_static_rx(static, version)
             mot_static = ascii_to_mot(static_data, 0xFFFFE000)
-            mot_crc = ascii_to_mot(hexlify(int.to_bytes(crc_complete, length=(crc_complete.bit_length() + 7) // 8, byteorder='big')).decode('utf-8'), static['addcrc'])
+
+            mot_crc = ascii_to_mot(crc_complete, static['addcrc'])
             mot_list = [mot_bootloader_app, mot_app, mot_static, mot_vector, mot_crc, mot_bootloader_vt]
 
             data = [('Arquivo .mot', '*.mot')]

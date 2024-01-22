@@ -23,7 +23,6 @@ def crc16_encode(data):
 
     return crc & 0xFFFF
 
-
 # def crc16_encode(data):
 #     crc = 0x0000
 #     poly = 0x8408

@@ -316,11 +316,11 @@ def ascii_to_mot(input_string, init_address):
 
 
 def mot_gen(destination_path, mot_list):
-    all_data = ''
+    all_data = 'S00E00004F464653454E5F556D6F742C\n'
 
     for mot in mot_list:
         all_data += mot
-
+    all_data += 'S70500000000FA'
     with open(destination_path, 'w') as destination:
         destination.write(all_data)
 

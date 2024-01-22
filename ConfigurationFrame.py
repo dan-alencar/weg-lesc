@@ -30,11 +30,11 @@ class ConfigurationFrame(ctk.CTkFrame):
         fileicon = ctk.CTkImage(Image.open(img_file), size=(25, 25))
         self.btn = ctk.CTkButton(self, text="", image=fileicon, height=35, width=50,
                                  font=('', 14, 'bold'), command=self.chooseFile)
-        self.btn.pack(pady=5, padx=5)
 
         # campo de texto que exibe o path do arquivo selecionado
-        self.file_entry = ctk.CTkEntry(self, state=ctk.DISABLED, placeholder_text="Local do arquivo", width=160)
+        self.file_entry = ctk.CTkEntry(self, state=ctk.DISABLED, placeholder_text="Local do arquivo", width=300)
         self.file_entry.pack(pady=5, padx=5)
+        self.btn.pack(pady=5, padx=5)
 
     # Método: chooseFile
     # Parâmetros de Entrada: Nenhum

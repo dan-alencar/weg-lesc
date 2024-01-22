@@ -93,7 +93,7 @@ def build_header(header):
 # Operação: Empacota os parâmetros fornecidos para formar o cabeçalho do versionamento.
 def build_version_header(version_h, version_l, offset_adds, length, interface,
                          comm_address, code_id, optional, offset_vec, offset_app):
-    header_format = '>HHIIBBBBII'
+    header_format = 'HHIIBBBBII'
     version_header_data = struct.pack(
         header_format, version_h, version_l
         , offset_adds, length, interface, comm_address, code_id, optional, offset_vec, offset_app)
