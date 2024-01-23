@@ -316,7 +316,7 @@ def ascii_to_mot(input_string, init_address):
 
 
 def mot_gen(destination_path, mot_list):
-    all_data = 'S00E00004F464653454E5F556D6F742C\n'
+    all_data = 'S00700004C455343D1\n'
 
     for mot in mot_list:
         all_data += mot
@@ -324,30 +324,6 @@ def mot_gen(destination_path, mot_list):
     with open(destination_path, 'w') as destination:
         destination.write(all_data)
 
-
-# filepath = r'Arquivos WPS/rl_application.mot'
-# destination_path = r"Arquivos WPS/testandoomot.mot"
-# app, vector_table = mot_to_binary_rl(filepath)
-# print(app['end_address'])
-#
-# static = {
-#     "exch_mode": 0xFFFFFFFF,
-#     "fw_rev": 0x00010001,
-#     "vecstart": 0x1000,
-#     "vecend": 0x1FFF,
-#     "addstart": 0x3800,
-#     "addend": 0x7E00,
-#     "addcrc": 0x04FB,
-#     "numslaves": 0x8,
-#     "exch_mode_slaves": 0x9,
-#     "first_update": 0xAAAAAAAA,
-#     "prod_ver": "10101",
-# }
-
-# static_data = build_static(static)
-# string = ascii_to_mot2(static_data, 0x00)
-# print(static_data)
-# print(string)
 
 
 
