@@ -22,7 +22,7 @@ class App(ctk.CTk):
 
         self.geometry("1400x800")
         self.resizable(True, True)
-        self.title("Seleção de Arquivos")
+        self.title("Gerador de MOT para Bootloader RX")
 
         self.builder = Builder(self)
 
