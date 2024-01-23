@@ -106,7 +106,7 @@ class Builder:
                 "fw_rev": 0xFFFFFFFF,
                 "vecstart": 0xFFFFFF70,
                 "vecend": 0xFFFFFEF4,
-                "addstart": app['address'],
+                "addstart": rx_address,
                 #atualmente está errado, mas pode ser padronizado
                 "addend": 0xFFFFE000,
                 "addcrc": 0xFFFFFF7C,
