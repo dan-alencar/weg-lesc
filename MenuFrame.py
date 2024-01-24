@@ -33,8 +33,10 @@ class MenuFrame(ctk.CTkFrame):
     def onOpen(self):
         # abre o seletor de arquivos para carregar o arquivo .lesc
         data = [('Arquivos .lesc', '*.lesc')]
-        file = filedialog.askopenfilename(initialdir="/", title="Abrir arquivo",
+        file = filedialog.askopenfilename(initialdir=self.master.previous_path, title="Abrir arquivo",
                                           filetypes=data, defaultextension=data)
+        if file != '':
+            self.master.previous_path = file
 
         # XML parser
         tree = ET.parse(file)
@@ -128,7 +130,9 @@ class MenuFrame(ctk.CTkFrame):
 
         data = [('Arquivos .lesc', '*.lesc')]
         file = filedialog.asksaveasfilename(
-            initialdir="/", title="Salvar como", filetypes=data, defaultextension=data)
+            initialdir=master.previous_path, title="Salvar como", filetypes=data, defaultextension=data)
+        if file != '':
+            master.previous_path = file
 
         # chama a função que cria o arquivo XML
 

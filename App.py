@@ -23,7 +23,7 @@ class App(ctk.CTk):
         self.geometry("1400x800")
         self.resizable(True, True)
         self.title("Gerador de MOT para Bootloader RX")
-
+        self.previous_path = '/'
         self.builder = Builder(self)
 
         weg_ico = 'weg-logo-5.ico'
