@@ -334,16 +334,16 @@ def mot_gen(destination_path, mot_list):
         destination.write(all_data)
 
 
-mot_path = r"F:\CORPORATE_MOT_FINAL\231215A_IHM_8.mot"
-app, vec = mot_to_binary_rl(mot_path)
+# mot_path = r"F:\CORPORATE_MOT_FINAL\231215A_IHM_8.mot"
+# app, vec = mot_to_binary_rl(mot_path)
 # print(ascii_to_mot(app['data'], 0x00))
 # print()
 # print()
 # print(ascii_to_mot(vec['data'], 0x00))
 
-part1, part2 = rl_division(app, vec)
-print(ascii_to_mot(part1, 0x00))
-print(ascii_to_mot(part2, 0x00))
+# part1, part2 = rl_division(app, vec)
+# print(ascii_to_mot(part1, 0x00))
+# print(ascii_to_mot(part2, 0x00))
 
 
 
