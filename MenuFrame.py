@@ -106,6 +106,7 @@ class MenuFrame(ctk.CTkFrame):
                         new_frame.optionmenu.set('Selecione uma opção')
                 if frame.tag == 'configurations':
                     self.master.tab_view.configframe.prodver_entry.insert('1', frame.get('prod_ver'))
+                    self.master.previous_path = frame.get('file')
                     self.master.tab_view.configframe.file_entry.configure(state=ctk.NORMAL)
                     self.master.tab_view.configframe.file_entry.insert('1', frame.get('file'))
                     self.master.tab_view.configframe.file_entry.configure(state=ctk.DISABLED)
