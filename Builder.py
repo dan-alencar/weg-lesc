@@ -131,6 +131,8 @@ class Builder:
             messagebox.showinfo(title="Concluído", message="O arquivo foi gerado com sucesso!")
         except ValueError as e:
             messagebox.showerror("Erro", str(e))
+        except FileNotFoundError:
+            pass
         except Exception:
             messagebox.showerror("Erro", "Erro na geração do arquivo.")
         # log_file = file[:-4] + ".txt"
@@ -144,7 +146,7 @@ class Builder:
     def fieldCheck(self, frame, type):
         if type == 'firmware':
             if '' in {frame.version_h.get(), frame.version_l.get(),
-                      frame.file.get()} or frame.micro_fam.get() == "Selecione uma aplicação":
+                      frame.file.get()} or frame.micro_fam.get() == "RX/RL":
                 raise ValueError('Configure todos os campos dos firmwares selecionados')
             # cuidado com esse parenteses
             else:
