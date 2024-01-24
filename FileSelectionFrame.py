@@ -116,7 +116,7 @@ class FileSelectionFrame(ctk.CTkFrame):
         self.filename = filedialog.askopenfilename(initialdir=self.repository.master.previous_path, title="Selecione o arquivo do seu firmware", filetypes=[
             ("Arquivos .mot", "*.mot")])
         if self.filename != '':
-            self.master.previous_path = self.filename
+            self.repository.master.previous_path = self.filename
         print(self.filename)
         if self.filename=='':
             self.file.configure(state=ctk.DISABLED)
