@@ -22,8 +22,8 @@ class App(ctk.CTk):
 
         self.geometry("1400x800")
         self.resizable(True, True)
-        self.title("Seleção de Arquivos")
-
+        self.title("Gerador de binário WPS")
+        self.previous_path = '/'
         self.builder = Builder(self)
 
         weg_ico = 'weg-logo-5.ico'

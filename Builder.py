@@ -95,8 +95,9 @@ class Builder:
             }
             data = [('Arquivo .bin', '*.bin')]
             file = filedialog.asksaveasfilename(
-                initialdir="/", title="Salvar como", filetypes=data, defaultextension=data)
-
+                initialdir=self.master.previous_path, title="Salvar como", filetypes=data, defaultextension=data)
+            if file != '':
+                self.master.previous_path = file
             binary_gen(file, header, version, binary_data)
             messagebox.showinfo(title="Concluído", message="O arquivo foi gerado com sucesso!")
         except ValueError as e:

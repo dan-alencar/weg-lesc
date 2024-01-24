@@ -1,28 +1,28 @@
 Firmwares carregados:
 FW 1
-Path do arquivo: C:/Users/danfi/Documents/GitHub/weg-lesc/Arquivos WPS/Binary_RX/rx_application.mot
-Tamanho do arquivo: 11555
+Path do arquivo: C:/Users/danfi/OneDrive/Documents/aaaa.mot
+Tamanho do arquivo: 254288
 Offset do arquivo: 0
-Version High: 0001
-Version Low: 0001
-Code 1 Size: 11427
-Code 2 Size: 128
+Version High: 1
+Version Low: 2
+Code 1 Size: 254028
+Code 2 Size: 260
 Família de controlador compatível: RX
 
 Controladores selecionados:
 Firmware selecionado: FW 1
-Endereço de comunicação: 00
-Code ID: 01
-Interface: Serial
-Controlador opcional: 0
+Endereço de comunicação: 1
+Code ID: 2
+Interface: CAN
+Controlador opcional: 1
 
 Cabeçalho WPS:
 header_ver: 1
 header_valid: 2
 prod_id: 3           
 prod_ver: 4         
-length: 11583
+length: 254316
 
 Cabeçalho de versionamento:
 
-bytearray(b'\x00\x01\x00\x01\x00\x00\x00\x00\x00\x00-#\x00\x00\x01\x00\x00\x00,\xa3\x00\x00\x00\x80')
+bytearray(b'\x00\x01\x00\x02\x00\x00\x00\x00\x00\x03\xe1P\x02\x01\x02\x01\x00\x03\xe0L\x00\x00\x01\x04')
