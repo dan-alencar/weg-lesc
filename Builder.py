@@ -124,8 +124,9 @@ class Builder:
 
             data = [('Arquivo .mot', '*.mot')]
             file = filedialog.asksaveasfilename(
-                initialdir="/", title="Salvar como", filetypes=data, defaultextension=data)
-
+                initialdir=self.master.previous_path, title="Salvar como", filetypes=data, defaultextension=data)
+            if file != '':
+                self.master.previous_path = file
             mot_gen(file, mot_list)
 
             messagebox.showinfo(title="Concluído", message="O arquivo foi gerado com sucesso!")
