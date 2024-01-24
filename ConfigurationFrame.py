@@ -1,5 +1,5 @@
 from tkinter import filedialog
-
+from dictionary import rlmomery_enum
 import customtkinter as ctk
 import tkinter as tk
 from PIL import Image
@@ -15,12 +15,13 @@ class ConfigurationFrame(ctk.CTkFrame):
         super().__init__(master, **kwargs)
 
         # Campo de texto que exibe o path do arquivo selecionado
-        self.prodver_label = ctk.CTkLabel(self, height=30, width=100, text="Versão:", font=("", 12, "bold"))
-        self.prodver_label.pack(padx=5, pady=5)
+        self.endadd_label = ctk.CTkLabel(self, height=30, width=100, text="RL78 Part Memory Size:", font=("", 12, "bold"))
+        self.endadd_label.pack(padx=5, pady=5)
 
-        self.prodver_entry = ctk.CTkEntry(self, placeholder_text="Ex: V2.01", width=160)
-        self.prodver_entry.pack(padx=5, pady=5)
-
+        self.endadd_var = ctk.StringVar(value="Part Number")
+        self.endadd_fam = ctk.CTkOptionMenu(self, dynamic_resizing=False, height=35, width=125,
+                                           values=["A", "C", "D", "E", "F", "G", "H", "J", "K", "L"], command=self.dropdown_callback, variable=self.endadd_var)
+        self.endadd_fam.pack(padx=5, pady=5)
         self.file_label = ctk.CTkLabel(self, height=30, width=100, text="Arquivo do Bootloader:",
                                             font=("", 12, "bold"))
         self.file_label.pack(padx=5, pady=5)
@@ -62,5 +63,8 @@ class ConfigurationFrame(ctk.CTkFrame):
     # Parâmetros de Entrada: Nenhum
     # Operação: Limpa os campos de entrada do frame.
     def clearFields(self):
-        self.prodver_entry.delete('0', ctk.END)
         self.file_entry.delete('0', ctk.END)
+
+    def dropdown_callback(self, choice):
+        self.endadd_var = rlmomery_enum[choice]
+        print(self.endadd_var)

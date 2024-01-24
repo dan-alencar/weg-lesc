@@ -26,48 +26,48 @@ class Builder:
         i = 0
         aux = 0
         try:
-            for controller_frame in self.master.controllerframe_list.controllerframes:
-                option_selected = controller_frame.optionmenu.get()
-                if controller_frame.checkbox.get() == 1:
-                    i = i + 1
-                    # self.fieldCheck(controller_frame, 'controller')
-                    firmware_frame = self.master.codeframe_list.searchFrameFile(option_selected)
-                    firmware_file = firmware_frame.file.get()
-                    # self.fieldCheck(firmware_frame, 'firmware')
-                    if firmware_frame in firmware_list:
-                        code1_size = firmware_frame.code1
-                        code2_size = firmware_frame.code2
-                        offset = firmware_frame.offset
-                    else:
-                        file, code1_size, code2_size = mot_to_binary(firmware_file, firmware_frame.micro_var)
-                        firmware_frame.binary_length = len(file)
-                        firmware_frame.code1 = code1_size
-                        firmware_frame.code2 = code2_size
-                        if i == 1:
-                            offset = 0
-                            aux = code1_size
-                        elif i == 2:
-                            offset = aux
-                            aux = code1_size + code2_size
-                        elif i > 2:
-                            offset = offset + aux
-                            aux = code1_size + code2_size
-                        firmware_frame.offset = offset
-                        firmware_list.append(firmware_frame)
-                    # adiciona a tupla à lista de .mot
-                    if (firmware_file, firmware_frame.micro_var) not in file_list:
-                        file_list.append((firmware_file, firmware_frame.micro_var))
-                    version_h = int(firmware_frame.version_h.get(), 16)
-                    version_l = int(firmware_frame.version_l.get(), 16)
-                    optional = controller_frame.optional_box.get()
-                    interface = controller_frame.interface_var
-                    comm_address = int(controller_frame.comm_address.get(), 16)
-                    code_id = int(controller_frame.code_id.get(), 16)
-                    version.extend(
-                        build_version_header(version_h, version_l, offset, firmware_frame.binary_length, interface,
-                                             comm_address, code_id, optional, code1_size, code2_size))
+            # for controller_frame in self.master.controllerframe_list.controllerframes:
+            #     option_selected = controller_frame.optionmenu.get()
+            #     if controller_frame.checkbox.get() == 1:
+            #         i = i + 1
+            #         # self.fieldCheck(controller_frame, 'controller')
+            #         firmware_frame = self.master.codeframe_list.searchFrameFile(option_selected)
+            #         firmware_file = firmware_frame.file.get()
+            #         # self.fieldCheck(firmware_frame, 'firmware')
+            #         if firmware_frame in firmware_list:
+            #             code1_size = firmware_frame.code1
+            #             code2_size = firmware_frame.code2
+            #             offset = firmware_frame.offset
+            #         else:
+            #             file, code1_size, code2_size = mot_to_binary(firmware_file, firmware_frame.micro_var)
+            #             firmware_frame.binary_length = len(file)
+            #             firmware_frame.code1 = code1_size
+            #             firmware_frame.code2 = code2_size
+            #             if i == 1:
+            #                 offset = 0
+            #                 aux = code1_size
+            #             elif i == 2:
+            #                 offset = aux
+            #                 aux = code1_size + code2_size
+            #             elif i > 2:
+            #                 offset = offset + aux
+            #                 aux = code1_size + code2_size
+            #             firmware_frame.offset = offset
+            #             firmware_list.append(firmware_frame)
+            #         # adiciona a tupla à lista de .mot
+            #         if (firmware_file, firmware_frame.micro_var) not in file_list:
+            #             file_list.append((firmware_file, firmware_frame.micro_var))
+            #         version_h = int(firmware_frame.version_h.get(), 16)
+            #         version_l = int(firmware_frame.version_l.get(), 16)
+            #         optional = controller_frame.optional_box.get()
+            #         interface = controller_frame.interface_var
+            #         comm_address = int(controller_frame.comm_address.get(), 16)
+            #         code_id = int(controller_frame.code_id.get(), 16)
+            #         version.extend(
+            #             build_version_header(version_h, version_l, offset, firmware_frame.binary_length, interface,
+            #                                  comm_address, code_id, optional, code1_size, code2_size))
 
-            print("Version: ", version)
+
 
             for file_path in file_list:
                 print(file_path)
@@ -77,11 +77,8 @@ class Builder:
                     rx_address = app['address']
                     vt_data = vector_table['data']
                     vt_address = vector_table['address']
-                    app_list.append(app['data'])
                 elif family == 2:
                     app, vector_table = mot_to_binary_rl(file)
-                    app_list.append(vector_table['data'])
-                    app_list.append(app['data'])
             for binary in app_list:
                 binary_data += binary
             data_complete = fill_data(binary_data, rx_address)
@@ -94,21 +91,21 @@ class Builder:
             crc_l = crc_str[2:4]
             crc_complete = crc_l + crc_h + '0000'
             print("CRC do arquivo: ", crc_complete)
-            mot_app = ascii_to_mot(binary_data, rx_address)
+            mot_app = ascii_to_mot(binary_data, rx_address) # add start 0x0000
             mot_vector = ascii_to_mot(vt_data, vt_address)
             # Alterar para a aplicação do bootloader RL
             bootloader_app, bootloader_vector = mot_to_binary_rx(self.master.tab_view.configframe.file_entry.get())
             mot_bootloader_app = ascii_to_mot(bootloader_app['data'], bootloader_app['address'])
-            mot_bootloader_vt = ascii_to_mot(bootloader_vector['data'], bootloader_vector['address'])
+            mot_bootloader_vt = ascii_to_mot(bootloader_vector['data'], bootloader_vector['address']) #0x1000
 
             static = {
+                # comm_address(do controlador), fw_rev(concatenar V_H e V_L), vecstart(padronizada), vecend(padronizada), addstart, addend, crc*
                 "exch_mode": 0x00000000,
                 "fw_rev": 0xFFFFFFFF,
-                "vecstart": 0xFFFFFF70,
-                "vecend": 0xFFFFFEF4,
-                "addstart": rx_address,
-                #atualmente está errado, mas pode ser padronizado
-                "addend": 0xFFFFE000,
+                "vecstart": 0xFFFFFF70, #0x1000
+                "vecend": 0xFFFFFEF4, #0x1FFF
+                "addstart": rx_address, #0x2C00, mas pode pegar do mot, primeiro endereço da primeira parte do app
+                "addend": 0xFFFFE000, #depende do microcontrolador, tem dois valores atualmente: 0x7FFF ou 0x17FFF, aparentemente vai usar um enumerate com as opções(dropdown)
                 "addcrc": 0xFFFFFF7C,
                 "numslaves": 0xFFFFFFFF,
                 "exch_mode_slaves": 0x00000000,
@@ -117,7 +114,7 @@ class Builder:
             }
 
             static_data = build_static_rx(static, version)
-            mot_static = ascii_to_mot(static_data, 0xFFFFE000)
+            mot_static = ascii_to_mot(static_data, 0x2A00)
 
             mot_crc = ascii_to_mot(crc_complete, static['addcrc'])
             mot_list = [mot_bootloader_app, mot_app, mot_static, mot_vector, mot_crc, mot_bootloader_vt]

@@ -22,11 +22,11 @@ class BodyFrame(ctk.CTkScrollableFrame):
         if type == "controller":
             self.first_frame = ControllerSelectionFrame(self, repository)
             # botão para adicionar novo frame
-            img_mais = repository.master.get_image_path('mais.png')
-            img = ctk.CTkImage(Image.open(img_mais), size=(20, 20))
-            self.add_frame = ctk.CTkButton(self, text="", image=img, width=45, height=35,
-                                           command=lambda: self.newFrame(repository, type))
-            self.add_frame.pack(side=ctk.BOTTOM, pady=5)
+            # img_mais = repository.master.get_image_path('mais.png')
+            # img = ctk.CTkImage(Image.open(img_mais), size=(20, 20))
+            # self.add_frame = ctk.CTkButton(self, text="", image=img, width=45, height=35,
+            #                                command=lambda: self.newFrame(repository, type))
+            # self.add_frame.pack(side=ctk.BOTTOM, pady=5)
         self.first_frame.pack(fill=ctk.BOTH, expand=ctk.TRUE)
         repository.addFrame(self.first_frame)
 

@@ -14,3 +14,16 @@ micro_enum = {
     "Bootloader RX": 3,
     "Bootloader RL": 4
 }
+
+rlmomery_enum = {
+    "A": "03FFFH",
+    "C": "07FFFH",
+    "D": "0BFFFH",
+    "E": "0FFFFH",
+    "F": "17FFFH",
+    "G": "1FFFFH",
+    "H": "2FFFFH",
+    "J": "3FFFFH",
+    "K": "5FFFFH",
+    "L": "7FFFFH"
+}

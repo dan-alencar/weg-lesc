@@ -59,15 +59,14 @@ class FileSelectionFrame(ctk.CTkFrame):
         
         self.micro_var = ctk.StringVar(value="RX/RL")
         self.micro_fam = ctk.CTkOptionMenu(self, state=ctk.DISABLED, dynamic_resizing=False, height=35, width=125, values=["RX", "RL"], command=self.micro_callback, variable=self.micro_var)
-        self.micro_fam.pack(expand=True, padx=10, pady=10,
-                       side=ctk.LEFT, anchor=ctk.N)
+        # self.micro_fam.pack(expand=True, padx=10, pady=10, side=ctk.LEFT, anchor=ctk.N)
 
         # botão para apagar o frame
         img_excluir = repository.master.get_image_path('excluir.png')
         img = ctk.CTkImage(Image.open(img_excluir), size=(20, 20))
         self.bin = ctk.CTkButton(
             self, text='', image=img, width=35, height=35, command=lambda: self.delFrame(self.repository))
-        self.bin.pack(pady=10, padx=10, side=ctk.RIGHT, anchor=ctk.E)
+        # self.bin.pack(pady=10, padx=10, side=ctk.RIGHT, anchor=ctk.E)
 
 
         #tirar esse frame do bootloader daqui e colocá-lo na tab de configurações
