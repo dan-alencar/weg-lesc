@@ -104,7 +104,7 @@ class Builder:
                 "fw_rev": 0xFFFFFFFF,
                 "vecstart": 0xFFFFFF70, #0x1000
                 "vecend": 0xFFFFFEF4, #0x1FFF
-                "addstart": rx_address, #0x2C00, mas pode pegar do mot, primeiro endereço da primeira parte do app
+                "addstart": rx_address, #0x2C00, mas pode pegar do mot, primeiro endereço da primeira parte do app (dps da vector table)
                 "addend": 0xFFFFE000, #depende do microcontrolador, tem dois valores atualmente: 0x7FFF ou 0x17FFF, aparentemente vai usar um enumerate com as opções(dropdown)
                 "addcrc": 0xFFFFFF7C,
                 "numslaves": 0xFFFFFFFF,
@@ -116,7 +116,8 @@ class Builder:
             static_data = build_static_rx(static, version)
             mot_static = ascii_to_mot(static_data, 0x2A00)
 
-            mot_crc = ascii_to_mot(crc_complete, static['addcrc'])
+            # mot_crc = ascii_to_mot(crc_complete, static['addcrc'])
+            #vai ser removido do mot e colocado apenas na static
             mot_list = [mot_bootloader_app, mot_app, mot_static, mot_vector, mot_crc, mot_bootloader_vt]
 
             data = [('Arquivo .mot', '*.mot')]

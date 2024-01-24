@@ -4,6 +4,7 @@ import xml.etree.ElementTree as ET
 from tkinter import filedialog
 from FileSelectionFrame import FileSelectionFrame
 from ControllerSelectionFrame import ControllerSelectionFrame
+from dictionary import rlmomery_enum
 
 
 # Classe: MenuFrame
@@ -66,46 +67,40 @@ class MenuFrame(ctk.CTkFrame):
                     new_frame.file.insert('1', frame.get('filepath'))
                     new_frame.version_h.insert('1',  frame.get('version_h'))
                     new_frame.version_l.insert('1', frame.get('version_l'))
-                    if new_frame.index == 0:
-                        if micro_option != 'Bootloader':
-                            new_frame.micro_fam.set(micro_option)
-                            new_frame.micro_callback(micro_option)
-                        else:
-                            new_frame.micro_fam.set('Bootloader')
-                            new_frame.micro_var = -1
-                    else:
-                        if micro_option != 'RX/RL':
-                            new_frame.micro_fam.set(micro_option)
-                            new_frame.micro_callback(micro_option)
-                        else:
-                            new_frame.micro_fam.set('RX/RL')
-                            new_frame.micro_var = -1
+                    # if micro_option != 'RX/RL':
+                    #     new_frame.micro_fam.set(micro_option)
+                    #     new_frame.micro_callback(micro_option)
+                    # else:
+                    #     new_frame.micro_fam.set('RX/RL')
+                    #     new_frame.micro_var = -1
                     new_frame.file.configure(state=ctk.DISABLED)
                 if frame.tag=='controllerframe':
                     new_frame = ControllerSelectionFrame(self.master.tab_view.controllerframe, self.master.controllerframe_list)
                     self.master.controllerframe_list.addFrame(new_frame)
                     new_frame.pack(side=ctk.TOP, fill=ctk.BOTH, expand=ctk.TRUE)
                     new_frame.checkbox.toggle()
-                    interface_option = frame.get('interface')
-                    if interface_option != 'Selecione uma interface':
-                        new_frame.interface.set(interface_option)
-                        new_frame.interface_callback(interface_option)
-                    else:
-                        new_frame.interface.set('Selecione uma interface')
-                        new_frame.interface_var = -1
+                    # interface_option = frame.get('interface')
+                    # if interface_option != 'Selecione uma interface':
+                    #     new_frame.interface.set(interface_option)
+                    #     new_frame.interface_callback(interface_option)
+                    # else:
+                    #     new_frame.interface.set('Selecione uma interface')
+                    #     new_frame.interface_var = -1
                     new_frame.comm_address.insert('1', frame.get('comm_address'))
-                    new_frame.code_id.insert('1', frame.get('code_id'))
-                    if frame.get('optional') == '1':
-                        new_frame.optional_box.select()
-                    else:
-                        new_frame.optional_box.deselect()
+                    # new_frame.code_id.insert('1', frame.get('code_id'))
+                    # if frame.get('optional') == '1':
+                    #     new_frame.optional_box.select()
+                    # else:
+                    #     new_frame.optional_box.deselect()
                     fw_option = frame.get('optionSelected')
                     if fw_option[:2] == 'FW':
                         new_frame.optionmenu.set(fw_option)
                     else:
                         new_frame.optionmenu.set('Selecione uma opção')
                 if frame.tag == 'configurations':
-                    self.master.tab_view.configframe.prodver_entry.insert('1', frame.get('prod_ver'))
+                    self.master.tab_view.configframe.endadd_var = rlmomery_enum[frame.get('endadd')]
+                    print(rlmomery_enum[frame.get('endadd')])
+                    self.master.tab_view.configframe.endadd_fam.set(frame.get('endadd'))
                     self.master.previous_path = frame.get('file')
                     self.master.tab_view.configframe.file_entry.configure(state=ctk.NORMAL)
                     self.master.tab_view.configframe.file_entry.insert('1', frame.get('file'))
@@ -152,7 +147,7 @@ class MenuFrame(ctk.CTkFrame):
         for frame in codeframe_list.valid_firmware:
             if frame.checkbox.get() == 1:
                 if isinstance(frame, FileSelectionFrame):
-                    ET.SubElement(codeframes, 'codeframe', filepath=frame.file.get(), version_h=frame.version_h.get(), version_l=frame.version_l.get(), micro=frame.micro_fam.get())
+                    ET.SubElement(codeframes, 'codeframe', filepath=frame.file.get(), version_h=frame.version_h.get(), version_l=frame.version_l.get())
         
         for frame in controllerframe_list.controllerframes:
             if frame.checkbox.get() == 1:
@@ -164,8 +159,8 @@ class MenuFrame(ctk.CTkFrame):
                             optionSelected = 'FW ' + str(optionIndex+1)
                         else:
                             optionSelected = "Selecione uma opção"
-                    ET.SubElement(controllerframes, 'controllerframe', interface=frame.interface.get(), comm_address=frame.comm_address.get(), code_id=frame.code_id.get(), optionSelected=optionSelected, optional=str(frame.optional_box.get()))
-        ET.SubElement(configs, 'configurations', prod_ver=configurations.prodver_entry.get(), file=configurations.file_entry.get())
+                    ET.SubElement(controllerframes, 'controllerframe', comm_address=frame.comm_address.get(), optionSelected=optionSelected)
+        ET.SubElement(configs, 'configurations', endadd=configurations.endadd_fam.get(), file=configurations.file_entry.get())
 
         tree = ET.ElementTree(xml_doc)
         tree.write(file)
