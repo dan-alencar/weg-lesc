@@ -25,7 +25,7 @@ class MenuFrame(ctk.CTkFrame):
 
         self.open_button.pack(side=ctk.LEFT)
         self.save_button.pack(side=ctk.LEFT)
-        self.help_button.pack(side=ctk.LEFT)
+        # self.help_button.pack(side=ctk.LEFT)
 
     # Método: onOpen
     # Parâmetros de Entrada: Nenhum
