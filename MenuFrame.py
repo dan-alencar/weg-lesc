@@ -98,6 +98,7 @@ class MenuFrame(ctk.CTkFrame):
                 if frame.tag == 'configurations':
                     self.master.tab_view.configframe.header_version.insert('1', frame.get('header_ver'))
                     self.master.tab_view.configframe.header_valid.insert('1', frame.get('header_val'))
+                    self.master.previous_path = frame.get('file')
                     self.master.tab_view.configframe.prod_id.insert('1', frame.get('prod_id'))
                     self.master.tab_view.configframe.prod_ver.insert('1', frame.get('prod_ver'))
         
