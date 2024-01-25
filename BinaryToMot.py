@@ -236,8 +236,8 @@ def build_static_rx(static, version):
 def build_static_rl(static):
     static_format = 'IIIIIII'
     static_data = struct.pack(
-        static_format, static["exch_mode"], static["fw_rev"], static["vecstart"],
-        static["vecend"], static["addstart"], static["addend"], static["addcrc"])
+        static_format, static["comm_address"], static["fw_rev"], static["vecstart"],
+        static["vecend"], static["addstart"], static["addend"], static["crc"])
     static_data = binascii.hexlify(static_data).decode('utf-8')
 
     return static_data

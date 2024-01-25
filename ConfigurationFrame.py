@@ -67,4 +67,4 @@ class ConfigurationFrame(ctk.CTkFrame):
 
     def dropdown_callback(self, choice):
         self.endadd_var = rlmomery_enum[choice]
-        print(self.endadd_var)
+        # print(self.endadd_var)

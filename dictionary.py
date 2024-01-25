@@ -16,14 +16,14 @@ micro_enum = {
 }
 
 rlmomery_enum = {
-    "A": "03FFFH",
-    "C": "07FFFH",
-    "D": "0BFFFH",
-    "E": "0FFFFH",
-    "F": "17FFFH",
-    "G": "1FFFFH",
-    "H": "2FFFFH",
-    "J": "3FFFFH",
-    "K": "5FFFFH",
-    "L": "7FFFFH"
+    "A": "3FFF",
+    "C": "7FFF",
+    "D": "BFFF",
+    "E": "FFFF",
+    "F": "17FFF",
+    "G": "1FFFF",
+    "H": "2FFFF",
+    "J": "3FFFF",
+    "K": "5FFFF",
+    "L": "7FFFF"
 }

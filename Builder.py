@@ -1,8 +1,8 @@
 from tkinter import filedialog, messagebox
-from binary import *
+import struct
 from binascii import hexlify
 from crc import crc16_encode, hex_string_to_bytearray
-from BinaryToMot import mot_to_binary_rl, mot_to_binary_rx, ascii_to_mot, build_static_rx, mot_gen, fill_data
+from BinaryToMot import mot_to_binary_rl, mot_to_binary_rx, ascii_to_mot, build_static_rl, mot_gen, fill_data
 
 
 # Classe: Builder
@@ -67,58 +67,69 @@ class Builder:
             #             build_version_header(version_h, version_l, offset, firmware_frame.binary_length, interface,
             #                                  comm_address, code_id, optional, code1_size, code2_size))
 
+            # for file_path in file_list:
+            #     print(file_path)
+            #     file, family = file_path
+            #     if family == 1:
+            #         app, vector_table = mot_to_binary_rx(file)
+            #         rx_address = app['address']
+            #         vt_data = vector_table['data']
+            #         vt_address = vector_table['address']
+            #     elif family == 2:
+            #         app, vector_table = mot_to_binary_rl(file)
 
+            firmware_frame = self.master.codeframe_list.codeframes[0]
+            controller_frame = self.master.controllerframe_list.controllerframes[0]
+            config_frame = self.master.tab_view.configframe
 
-            for file_path in file_list:
-                print(file_path)
-                file, family = file_path
-                if family == 1:
-                    app, vector_table = mot_to_binary_rx(file)
-                    rx_address = app['address']
-                    vt_data = vector_table['data']
-                    vt_address = vector_table['address']
-                elif family == 2:
-                    app, vector_table = mot_to_binary_rl(file)
-            for binary in app_list:
-                binary_data += binary
-            data_complete = fill_data(binary_data, rx_address)
-            print("Data complete: ", data_complete)
-            data = hex_string_to_bytearray(data_complete)
-            print("data: ", data)
+            version_high = int(firmware_frame.version_h.get())
+            version_low = int(firmware_frame.version_l.get())
+            version = struct.pack('>HH', version_high, version_low)
+            version = int.from_bytes(version, byteorder='big')
+
+            print(config_frame.endadd_var)
+            addend = int(config_frame.endadd_var, 16)
+            print(addend)
+
+            app_rl, vector_table_rl = mot_to_binary_rl(firmware_frame.filename)
+            app_boot, vector_table_boot = mot_to_binary_rl(config_frame.filename) #verificar se esse função trabalha corretamente com o bootloader do rl
+
+            #crc vai dentro da static -> espaço a ser checado ainda precisa ser definido
             crc_complete = crc16_encode(data)
             crc_str = (hexlify(int.to_bytes(crc_complete, length=(crc_complete.bit_length() + 7) // 8, byteorder='big')).decode('utf-8'))
             crc_h = crc_str[:2]
             crc_l = crc_str[2:4]
             crc_complete = crc_l + crc_h + '0000'
             print("CRC do arquivo: ", crc_complete)
-            mot_app = ascii_to_mot(binary_data, rx_address) # add start 0x0000
-            mot_vector = ascii_to_mot(vt_data, vt_address)
-            # Alterar para a aplicação do bootloader RL
-            bootloader_app, bootloader_vector = mot_to_binary_rx(self.master.tab_view.configframe.file_entry.get())
-            mot_bootloader_app = ascii_to_mot(bootloader_app['data'], bootloader_app['address'])
-            mot_bootloader_vt = ascii_to_mot(bootloader_vector['data'], bootloader_vector['address']) #0x1000
 
             static = {
-                # comm_address(do controlador), fw_rev(concatenar V_H e V_L), vecstart(padronizada), vecend(padronizada), addstart, addend, crc*
-                "exch_mode": 0x00000000,
-                "fw_rev": 0xFFFFFFFF,
-                "vecstart": 0xFFFFFF70, #0x1000
-                "vecend": 0xFFFFFEF4, #0x1FFF
-                "addstart": rx_address, #0x2C00, mas pode pegar do mot, primeiro endereço da primeira parte do app (dps da vector table)
-                "addend": 0xFFFFE000, #depende do microcontrolador, tem dois valores atualmente: 0x7FFF ou 0x17FFF, aparentemente vai usar um enumerate com as opções(dropdown)
-                "addcrc": 0xFFFFFF7C,
-                "numslaves": 0xFFFFFFFF,
-                "exch_mode_slaves": 0x00000000,
-                "first_update": 0xAAAAAAAA,
-                "prod_ver": self.master.tab_view.configframe.prodver_entry.get(),
+                # comm_address(do controlador) done, fw_rev(concatenar V_H e V_L)done , vecstart(padronizada) done, vecend(padronizada) done, addstart done, addend done
+                # crc* : qual parte do app ele precisa; se for a primeira parte, que fica junto com a vector table, precisa de uma função que separe os dois
+                "comm_address": int(controller_frame.comm_address.get()),
+                "fw_rev": version,
+                "vecstart": 0x1000, #0x1000
+                "vecend": 0x1FFF, #0x1FFF
+                "addstart": app_rl['address'], #0x2C00, mas pode pegar do mot, primeiro endereço da primeira parte do app (dps da vector table)
+                "addend": addend, #depende do microcontrolador, tem dois valores atualmente: 0x7FFF ou 0x17FFF, aparentemente vai usar um enumerate com as opções(dropdown)
+                "crc": crc_complete, #ainda precisa ser feito -> checar a região calculada e também o formato da variável
             }
 
-            static_data = build_static_rx(static, version)
-            mot_static = ascii_to_mot(static_data, 0x2A00)
+            static_data = build_static_rl(static)
+
+            mot_vt_rl = ascii_to_mot(vector_table_rl['data'], 0x0000)
+            mot_app_rl = ascii_to_mot(app_rl['data'], app_rl['address'])
+            mot_boot_rl = ascii_to_mot(app_boot['data'], 0x1000) #parte útil inteira do código do bootloader + static -> esse app_boot['data'] ta errado
+
+            # Alterar para a aplicação do bootloader RL
+            # bootloader_app, bootloader_vector = mot_to_binary_rx(self.master.tab_view.configframe.file_entry.get())
+            # mot_bootloader_app = ascii_to_mot(bootloader_app['data'], bootloader_app['address'])
+            # mot_bootloader_vt = ascii_to_mot(bootloader_vector['data'], bootloader_vector['address']) #0x1000
+            # mot_static = ascii_to_mot(static_data, 0x2A00)
 
             # mot_crc = ascii_to_mot(crc_complete, static['addcrc'])
             #vai ser removido do mot e colocado apenas na static
-            mot_list = [mot_bootloader_app, mot_app, mot_static, mot_vector, mot_crc, mot_bootloader_vt]
+
+            # mot_list = [mot_bootloader_app, mot_app, mot_static, mot_vector, mot_bootloader_vt]
 
             data = [('Arquivo .mot', '*.mot')]
             file = filedialog.asksaveasfilename(

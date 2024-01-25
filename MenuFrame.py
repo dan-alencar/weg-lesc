@@ -99,7 +99,6 @@ class MenuFrame(ctk.CTkFrame):
                         new_frame.optionmenu.set('Selecione uma opção')
                 if frame.tag == 'configurations':
                     self.master.tab_view.configframe.endadd_var = rlmomery_enum[frame.get('endadd')]
-                    print(rlmomery_enum[frame.get('endadd')])
                     self.master.tab_view.configframe.endadd_fam.set(frame.get('endadd'))
                     self.master.previous_path = frame.get('file')
                     self.master.tab_view.configframe.file_entry.configure(state=ctk.NORMAL)
