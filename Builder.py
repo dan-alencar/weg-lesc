@@ -17,67 +17,7 @@ class Builder:
     # Parâmetros de Entrada: Nenhum
     # Operação: Gera o arquivo binário com base nas configurações fornecidas no aplicativo.
     def geradorMot(self):
-        version = bytearray()
-        binary_data = ''
-        file_list = []
-        firmware_list = []
-        app_list = []
-        offset = 0
-        i = 0
-        aux = 0
         try:
-            # for controller_frame in self.master.controllerframe_list.controllerframes:
-            #     option_selected = controller_frame.optionmenu.get()
-            #     if controller_frame.checkbox.get() == 1:
-            #         i = i + 1
-            #         # self.fieldCheck(controller_frame, 'controller')
-            #         firmware_frame = self.master.codeframe_list.searchFrameFile(option_selected)
-            #         firmware_file = firmware_frame.file.get()
-            #         # self.fieldCheck(firmware_frame, 'firmware')
-            #         if firmware_frame in firmware_list:
-            #             code1_size = firmware_frame.code1
-            #             code2_size = firmware_frame.code2
-            #             offset = firmware_frame.offset
-            #         else:
-            #             file, code1_size, code2_size = mot_to_binary(firmware_file, firmware_frame.micro_var)
-            #             firmware_frame.binary_length = len(file)
-            #             firmware_frame.code1 = code1_size
-            #             firmware_frame.code2 = code2_size
-            #             if i == 1:
-            #                 offset = 0
-            #                 aux = code1_size
-            #             elif i == 2:
-            #                 offset = aux
-            #                 aux = code1_size + code2_size
-            #             elif i > 2:
-            #                 offset = offset + aux
-            #                 aux = code1_size + code2_size
-            #             firmware_frame.offset = offset
-            #             firmware_list.append(firmware_frame)
-            #         # adiciona a tupla à lista de .mot
-            #         if (firmware_file, firmware_frame.micro_var) not in file_list:
-            #             file_list.append((firmware_file, firmware_frame.micro_var))
-            #         version_h = int(firmware_frame.version_h.get(), 16)
-            #         version_l = int(firmware_frame.version_l.get(), 16)
-            #         optional = controller_frame.optional_box.get()
-            #         interface = controller_frame.interface_var
-            #         comm_address = int(controller_frame.comm_address.get(), 16)
-            #         code_id = int(controller_frame.code_id.get(), 16)
-            #         version.extend(
-            #             build_version_header(version_h, version_l, offset, firmware_frame.binary_length, interface,
-            #                                  comm_address, code_id, optional, code1_size, code2_size))
-
-            # for file_path in file_list:
-            #     print(file_path)
-            #     file, family = file_path
-            #     if family == 1:
-            #         app, vector_table = mot_to_binary_rx(file)
-            #         rx_address = app['address']
-            #         vt_data = vector_table['data']
-            #         vt_address = vector_table['address']
-            #     elif family == 2:
-            #         app, vector_table = mot_to_binary_rl(file)
-
             firmware_frame = self.master.codeframe_list.codeframes[0]
             controller_frame = self.master.controllerframe_list.controllerframes[0]
             config_frame = self.master.tab_view.configframe
@@ -120,23 +60,11 @@ class Builder:
             mot_vt_rl = ascii_to_mot(vector_table_rl['data'], 0x0000)
             mot_app_rl = ascii_to_mot(app_rl['data'], app_rl['address'])
 
+            mot_boot_rl = ascii_to_mot(vector_table_boot['data'], 0x1000) #parte útil inteira do código do bootloader + static -> esse app_boot['data'] ta errado
+            mot_app_boot_rl = ascii_to_mot(app_boot['data'], 0x2000)
+            mot_static = ascii_to_mot(static_data, 0x2A00)
 
-
-            boot_data = vector_table_boot['data'] + app_boot['data'] +  static_data
-
-            mot_boot_rl = ascii_to_mot(boot_data, 0x1000) #parte útil inteira do código do bootloader + static -> esse app_boot['data'] ta errado
-
-            # Alterar para a aplicação do bootloader RL
-            # bootloader_app, bootloader_vector = mot_to_binary_rx(self.master.tab_view.configframe.file_entry.get())
-            # mot_bootloader_app = ascii_to_mot(bootloader_app['data'], bootloader_app['address'])
-            # mot_bootloader_vt = ascii_to_mot(bootloader_vector['data'], bootloader_vector['address']) #0x1000
-            # mot_static = ascii_to_mot(static_data, 0x2A00)
-
-            # mot_crc = ascii_to_mot(crc_complete, static['addcrc'])
-            #vai ser removido do mot e colocado apenas na static
-
-            # mot_list = [mot_bootloader_app, mot_app, mot_static, mot_vector, mot_bootloader_vt]
-            mot_list = [mot_vt_rl, mot_boot_rl, mot_app_rl]
+            mot_list = [mot_vt_rl, mot_boot_rl, mot_app_boot_rl, mot_static, mot_app_rl]
 
             data = [('Arquivo .mot', '*.mot')]
             file = filedialog.asksaveasfilename(
