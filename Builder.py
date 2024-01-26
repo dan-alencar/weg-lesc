@@ -106,7 +106,7 @@ class Builder:
             static = {
                 # comm_address(do controlador) done, fw_rev(concatenar V_H e V_L)done , vecstart(padronizada) done, vecend(padronizada) done, addstart done, addend done
                 # crc* : qual parte do app ele precisa; se for a primeira parte, que fica junto com a vector table, precisa de uma função que separe os dois
-                "comm_address": int(controller_frame.comm_address.get()),
+                "comm_address": int(controller_frame.comm_address.get(), 16),
                 "fw_rev": version,
                 "vecstart": 0x1000, #0x1000
                 "vecend": 0x1FFF, #0x1FFF

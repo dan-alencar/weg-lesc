@@ -1,3 +1,4 @@
+import tkinter
 import customtkinter as ctk
 from tkinter import messagebox
 import xml.etree.ElementTree as ET
@@ -64,6 +65,7 @@ class MenuFrame(ctk.CTkFrame):
                     #     new_frame.finaladd.insert('1', frame.get('finaladd'))
                     # new_frame.length.insert('1',  frame.get('length'))
                     new_frame.filename = frame.get('filepath')
+                    new_frame.file.delete(0, tkinter.END)
                     new_frame.file.insert('1', frame.get('filepath'))
                     new_frame.version_h.insert('1',  frame.get('version_h'))
                     new_frame.version_l.insert('1', frame.get('version_l'))
@@ -102,6 +104,7 @@ class MenuFrame(ctk.CTkFrame):
                     self.master.tab_view.configframe.endadd_fam.set(frame.get('endadd'))
                     self.master.previous_path = frame.get('file')
                     self.master.tab_view.configframe.file_entry.configure(state=ctk.NORMAL)
+                    self.master.tab_view.configframe.file_entry.delete(0, tkinter.END)
                     self.master.tab_view.configframe.file_entry.insert('1', frame.get('file'))
                     self.master.tab_view.configframe.file_entry.configure(state=ctk.DISABLED)
         
