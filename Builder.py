@@ -95,7 +95,7 @@ class Builder:
             app_boot, vector_table_boot = mot_to_binary_rl(config_frame.filename) #verificar se esse função trabalha corretamente com o bootloader do rl
 
             #crc vai dentro da static -> espaço a ser checado ainda precisa ser definido
-            crc_complete = crc16_encode(data)
+            crc_complete = crc16_encode(app_rl['data'])
             crc_str = (hexlify(int.to_bytes(crc_complete, length=(crc_complete.bit_length() + 7) // 8, byteorder='big')).decode('utf-8'))
             crc_h = crc_str[:2]
             crc_l = crc_str[2:4]
@@ -118,7 +118,12 @@ class Builder:
 
             mot_vt_rl = ascii_to_mot(vector_table_rl['data'], 0x0000)
             mot_app_rl = ascii_to_mot(app_rl['data'], app_rl['address'])
-            mot_boot_rl = ascii_to_mot(app_boot['data'], 0x1000) #parte útil inteira do código do bootloader + static -> esse app_boot['data'] ta errado
+
+
+
+            boot_data = vector_table_boot['data'] + app_boot['data'] +  static_data
+
+            mot_boot_rl = ascii_to_mot(boot_data, 0x1000) #parte útil inteira do código do bootloader + static -> esse app_boot['data'] ta errado
 
             # Alterar para a aplicação do bootloader RL
             # bootloader_app, bootloader_vector = mot_to_binary_rx(self.master.tab_view.configframe.file_entry.get())
@@ -130,6 +135,7 @@ class Builder:
             #vai ser removido do mot e colocado apenas na static
 
             # mot_list = [mot_bootloader_app, mot_app, mot_static, mot_vector, mot_bootloader_vt]
+            mot_list = [mot_vt_rl, mot_boot_rl, mot_app_rl]
 
             data = [('Arquivo .mot', '*.mot')]
             file = filedialog.asksaveasfilename(
