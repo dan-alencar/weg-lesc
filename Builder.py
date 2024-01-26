@@ -95,11 +95,12 @@ class Builder:
             app_boot, vector_table_boot = mot_to_binary_rl(config_frame.file_entry.get()) #verificar se esse função trabalha corretamente com o bootloader do rl
 
             #crc vai dentro da static -> espaço a ser checado ainda precisa ser definido
-            crc_complete = crc16_encode(app_rl['data'])
+            data = hex_string_to_bytearray(app_rl['data'])
+            crc_complete = crc16_encode(data)
             crc_str = (hexlify(int.to_bytes(crc_complete, length=(crc_complete.bit_length() + 7) // 8, byteorder='big')).decode('utf-8'))
             crc_h = crc_str[:2]
             crc_l = crc_str[2:4]
-            crc_complete = crc_l + crc_h + '0000'
+            crc_complete = int(crc_l + crc_h + '0000', 16)
             print("CRC do arquivo: ", crc_complete)
 
             static = {
