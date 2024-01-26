@@ -92,7 +92,7 @@ class Builder:
             print(addend)
 
             app_rl, vector_table_rl = mot_to_binary_rl(firmware_frame.filename)
-            app_boot, vector_table_boot = mot_to_binary_rl(config_frame.filename) #verificar se esse função trabalha corretamente com o bootloader do rl
+            app_boot, vector_table_boot = mot_to_binary_rl(config_frame.file_entry.get()) #verificar se esse função trabalha corretamente com o bootloader do rl
 
             #crc vai dentro da static -> espaço a ser checado ainda precisa ser definido
             crc_complete = crc16_encode(app_rl['data'])
