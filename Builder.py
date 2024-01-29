@@ -2,7 +2,7 @@ from tkinter import filedialog, messagebox
 import struct
 from binascii import hexlify
 from crc import crc16_encode, hex_string_to_bytearray
-from BinaryToMot import mot_to_binary_rl, mot2bin, ascii_to_mot, build_static_rl, mot_gen
+from BinaryToMot import mot_to_binary_rl, mot2bin, ascii_to_mot, build_static_rl, mot_gen, fill_data
 
 
 # Classe: Builder
