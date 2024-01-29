@@ -33,12 +33,14 @@ class Builder:
 
             app_rl, vector_table_rl = mot2bin(firmware_frame.filename, 'rl')
 
-            data = hex_string_to_bytearray(app_rl['data'])
+            data_complete = fill_data(app_rl['data'], app_rl['address'], addend)
+            data = hex_string_to_bytearray(data_complete)
+            print(data_complete)
             crc_complete = crc16_encode(data)
             crc_str = (hexlify(int.to_bytes(crc_complete, length=(crc_complete.bit_length() + 7) // 8, byteorder='big')).decode('utf-8'))
             crc_h = crc_str[:2]
             crc_l = crc_str[2:4]
-            crc_complete = int(crc_l + crc_h + '0000', 16)
+            crc_complete = int('0000' + crc_h + crc_l, 16)
             print("CRC do arquivo: ", crc_complete)
 
 
