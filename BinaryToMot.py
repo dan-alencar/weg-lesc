@@ -126,6 +126,95 @@ def mot_to_binary_rx(file_path):
     return app, vector_table
 
 
+# def mot_to_binary_rl(file_path):
+#     code1 = ''  # string que contém a primera parte do código
+#     code2 = ''  # string que contém a segunda parte do código
+#     previous_end_address = 0  # guarda o último endereço preenchido na iteração anterior
+#     code = 1
+#     lines = 0  # guarda a quantidade de linhas para determinar os endereços de inicio
+#     code1_address = 0  # endereço inicial do code1
+#     code2_address = 0  # endereço inicial do code2
+#
+#     with open(file_path, 'rb') as mot:
+#         for line in mot:
+#             line = line.strip()
+#             record = parse_srec_line(line)
+#
+#             # testa se a linha armazena dados
+#             if record['record_type'] == b'S0':
+#                 pass
+#
+#             else:
+#                 # endereço inicial do dado
+#                 init_address = record['address']
+#                 # endereço final do dado
+#                 if record['address'] <= 0xFFFF:  # 2 bytes = S1
+#                     end_address = record['address'] + record['data_length'] - 3
+#                 elif record['address'] <= 0xFFFFFF:  # 3 bytes = S2
+#                     end_address = record['address'] + record['data_length'] - 4
+#                 elif record['address'] <= 0xFFFFFF:  # 4 bytes = S3
+#                     end_address = record['address'] + record['data_length'] - 5
+#
+#                 if lines == 0:
+#                     code1_address = record['address']
+#
+#                 # verifica se a linha pertence à segunda parte, se houve um pulo >= 128 bytes
+#                 if init_address - previous_end_address >= 128 and code == 1:
+#                     code = 2  # indica que houve uma mudança para code 2
+#                     previous_end_address = record['address']
+#                     code2_address = record['address']
+#
+#                 # verifica se houve um segundo pulo >= 128 bytes, indicando fim das informações
+#                 elif init_address - previous_end_address >= 128 and code == 2:
+#                     break  # para de percorrer o arquivo
+#
+#                 # se a linha faz parte da primeira parte do código:
+#                 if code == 1:
+#                     # preenche bytes vazios quando o endereço do início da linha é maior
+#                     # que o endereço do fim da linha anterior
+#                     if previous_end_address < init_address:
+#                         code1 += (init_address - previous_end_address) * 'FF'
+#
+#                     # junta o dado à primeira string
+#                     code1 += record["data"]
+#
+#                 # se a linha fizer parte da segunda parte do código
+#                 if code == 2:
+#                     # preenche bytes vazios quando o endereço do início da linha
+#                     # é maior que o endereço do fim da linha anterior
+#                     if previous_end_address < init_address:
+#                         code2 += (init_address - previous_end_address) * 'FF'
+#
+#                     # junta o dado à segunda string
+#                     code2 += record["data"]
+#
+#                 # atualiza o endereço final anterior
+#                 previous_end_address = end_address
+#
+#     # completando os códigos para que o tamanho seja múltiplo de 64
+#     code1 = mul64(code1)
+#     code2 = mul64(code2)
+#
+#     code1_size = len(bytearray.fromhex(code1))
+#     print('code 1: ', code1_size)
+#     code2_size = len(bytearray.fromhex(code2))
+#     print('code 2: ', code2_size)
+#
+#     app = {
+#         'data': code2,
+#         'address': code2_address,
+#         'size': code2_size
+#     }
+#
+#     vector_table = {
+#         'data': code1,
+#         'address': code1_address,
+#         'size': code1_size
+#     }
+#
+#     return app, vector_table
+
+
 def mot_to_binary_rl(file_path):
     code1 = ''  # string que contém a primera parte do código
     code2 = ''  # string que contém a segunda parte do código
@@ -191,28 +280,7 @@ def mot_to_binary_rl(file_path):
                 # atualiza o endereço final anterior
                 previous_end_address = end_address
 
-    # completando os códigos para que o tamanho seja múltiplo de 64
-    code1 = mul64(code1)
-    code2 = mul64(code2)
-
-    code1_size = len(bytearray.fromhex(code1))
-    print('code 1: ', code1_size)
-    code2_size = len(bytearray.fromhex(code2))
-    print('code 2: ', code2_size)
-
-    app = {
-        'data': code2,
-        'address': code2_address,
-        'size': code2_size
-    }
-
-    vector_table = {
-        'data': code1,
-        'address': code1_address,
-        'size': code1_size
-    }
-
-    return app, vector_table
+    return code1, code2, code1_address, code2_address
 
 
 # Função: build_header
@@ -231,6 +299,27 @@ def build_static_rx(static, version):
     version = binascii.hexlify(version).decode('utf-8')
 
     return static_data + version
+
+
+def mot2bin(file_path, file_type, static=''):
+    vec_table, app, vec_table_add, app_add = mot_to_binary_rl(file_path)
+
+    if file_type == 'boot_rl':
+        app = app[:-128] + static
+
+    vec_table = mul64(vec_table)
+    app = mul64(app)
+
+    dict_app = {
+        'data': app,
+        'address': app_add
+    }
+
+    dict_vt = {
+        'data': vec_table,
+        'address': vec_table_add
+    }
+    return dict_app, dict_vt
 
 
 def build_static_rl(static):
