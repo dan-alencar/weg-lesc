@@ -2,7 +2,7 @@ from tkinter import filedialog, messagebox
 import struct
 from binascii import hexlify
 from crc import crc16_encode, hex_string_to_bytearray
-from BinaryToMot import mot_to_binary_rl, mot_to_binary_rx, ascii_to_mot, build_static_rl, mot_gen, fill_data
+from BinaryToMot import mot_to_binary_rl, mot2bin, ascii_to_mot, build_static_rl, mot_gen
 
 
 # Classe: Builder
@@ -31,10 +31,8 @@ class Builder:
             addend = int(config_frame.endadd_var, 16)
             print(addend)
 
-            app_rl, vector_table_rl = mot_to_binary_rl(firmware_frame.filename)
-            app_boot, vector_table_boot = mot_to_binary_rl(config_frame.file_entry.get()) #verificar se esse função trabalha corretamente com o bootloader do rl
+            app_rl, vector_table_rl = mot2bin(firmware_frame.filename, 'rl')
 
-            #crc vai dentro da static -> espaço a ser checado ainda precisa ser definido
             data = hex_string_to_bytearray(app_rl['data'])
             crc_complete = crc16_encode(data)
             crc_str = (hexlify(int.to_bytes(crc_complete, length=(crc_complete.bit_length() + 7) // 8, byteorder='big')).decode('utf-8'))
@@ -43,28 +41,36 @@ class Builder:
             crc_complete = int(crc_l + crc_h + '0000', 16)
             print("CRC do arquivo: ", crc_complete)
 
+
             static = {
                 # comm_address(do controlador) done, fw_rev(concatenar V_H e V_L)done , vecstart(padronizada) done, vecend(padronizada) done, addstart done, addend done
                 # crc* : qual parte do app ele precisa; se for a primeira parte, que fica junto com a vector table, precisa de uma função que separe os dois
                 "comm_address": int(controller_frame.comm_address.get(), 16),
                 "fw_rev": version,
-                "vecstart": 0x1000, #0x1000
-                "vecend": 0x1FFF, #0x1FFF
-                "addstart": app_rl['address'], #0x2C00, mas pode pegar do mot, primeiro endereço da primeira parte do app (dps da vector table)
-                "addend": addend, #depende do microcontrolador, tem dois valores atualmente: 0x7FFF ou 0x17FFF, aparentemente vai usar um enumerate com as opções(dropdown)
-                "crc": crc_complete, #ainda precisa ser feito -> checar a região calculada e também o formato da variável
+                "vecstart": 0x1000,  # 0x1000
+                "vecend": 0x1FFF,  # 0x1FFF
+                "addstart": app_rl['address'],
+                # 0x2C00, mas pode pegar do mot, primeiro endereço da primeira parte do app (dps da vector table)
+                "addend": addend,
+                # depende do microcontrolador, tem dois valores atualmente: 0x7FFF ou 0x17FFF, aparentemente vai usar um enumerate com as opções(dropdown)
+                "crc": crc_complete,
+                # ainda precisa ser feito -> checar a região calculada e também o formato da variável
             }
 
             static_data = build_static_rl(static)
 
+            app_boot, vector_table_boot = mot2bin(config_frame.file_entry.get(), 'boot_rl', static_data) #verificar se esse função trabalha corretamente com o bootloader do rl
+
+            #crc vai dentro da static -> espaço a ser checado ainda precisa ser definido
             mot_vt_rl = ascii_to_mot(vector_table_rl['data'], 0x0000)
             mot_app_rl = ascii_to_mot(app_rl['data'], app_rl['address'])
 
             mot_boot_rl = ascii_to_mot(vector_table_boot['data'], 0x1000) #parte útil inteira do código do bootloader + static -> esse app_boot['data'] ta errado
             mot_app_boot_rl = ascii_to_mot(app_boot['data'], 0x2000)
-            mot_static = ascii_to_mot(static_data, 0x2A00)
+            #mot_static = ascii_to_mot(static_data, 0x2A00)
 
-            mot_list = [mot_vt_rl, mot_boot_rl, mot_app_boot_rl, mot_static, mot_app_rl]
+            # mot_list = [mot_vt_rl, mot_boot_rl, mot_app_boot_rl, mot_static, mot_app_rl]
+            mot_list = [mot_vt_rl, mot_boot_rl, mot_app_boot_rl, mot_app_rl]
 
             data = [('Arquivo .mot', '*.mot')]
             file = filedialog.asksaveasfilename(
