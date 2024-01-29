@@ -38,10 +38,10 @@ def parse_srec_line(line):
     }
 
 
-def fill_data(data, init_util):
+def fill_data(data, init_util, end_address):
     lenght = int(len(data) / 2)
     util_data_len = lenght + init_util
-    final_data = data + (0xFFFFE000 - util_data_len) * 'FF'
+    final_data = data + (end_address - util_data_len) * 'FF'
     return final_data
 
 
@@ -305,7 +305,7 @@ def mot2bin(file_path, file_type, static=''):
     vec_table, app, vec_table_add, app_add = mot_to_binary_rl(file_path)
 
     if file_type == 'boot_rl':
-        app = app[:-128] + static
+        app = app[:-64] + static
 
     vec_table = mul64(vec_table)
     app = mul64(app)
