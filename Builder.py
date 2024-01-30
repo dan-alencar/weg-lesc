@@ -33,7 +33,7 @@ class Builder:
 
             app_rl, vector_table_rl = mot2bin(firmware_frame.filename, 'rl')
 
-            data_complete = fill_data(app_rl['data'], app_rl['address'], addend)
+            data_complete = fill_data(app_rl['data'], app_rl['address'], addend+1)
             data = hex_string_to_bytearray(data_complete)
             print(data_complete)
             crc_complete = crc16_encode(data)
