@@ -248,13 +248,13 @@ def mot_to_binary_rl(file_path):
                     code1_address = record['address']
 
                 # verifica se a linha pertence à segunda parte, se houve um pulo >= 128 bytes
-                if init_address - previous_end_address >= 128 and code == 1:
+                if init_address - previous_end_address >= 100 and code == 1:
                     code = 2  # indica que houve uma mudança para code 2
                     previous_end_address = record['address']
                     code2_address = record['address']
 
                 # verifica se houve um segundo pulo >= 128 bytes, indicando fim das informações
-                elif init_address - previous_end_address >= 128 and code == 2:
+                elif init_address - previous_end_address >= 256 and code == 2:
                     break  # para de percorrer o arquivo
 
                 # se a linha faz parte da primeira parte do código:
